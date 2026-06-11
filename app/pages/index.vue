@@ -44,14 +44,12 @@ const plans = [
   }
 ]
 
-const codeExample = `curl -X POST https://pixsqueeze-api-production.up.railway.app/compress/batch \\
+const codeExample = `curl -X POST ${PIXSQUEEZE_API}/compress/batch \\
   -H "Authorization: Bearer psx_your_key_here" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "images": [
-      { "url": "https://example.com/photo.jpg", "quality": 80 }
-    ]
-  }'`
+  -F "files[]=@photo1.jpg" \\
+  -F "files[]=@photo2.heic" \\
+  -F "quality=0.7" \\
+  -F "maxWidth=1280"`
 </script>
 
 <template>
@@ -73,7 +71,10 @@ const codeExample = `curl -X POST https://pixsqueeze-api-production.up.railway.a
     </UPageHero>
 
     <!-- Code snippet -->
-    <UPageSection title="One endpoint, done" description="Send images, get compressed images back. That's it.">
+    <UPageSection
+      title="One endpoint, done"
+      description="Send images, get compressed images back. That's it."
+    >
       <div class="bg-gray-900 dark:bg-gray-950 rounded-xl p-5 text-sm font-mono text-green-400 overflow-x-auto max-w-2xl mx-auto shadow-lg">
         <pre>{{ codeExample }}</pre>
       </div>
@@ -87,7 +88,11 @@ const codeExample = `curl -X POST https://pixsqueeze-api-production.up.railway.a
     />
 
     <!-- Pricing -->
-    <UPageSection id="pricing" title="Simple, transparent pricing" description="Start free. Upgrade when you need more.">
+    <UPageSection
+      id="pricing"
+      title="Simple, transparent pricing"
+      description="Start free. Upgrade when you need more."
+    >
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
         <UCard
           v-for="plan in plans"
@@ -98,24 +103,44 @@ const codeExample = `curl -X POST https://pixsqueeze-api-production.up.railway.a
           <template #header>
             <div class="flex items-center justify-between">
               <span class="font-semibold text-base">{{ plan.name }}</span>
-              <UBadge v-if="plan.highlight" color="primary" variant="subtle" size="sm">Popular</UBadge>
+              <UBadge
+                v-if="plan.highlight"
+                color="primary"
+                variant="subtle"
+                size="sm"
+              >
+                Popular
+              </UBadge>
             </div>
             <div class="mt-2 flex items-end gap-1">
               <span class="text-3xl font-bold">{{ plan.price }}</span>
               <span class="text-muted text-sm mb-1">{{ plan.period }}</span>
             </div>
-            <p class="text-sm text-muted mt-1">{{ plan.description }}</p>
+            <p class="text-sm text-muted mt-1">
+              {{ plan.description }}
+            </p>
           </template>
 
           <ul class="space-y-2 text-sm flex-1">
-            <li v-for="f in plan.features" :key="f" class="flex items-center gap-2">
-              <UIcon name="i-lucide-check" class="text-primary shrink-0" />
+            <li
+              v-for="f in plan.features"
+              :key="f"
+              class="flex items-center gap-2"
+            >
+              <UIcon
+                name="i-lucide-check"
+                class="text-primary shrink-0"
+              />
               {{ f }}
             </li>
           </ul>
 
           <template #footer>
-            <UButton :to="plan.ctaTo" :variant="plan.highlight ? 'solid' : 'outline'" block>
+            <UButton
+              :to="plan.ctaTo"
+              :variant="plan.highlight ? 'solid' : 'outline'"
+              block
+            >
               {{ plan.cta }}
             </UButton>
           </template>

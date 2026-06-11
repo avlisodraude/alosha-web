@@ -20,7 +20,10 @@ const navLinks = [
     <div class="min-h-screen flex flex-col">
       <!-- Top bar -->
       <header class="border-b border-default h-14 flex items-center px-6 gap-4 shrink-0">
-        <NuxtLink to="/" class="font-bold text-lg">
+        <NuxtLink
+          to="/"
+          class="font-bold text-lg"
+        >
           <span class="text-primary">Pix</span>Squeeze
         </NuxtLink>
         <span class="text-muted text-sm">/</span>
@@ -34,10 +37,21 @@ const navLinks = [
               { label: 'Sign out', icon: 'i-lucide-log-out', onSelect: handleSignOut }
             ]]"
           >
-            <UAvatar :alt="user?.email ?? 'U'" size="sm" />
+            <UAvatar
+              :alt="user?.email ?? 'U'"
+              size="sm"
+            />
           </UDropdownMenu>
         </div>
       </header>
+
+      <!-- Mobile nav -->
+      <nav class="md:hidden border-b border-default px-2 overflow-x-auto">
+        <UNavigationMenu
+          orientation="horizontal"
+          :items="navLinks"
+        />
+      </nav>
 
       <div class="flex flex-1">
         <!-- Sidebar -->

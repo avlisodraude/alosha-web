@@ -4,7 +4,7 @@ definePageMeta({ layout: 'default' })
 const client = useSupabaseClient()
 const user = useSupabaseUser()
 const status = ref('Confirming your account…')
-const API = 'https://pixsqueeze-api-production.up.railway.app'
+const API = PIXSQUEEZE_API
 
 watch(user, async (u) => {
   if (!u) return
@@ -36,8 +36,8 @@ watch(user, async (u) => {
 
     status.value = 'All set! Redirecting…'
     await navigateTo('/dashboard')
-  } catch (e: any) {
-    status.value = `Something went wrong: ${e.message}`
+  } catch (e) {
+    status.value = `Something went wrong: ${e instanceof Error ? e.message : e}`
   }
 }, { immediate: true })
 </script>
@@ -49,7 +49,9 @@ watch(user, async (u) => {
         :name="status.startsWith('Something') ? 'i-lucide-circle-x' : 'i-lucide-loader-circle'"
         :class="['text-3xl mx-auto mb-3', status.startsWith('Something') ? 'text-error' : 'text-primary animate-spin']"
       />
-      <p class="text-muted text-sm">{{ status }}</p>
+      <p class="text-muted text-sm">
+        {{ status }}
+      </p>
     </UCard>
   </div>
 </template>

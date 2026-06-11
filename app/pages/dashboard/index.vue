@@ -2,16 +2,16 @@
 definePageMeta({ layout: 'dashboard' })
 
 const user = useSupabaseUser()
-const config = useRuntimeConfig()
-const API = 'https://pixsqueeze-api-production.up.railway.app'
+const API = PIXSQUEEZE_API
 
 // --- State ---
 const apiKey = ref<string | null>(null)
-const usage = ref<{ used: number; limit: number; plan: string } | null>(null)
+const usage = ref<{ used: number, limit: number, plan: string } | null>(null)
 const loadingKey = ref(false)
 const loadingUsage = ref(false)
 const loadingBilling = ref(false)
 const copied = ref(false)
+const revealed = ref(false)
 const error = ref('')
 
 const planLimits: Record<string, number | null> = {
@@ -61,8 +61,8 @@ async function provisionKey() {
 
     apiKey.value = key
     await fetchUsage(key)
-  } catch (e: any) {
-    error.value = `Could not provision API key: ${e.message}`
+  } catch (e) {
+    error.value = `Could not provision API key: ${e instanceof Error ? e.message : e}`
   } finally {
     loadingKey.value = false
   }
@@ -71,7 +71,7 @@ async function provisionKey() {
 async function fetchUsage(key: string) {
   loadingUsage.value = true
   try {
-    const res = await fetch(`${API}/usage`, { headers: { 'Authorization': `Bearer ${key}` } })
+    const res = await fetch(`${API}/usage`, { headers: { Authorization: `Bearer ${key}` } })
     if (!res.ok) throw new Error('Failed to load usage')
     const data = await res.json()
     usage.value = { used: data.used ?? 0, limit: data.limit ?? 100, plan: data.plan ?? 'FREE' }
@@ -86,7 +86,9 @@ async function copyKey() {
   if (!apiKey.value) return
   await navigator.clipboard.writeText(apiKey.value)
   copied.value = true
-  setTimeout(() => { copied.value = false }, 2000)
+  setTimeout(() => {
+    copied.value = false
+  }, 2000)
 }
 
 async function openBillingPortal() {
@@ -95,7 +97,7 @@ async function openBillingPortal() {
   try {
     const res = await fetch(`${API}/billing/portal`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${apiKey.value}` }
+      headers: { Authorization: `Bearer ${apiKey.value}` }
     })
     const data = await res.json()
     if (data.url) window.location.href = data.url
@@ -128,41 +130,74 @@ async function openUpgradeCheckout(plan: 'STARTER' | 'PRO' | 'BUSINESS') {
 <template>
   <div class="max-w-3xl space-y-6">
     <div>
-      <h1 class="text-2xl font-bold">Overview</h1>
-      <p class="text-muted text-sm mt-1">{{ user?.email }}</p>
+      <h1 class="text-2xl font-bold">
+        Overview
+      </h1>
+      <p class="text-muted text-sm mt-1">
+        {{ user?.email }}
+      </p>
     </div>
 
-    <UAlert v-if="error" color="error" :description="error" />
+    <UAlert
+      v-if="error"
+      color="error"
+      :description="error"
+    />
 
     <!-- Plan + Usage -->
     <UCard>
       <template #header>
         <div class="flex items-center justify-between">
           <span class="font-semibold">Usage this month</span>
-          <UBadge v-if="usage" :color="usage.plan === 'FREE' ? 'neutral' : 'primary'" variant="subtle">
+          <UBadge
+            v-if="usage"
+            :color="usage.plan === 'FREE' ? 'neutral' : 'primary'"
+            variant="subtle"
+          >
             {{ usage.plan }}
           </UBadge>
-          <USkeleton v-else class="h-5 w-16 rounded-full" />
+          <USkeleton
+            v-else
+            class="h-5 w-16 rounded-full"
+          />
         </div>
       </template>
 
-      <div v-if="loadingUsage" class="space-y-3">
+      <div
+        v-if="loadingUsage"
+        class="space-y-3"
+      >
         <USkeleton class="h-4 w-32" />
         <USkeleton class="h-2 w-full rounded-full" />
       </div>
-      <div v-else-if="usage" class="space-y-3">
+      <div
+        v-else-if="usage"
+        class="space-y-3"
+      >
         <div class="flex items-end justify-between text-sm">
           <span class="font-mono text-2xl font-bold">{{ usage.used.toLocaleString() }}</span>
           <span class="text-muted">
             {{ planLimits[usage.plan] ? `/ ${planLimits[usage.plan]!.toLocaleString()} images` : '/ Unlimited' }}
           </span>
         </div>
-        <UProgress v-if="planLimits[usage.plan]" :value="usagePercent" color="primary" />
-        <p v-if="usage.plan === 'FREE'" class="text-xs text-muted">
+        <UProgress
+          v-if="planLimits[usage.plan]"
+          :value="usagePercent"
+          color="primary"
+        />
+        <p
+          v-if="usage.plan === 'FREE'"
+          class="text-xs text-muted"
+        >
           On the free plan. Upgrade to compress more images.
         </p>
       </div>
-      <div v-else class="text-sm text-muted">No usage data available.</div>
+      <div
+        v-else
+        class="text-sm text-muted"
+      >
+        No usage data available.
+      </div>
 
       <template #footer>
         <div class="flex gap-2 flex-wrap">
@@ -201,16 +236,32 @@ async function openUpgradeCheckout(plan: 'STARTER' | 'PRO' | 'BUSINESS') {
         <span class="font-semibold">API Key</span>
       </template>
 
-      <div v-if="loadingKey" class="flex items-center gap-2 text-sm text-muted">
-        <UIcon name="i-lucide-loader-circle" class="animate-spin" />
+      <div
+        v-if="loadingKey"
+        class="flex items-center gap-2 text-sm text-muted"
+      >
+        <UIcon
+          name="i-lucide-loader-circle"
+          class="animate-spin"
+        />
         Setting up your API key…
       </div>
-      <div v-else-if="apiKey" class="flex items-center gap-2">
+      <div
+        v-else-if="apiKey"
+        class="flex items-center gap-2"
+      >
         <UInput
           :model-value="apiKey"
-          type="password"
+          :type="revealed ? 'text' : 'password'"
           readonly
           class="flex-1 font-mono text-sm"
+        />
+        <UButton
+          :icon="revealed ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          @click="revealed = !revealed"
         />
         <UButton
           :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
@@ -220,7 +271,10 @@ async function openUpgradeCheckout(plan: 'STARTER' | 'PRO' | 'BUSINESS') {
           @click="copyKey"
         />
       </div>
-      <div v-else class="text-sm text-muted">
+      <div
+        v-else
+        class="text-sm text-muted"
+      >
         No API key found.
       </div>
 
@@ -237,11 +291,17 @@ async function openUpgradeCheckout(plan: 'STARTER' | 'PRO' | 'BUSINESS') {
         <span class="font-semibold">Quick start</span>
       </template>
       <div class="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 text-xs font-mono text-green-400 overflow-x-auto">
-        <pre>curl -X POST https://pixsqueeze-api-production.up.railway.app/compress/batch \
-  -H "Authorization: Bearer {{ apiKey ?? 'psx_your_key_here' }}" \
-  -H "Content-Type: application/json" \
-  -d '{ "images": [{ "url": "https://example.com/photo.jpg", "quality": 80 }] }'</pre>
+        <pre>curl -X POST {{ API }}/compress/batch \
+  -H "Authorization: Bearer {{ revealed && apiKey ? apiKey : 'psx_your_key_here' }}" \
+  -F "files[]=@photo.jpg" \
+  -F "quality=0.8"</pre>
       </div>
+      <p class="text-xs text-muted mt-2">
+        Full reference in the <NuxtLink
+          to="/docs"
+          class="text-primary hover:underline"
+        >API docs</NuxtLink>.
+      </p>
     </UCard>
   </div>
 </template>

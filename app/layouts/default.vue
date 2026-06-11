@@ -12,7 +12,10 @@ async function handleSignOut() {
   <UApp>
     <UHeader>
       <template #left>
-        <NuxtLink to="/" class="flex items-center gap-2 font-bold text-lg">
+        <NuxtLink
+          to="/"
+          class="flex items-center gap-2 font-bold text-lg"
+        >
           <span class="text-primary">Pix</span>Squeeze
         </NuxtLink>
       </template>
@@ -23,12 +26,35 @@ async function handleSignOut() {
           class="hidden md:flex"
         />
         <template v-if="user">
-          <UButton to="/dashboard" size="sm" variant="subtle">Dashboard</UButton>
-          <UButton size="sm" variant="ghost" @click="handleSignOut">Sign out</UButton>
+          <UButton
+            to="/dashboard"
+            size="sm"
+            variant="subtle"
+          >
+            Dashboard
+          </UButton>
+          <UButton
+            size="sm"
+            variant="ghost"
+            @click="handleSignOut"
+          >
+            Sign out
+          </UButton>
         </template>
         <template v-else>
-          <UButton to="/login" size="sm" variant="ghost">Sign in</UButton>
-          <UButton to="/login?signup=1" size="sm">Get started</UButton>
+          <UButton
+            to="/login"
+            size="sm"
+            variant="ghost"
+          >
+            Sign in
+          </UButton>
+          <UButton
+            to="/login?signup=1"
+            size="sm"
+          >
+            Get started
+          </UButton>
         </template>
         <UColorModeButton />
       </template>
@@ -40,10 +66,19 @@ async function handleSignOut() {
 
     <UFooter>
       <template #left>
-        <p class="text-sm text-muted">© {{ new Date().getFullYear() }} PixSqueeze</p>
+        <p class="text-sm text-muted">
+          © {{ new Date().getFullYear() }} PixSqueeze
+        </p>
       </template>
       <template #right>
-        <UButton to="https://github.com/avlisodraude/compressme" target="_blank" icon="i-simple-icons-github" color="neutral" variant="ghost" size="sm" />
+        <UButton
+          to="https://github.com/avlisodraude/compressme"
+          target="_blank"
+          icon="i-simple-icons-github"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+        />
       </template>
     </UFooter>
   </UApp>

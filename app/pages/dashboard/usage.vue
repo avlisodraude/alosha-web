@@ -1,8 +1,8 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard' })
 
-const user = useSupabaseUser()
-const API = 'https://pixsqueeze-api-production.up.railway.app'
+const API = PIXSQUEEZE_API
+const pixKey = usePixsqueezeKey()
 
 interface UsageData {
   plan: string
@@ -48,17 +48,19 @@ const daysUntilReset = computed(() => {
   return Math.ceil((reset.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
 })
 
-onMounted(async () => {
-  const key = user.value?.user_metadata?.pixsqueeze_api_key
+async function loadUsage() {
+  const key = pixKey.value
   if (!key) {
     error.value = 'No API key found. Visit the Overview page first.'
     loading.value = false
     return
   }
 
+  loading.value = true
+  error.value = ''
   try {
     const res = await fetch(`${API}/usage`, {
-      headers: { 'Authorization': `Bearer ${key}` }
+      headers: { Authorization: `Bearer ${key}` }
     })
     if (!res.ok) throw new Error(`Status ${res.status}`)
     const data = await res.json()
@@ -69,22 +71,32 @@ onMounted(async () => {
       remaining: data.remaining ?? null,
       resetDate: data.resetDate ?? null
     }
-  } catch (e: any) {
-    error.value = `Could not load usage: ${e.message}`
+  } catch (e) {
+    error.value = `Could not load usage: ${e instanceof Error ? e.message : e}`
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(loadUsage)
 </script>
 
 <template>
   <div class="max-w-2xl space-y-6">
     <div>
-      <h1 class="text-2xl font-bold">Usage</h1>
-      <p class="text-muted text-sm mt-1">Your image compression usage for the current billing period.</p>
+      <h1 class="text-2xl font-bold">
+        Usage
+      </h1>
+      <p class="text-muted text-sm mt-1">
+        Your image compression usage for the current billing period.
+      </p>
     </div>
 
-    <UAlert v-if="error" color="error" :description="error" />
+    <UAlert
+      v-if="error"
+      color="error"
+      :description="error"
+    />
 
     <!-- Main usage card -->
     <UCard>
@@ -92,15 +104,24 @@ onMounted(async () => {
         <div class="flex items-center justify-between">
           <span class="font-semibold">Current period</span>
           <div v-if="usage">
-            <UBadge :color="usage.plan === 'FREE' ? 'neutral' : 'primary'" variant="subtle">
+            <UBadge
+              :color="usage.plan === 'FREE' ? 'neutral' : 'primary'"
+              variant="subtle"
+            >
               {{ usage.plan }}
             </UBadge>
           </div>
-          <USkeleton v-else-if="loading" class="h-5 w-16 rounded-full" />
+          <USkeleton
+            v-else-if="loading"
+            class="h-5 w-16 rounded-full"
+          />
         </div>
       </template>
 
-      <div v-if="loading" class="space-y-4">
+      <div
+        v-if="loading"
+        class="space-y-4"
+      >
         <USkeleton class="h-10 w-24" />
         <USkeleton class="h-2 w-full rounded-full" />
         <div class="grid grid-cols-3 gap-4">
@@ -110,7 +131,10 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-else-if="usage" class="space-y-4">
+      <div
+        v-else-if="usage"
+        class="space-y-4"
+      >
         <!-- Big number -->
         <div class="flex items-end gap-2">
           <span class="text-4xl font-bold font-mono">{{ usage.used.toLocaleString() }}</span>
@@ -120,8 +144,14 @@ onMounted(async () => {
         </div>
 
         <!-- Progress bar -->
-        <div v-if="usage.limit" class="space-y-1">
-          <UProgress :value="usagePercent" :color="progressColor" />
+        <div
+          v-if="usage.limit"
+          class="space-y-1"
+        >
+          <UProgress
+            :value="usagePercent"
+            :color="progressColor"
+          />
           <div class="flex justify-between text-xs text-muted">
             <span>{{ usagePercent }}% used</span>
             <span>{{ (usage.remaining ?? usage.limit - usage.used).toLocaleString() }} remaining</span>
@@ -131,23 +161,36 @@ onMounted(async () => {
         <!-- Stats row -->
         <div class="grid grid-cols-3 gap-4 pt-2">
           <div class="rounded-lg bg-muted/10 p-3 text-center">
-            <div class="text-2xl font-bold font-mono">{{ usage.used.toLocaleString() }}</div>
-            <div class="text-xs text-muted mt-1">Images processed</div>
+            <div class="text-2xl font-bold font-mono">
+              {{ usage.used.toLocaleString() }}
+            </div>
+            <div class="text-xs text-muted mt-1">
+              Images processed
+            </div>
           </div>
           <div class="rounded-lg bg-muted/10 p-3 text-center">
             <div class="text-2xl font-bold font-mono">
               {{ usage.limit ? (usage.remaining ?? usage.limit - usage.used).toLocaleString() : '∞' }}
             </div>
-            <div class="text-xs text-muted mt-1">Images remaining</div>
+            <div class="text-xs text-muted mt-1">
+              Images remaining
+            </div>
           </div>
           <div class="rounded-lg bg-muted/10 p-3 text-center">
-            <div class="text-2xl font-bold font-mono">{{ daysUntilReset ?? '—' }}</div>
-            <div class="text-xs text-muted mt-1">Days until reset</div>
+            <div class="text-2xl font-bold font-mono">
+              {{ daysUntilReset ?? '—' }}
+            </div>
+            <div class="text-xs text-muted mt-1">
+              Days until reset
+            </div>
           </div>
         </div>
 
         <!-- Reset date -->
-        <p v-if="resetDateFormatted" class="text-xs text-muted flex items-center gap-1">
+        <p
+          v-if="resetDateFormatted"
+          class="text-xs text-muted flex items-center gap-1"
+        >
           <UIcon name="i-lucide-calendar" />
           Resets on {{ resetDateFormatted }}
         </p>
@@ -167,7 +210,13 @@ onMounted(async () => {
       <template #footer>
         <div class="flex items-center justify-between text-xs text-muted">
           <span>Usage resets at the start of each billing period.</span>
-          <UButton size="xs" variant="ghost" icon="i-lucide-refresh-cw" @click="$router.go(0)">
+          <UButton
+            size="xs"
+            variant="ghost"
+            icon="i-lucide-refresh-cw"
+            :loading="loading"
+            @click="loadUsage"
+          >
             Refresh
           </UButton>
         </div>
@@ -192,9 +241,20 @@ onMounted(async () => {
               name="i-lucide-check-circle"
               class="text-primary"
             />
-            <UIcon v-else name="i-lucide-circle" class="opacity-30" />
+            <UIcon
+              v-else
+              name="i-lucide-circle"
+              class="opacity-30"
+            />
             <span class="font-medium">{{ plan }}</span>
-            <UBadge v-if="usage?.plan === plan" color="primary" variant="subtle" size="xs">Current</UBadge>
+            <UBadge
+              v-if="usage?.plan === plan"
+              color="primary"
+              variant="subtle"
+              size="xs"
+            >
+              Current
+            </UBadge>
           </div>
           <span class="font-mono text-sm">
             {{ limit ? limit.toLocaleString() + ' / mo' : 'Unlimited' }}
@@ -202,7 +262,11 @@ onMounted(async () => {
         </div>
       </div>
       <template #footer>
-        <UButton to="/dashboard/billing" size="sm" variant="outline">
+        <UButton
+          to="/dashboard/billing"
+          size="sm"
+          variant="outline"
+        >
           View billing & upgrade
         </UButton>
       </template>
