@@ -1,5 +1,11 @@
 {
   "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npm run build",
-  "framework": "nuxtjs"
+  "framework": "nuxtjs",
+  "functions": {},
+  "build": {
+    "env": {
+      "NODE_VERSION": "20"
+    }
+  }
 }
