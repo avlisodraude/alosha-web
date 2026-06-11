@@ -18,6 +18,10 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-01-15',
 
+  typescript: {
+    typeCheck: false
+  },
+
   supabase: {
     redirectOptions: {
       login: '/login',
