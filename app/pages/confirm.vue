@@ -24,9 +24,8 @@ watch(user, async (u) => {
       body: JSON.stringify({ email: u.email })
     })
 
-    if (!res.ok) throw new Error(`Registration failed: ${res.status}`)
-
     const data = await res.json()
+    if (!res.ok) throw new Error(data.error ?? `Registration failed: ${res.status}`)
     const apiKey = data.apiKey ?? data.key ?? data.api_key
 
     if (!apiKey) throw new Error('No API key returned')

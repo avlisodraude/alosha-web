@@ -32,17 +32,16 @@ async function copyKey() {
 }
 
 async function regenerateKey() {
-  if (!user.value?.email) return
+  if (!apiKey.value) return
   regenerating.value = true
   error.value = ''
   try {
-    const res = await fetch(`${API}/auth/register`, {
+    const res = await fetch(`${API}/auth/rotate-key`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: user.value.email })
+      headers: { Authorization: `Bearer ${apiKey.value}` }
     })
-    if (!res.ok) throw new Error(`Status ${res.status}`)
     const data = await res.json()
+    if (!res.ok) throw new Error(data.error ?? `Status ${res.status}`)
     const key = data.apiKey
     if (!key) throw new Error('No key returned')
 

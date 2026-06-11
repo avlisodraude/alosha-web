@@ -33,6 +33,9 @@ const compressResponse = `{
   "usage": { "used": 2, "limit": 100, "remaining": 98 }
 }`
 
+const rotateExample = `curl -X POST ${PIXSQUEEZE_API}/auth/rotate-key \\
+  -H "Authorization: Bearer psx_YOUR_CURRENT_KEY"`
+
 const usageExample = `curl ${PIXSQUEEZE_API}/usage \\
   -H "Authorization: Bearer psx_YOUR_API_KEY"`
 
@@ -54,6 +57,7 @@ const compressParams = [
 
 const errors = [
   { code: '401', meaning: 'Missing or invalid API key.' },
+  { code: '409', meaning: 'An account with this email already exists. Keys are shown only once; rotate via /auth/rotate-key.' },
   { code: '413', meaning: 'Request body too large.' },
   { code: '422', meaning: 'Unsupported or unreadable image file.' },
   { code: '429', meaning: 'Monthly image limit reached. Upgrade your plan or wait for the reset date.' },
@@ -104,6 +108,26 @@ const errors = [
       </p>
       <div class="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 text-xs font-mono text-gray-300 overflow-x-auto mt-1">
         <pre>{{ registerResponse }}</pre>
+      </div>
+      <p class="text-xs text-muted mt-2">
+        Your key is shown <strong class="text-default">only once</strong>. Registering an existing email returns
+        <code class="font-mono bg-muted/20 px-1 rounded">409</code> — it never reveals the existing key.
+      </p>
+
+      <h3 class="font-mono text-sm font-semibold mt-5 flex items-center gap-2">
+        <UBadge
+          color="primary"
+          variant="subtle"
+          size="sm"
+        >
+          POST
+        </UBadge> /auth/rotate-key
+      </h3>
+      <p class="text-sm text-muted mt-2">
+        Lost or leaked your key? Rotate it using your current key. The old key is revoked immediately.
+      </p>
+      <div class="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 text-xs font-mono text-green-400 overflow-x-auto mt-2">
+        <pre>{{ rotateExample }}</pre>
       </div>
     </section>
 

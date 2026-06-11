@@ -50,8 +50,8 @@ async function provisionKey() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: user.value?.email })
     })
-    if (!res.ok) throw new Error(`Status ${res.status}`)
     const data = await res.json()
+    if (!res.ok) throw new Error(data.error ?? `Status ${res.status}`)
     const key = data.apiKey
     if (!key) throw new Error('No key returned')
 
