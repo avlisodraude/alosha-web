@@ -25,6 +25,7 @@
     "vue-tsc": "^3.3.3"
   },
   "engines": {
-    "node": "20.x"
-  }
+    "node": "22.x"
+  },
+  "packageManager": "pnpm@11.5.2"
 }
