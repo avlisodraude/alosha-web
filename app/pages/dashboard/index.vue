@@ -2,6 +2,7 @@
 definePageMeta({ layout: 'dashboard' })
 
 const user = useSupabaseUser()
+const session = useSupabaseSession()
 const API = PIXSQUEEZE_API
 
 // --- State ---
@@ -50,8 +51,21 @@ async function provisionKey() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: user.value?.email })
     })
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.error ?? `Status ${res.status}`)
+    let data = await res.json()
+
+    // Account already exists but metadata lost the key — recover it using
+    // the Supabase session token, which proves ownership of the email.
+    if (res.status === 409 && session.value?.access_token) {
+      const rec = await fetch(`${API}/auth/recover-key`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.value.access_token}` }
+      })
+      data = await rec.json()
+      if (!rec.ok) throw new Error(data.error ?? `Status ${rec.status}`)
+    } else if (!res.ok) {
+      throw new Error(data.error ?? `Status ${res.status}`)
+    }
+
     const key = data.apiKey
     if (!key) throw new Error('No key returned')
 
