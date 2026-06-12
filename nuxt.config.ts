@@ -10,6 +10,15 @@ export default defineNuxtConfig({
     enabled: false
   },
 
+  app: {
+    head: {
+      script: [
+        // Vercel Web Analytics (no-op until enabled in the Vercel dashboard)
+        { src: '/_vercel/insights/script.js', defer: true }
+      ]
+    }
+  },
+
   css: ['~/assets/css/main.css'],
 
   compatibilityDate: '2025-01-15',
@@ -18,20 +27,20 @@ export default defineNuxtConfig({
     typeCheck: false
   },
 
-  supabase: {
-    redirectOptions: {
-      login: '/login',
-      callback: '/confirm',
-      exclude: ['/', '/login', '/docs', '/reset-password']
-    }
-  },
-
   eslint: {
     config: {
       stylistic: {
         commaDangle: 'never',
         braceStyle: '1tbs'
       }
+    }
+  },
+
+  supabase: {
+    redirectOptions: {
+      login: '/login',
+      callback: '/confirm',
+      exclude: ['/', '/login', '/docs', '/reset-password']
     }
   }
 })

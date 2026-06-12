@@ -3,7 +3,11 @@ definePageMeta({ layout: 'default' })
 
 useSeoMeta({
   title: 'API Documentation — PixSqueeze',
-  description: 'Complete reference for the PixSqueeze batch image compression API: authentication, endpoints, request formats, and error codes.'
+  description: 'Complete reference for the PixSqueeze batch image compression API: authentication, endpoints, request formats, and error codes.',
+  ogTitle: 'API Documentation — PixSqueeze',
+  ogDescription: 'Complete reference for the PixSqueeze batch image compression API.',
+  ogImage: 'https://alosha.dev/og.png',
+  twitterCard: 'summary_large_image'
 })
 
 const registerExample = `curl -X POST ${PIXSQUEEZE_API}/auth/register \\

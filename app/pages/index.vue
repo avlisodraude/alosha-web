@@ -5,7 +5,10 @@ useSeoMeta({
   title: 'PixSqueeze — Image Compression API',
   description: 'Batch compress images at scale with a simple API. Free tier, no credit card required.',
   ogTitle: 'PixSqueeze — Image Compression API',
-  ogDescription: 'Batch compress images at scale with a simple API. Free tier, no credit card required.'
+  ogDescription: 'Batch compress images at scale with a simple API. Free tier, no credit card required.',
+  ogImage: 'https://alosha.dev/og.png',
+  ogUrl: 'https://alosha.dev',
+  twitterCard: 'summary_large_image'
 })
 
 const features = [
