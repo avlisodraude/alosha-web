@@ -16,3 +16,55 @@
   --color-green-900: #0A5331;
   --color-green-950: #052E16;
 }
+
+/* ── PixSqueeze brand gradient (shared with the compressme demo site) ── */
+:root {
+  --px-grad: linear-gradient(135deg, #10b981 0%, #22c55e 45%, #2dd4bf 100%);
+}
+
+/* Dotted-grid backdrop */
+body {
+  background-image: radial-gradient(rgba(24, 24, 27, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.dark body {
+  background-image: radial-gradient(rgba(250, 250, 250, 0.05) 1px, transparent 1px);
+}
+
+/* Gradient text */
+.text-grad {
+  background: var(--px-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gradient primary CTA */
+.btn-grad {
+  background: var(--px-grad) !important;
+  color: #fff !important;
+  border: none;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-grad:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45);
+}
+
+/* Hero glow blobs */
+.hero-glow {
+  position: relative;
+  overflow: hidden;
+}
+.hero-glow::before {
+  content: '';
+  position: absolute;
+  inset: -40% -20% auto;
+  height: 130%;
+  background:
+    radial-gradient(40% 55% at 28% 38%, rgba(16, 185, 129, 0.18), transparent 70%),
+    radial-gradient(35% 50% at 72% 30%, rgba(45, 212, 191, 0.13), transparent 70%),
+    radial-gradient(30% 45% at 52% 65%, rgba(34, 197, 94, 0.10), transparent 70%);
+  pointer-events: none;
+}

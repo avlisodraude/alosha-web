@@ -59,12 +59,21 @@ const codeExample = `curl -X POST ${PIXSQUEEZE_API}/compress/batch \\
   <div>
     <!-- Hero -->
     <UPageHero
-      title="Image compression API that just works"
+      class="hero-glow"
       :links="[
-        { label: 'Start for free', to: '/login?signup=1', trailingIcon: 'i-lucide-arrow-right', size: 'xl' },
+        { label: 'Start for free', to: '/login?signup=1', trailingIcon: 'i-lucide-arrow-right', size: 'xl', class: 'btn-grad' },
         { label: 'See pricing', to: '#pricing', size: 'xl', color: 'neutral', variant: 'subtle' }
       ]"
     >
+      <template #headline>
+        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-default bg-default font-mono text-xs text-muted">
+          <span class="size-1.5 rounded-full bg-primary shadow-[0_0_0_3px_rgba(16,185,129,.25)]" />
+          API live · 100 images free every month
+        </span>
+      </template>
+      <template #title>
+        Image compression API<br><span class="text-grad">that just works</span>
+      </template>
       <template #description>
         <p class="text-lg text-muted max-w-xl mx-auto">
           Batch compress JPEG, PNG, and WebP images via a simple REST API.
@@ -142,6 +151,7 @@ const codeExample = `curl -X POST ${PIXSQUEEZE_API}/compress/batch \\
             <UButton
               :to="plan.ctaTo"
               :variant="plan.highlight ? 'solid' : 'outline'"
+              :class="plan.highlight ? 'btn-grad' : ''"
               block
             >
               {{ plan.cta }}
@@ -158,7 +168,7 @@ const codeExample = `curl -X POST ${PIXSQUEEZE_API}/compress/batch \\
         description="Sign up, grab your API key, and make your first batch call. Free forever on the starter tier."
         variant="subtle"
         :links="[
-          { label: 'Create free account', to: '/login?signup=1', trailingIcon: 'i-lucide-arrow-right' },
+          { label: 'Create free account', to: '/login?signup=1', trailingIcon: 'i-lucide-arrow-right', class: 'btn-grad' },
           { label: 'View on GitHub', to: 'https://github.com/avlisodraude/compressme', target: '_blank', icon: 'i-simple-icons-github', color: 'neutral', variant: 'outline' }
         ]"
       />
