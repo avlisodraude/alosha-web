@@ -1,0 +1,24 @@
+name: uptime
+
+on:
+  schedule:
+    # every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Website (alosha.dev)
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://alosha.dev/)
+          echo "alosha.dev -> HTTP $code"
+          test "$code" = "200"
+
+      - name: API health (Railway)
+        if: always()
+        run: |
+          body=$(curl -s --max-time 20 https://pixsqueeze-api-production.up.railway.app/health)
+          echo "API /health -> $body"
+          echo "$body" | grep -q '"status":"ok"'
