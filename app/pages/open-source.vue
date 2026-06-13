@@ -6,15 +6,10 @@ useSeoMeta({
   description: 'Open-source projects maintained by Alosha.'
 })
 
-const projects = [
-  {
-    name: 'pixsqueeze',
-    description: 'JavaScript image compressor with server-side HEIC, TIFF & camera-RAW conversion.',
-    repo: 'https://github.com/avlisodraude/pixsqueeze',
-    npm: 'https://www.npmjs.com/package/pixsqueeze',
-    status: 'Active'
-  }
-]
+const { data: stats } = await useFetch('/api/oss-stats')
+
+const nf = new Intl.NumberFormat('en-US')
+const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
 </script>
 
 <template>
@@ -24,13 +19,39 @@ const projects = [
       description="We maintain the open-source projects our products are built on. Use them freely — MIT licensed."
     />
     <UPageBody>
-      <div class="space-y-4">
+      <div class="max-w-2xl mx-auto">
         <UPageCard
-          v-for="proj in projects"
-          :key="proj.name"
-          :title="proj.name"
-          :description="proj.description"
+          title="pixsqueeze"
+          description="JavaScript image compressor with server-side HEIC, TIFF & camera-RAW conversion."
         >
+          <!-- Live stats -->
+          <div class="grid grid-cols-3 gap-4 mt-2">
+            <div>
+              <div class="text-2xl font-bold">
+                {{ fmt(stats?.downloads) }}
+              </div>
+              <div class="text-xs text-muted uppercase tracking-wide">
+                Downloads / mo
+              </div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold">
+                {{ fmt(stats?.stars) }}
+              </div>
+              <div class="text-xs text-muted uppercase tracking-wide">
+                GitHub stars
+              </div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold">
+                {{ stats?.version ? `v${stats.version}` : '—' }}
+              </div>
+              <div class="text-xs text-muted uppercase tracking-wide">
+                Latest
+              </div>
+            </div>
+          </div>
+
           <template #footer>
             <div class="flex flex-wrap items-center gap-3">
               <UBadge
@@ -38,10 +59,10 @@ const projects = [
                 variant="subtle"
                 size="sm"
               >
-                {{ proj.status }}
+                Active
               </UBadge>
               <UButton
-                :to="proj.repo"
+                to="https://github.com/avlisodraude/pixsqueeze"
                 target="_blank"
                 size="xs"
                 color="neutral"
@@ -51,7 +72,7 @@ const projects = [
                 GitHub
               </UButton>
               <UButton
-                :to="proj.npm"
+                to="https://www.npmjs.com/package/pixsqueeze"
                 target="_blank"
                 size="xs"
                 color="neutral"
@@ -59,6 +80,15 @@ const projects = [
                 icon="i-simple-icons-npm"
               >
                 npm
+              </UButton>
+              <UButton
+                to="https://pixsqueeze.alosha.dev"
+                target="_blank"
+                size="xs"
+                variant="subtle"
+                trailing-icon="i-lucide-arrow-up-right"
+              >
+                Hosted product
               </UButton>
             </div>
           </template>
