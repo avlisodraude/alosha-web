@@ -7,6 +7,8 @@ async function handleSignOut() {
   await navigateTo('/')
 }
 
+const { hubUrl } = useSite()
+
 const navLinks = [
   { label: 'Overview', icon: 'i-lucide-layout-dashboard', to: '/dashboard' },
   { label: 'API Key', icon: 'i-lucide-key', to: '/dashboard/api-key' },
@@ -55,12 +57,23 @@ const navLinks = [
 
       <div class="flex flex-1">
         <!-- Sidebar -->
-        <aside class="w-56 border-r border-default p-4 hidden md:block shrink-0">
+        <aside class="w-56 border-r border-default p-4 hidden md:flex flex-col shrink-0">
           <UNavigationMenu
             orientation="vertical"
             :items="navLinks"
             class="w-full"
           />
+          <UButton
+            :to="hubUrl"
+            target="_blank"
+            variant="link"
+            color="neutral"
+            size="xs"
+            class="mt-auto px-0"
+            trailing-icon="i-lucide-arrow-up-right"
+          >
+            Built by Alosha
+          </UButton>
         </aside>
 
         <!-- Content -->

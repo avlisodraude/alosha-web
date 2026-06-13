@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { auth } = useSupabaseClient()
 const user = useSupabaseUser()
+const { hubUrl } = useSite()
 
 async function handleSignOut() {
   await auth.signOut()
@@ -66,9 +67,20 @@ async function handleSignOut() {
 
     <UFooter>
       <template #left>
-        <p class="text-sm text-muted">
-          © {{ new Date().getFullYear() }} PixSqueeze
-        </p>
+        <div class="flex items-center gap-2 text-sm text-muted">
+          <span>© {{ new Date().getFullYear() }} PixSqueeze</span>
+          <span aria-hidden="true">·</span>
+          <UButton
+            :to="hubUrl"
+            variant="link"
+            color="neutral"
+            size="sm"
+            class="px-0"
+            trailing-icon="i-lucide-arrow-up-right"
+          >
+            Built by Alosha
+          </UButton>
+        </div>
       </template>
       <template #right>
         <UButton
