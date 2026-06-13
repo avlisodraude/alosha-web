@@ -45,7 +45,7 @@ const upcoming = [
       description="Developer products built and maintained by Alosha, each grown from an open-source foundation."
     />
 
-    <UPageBody>
+    <UPageBody class="max-w-5xl mx-auto px-4 w-full">
       <!-- PixSqueeze — featured / live -->
       <section class="space-y-8">
         <div class="flex items-center gap-3">
