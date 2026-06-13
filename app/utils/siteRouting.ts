@@ -1,7 +1,7 @@
 import type { Site } from '~/composables/useSite'
 
 // Path prefixes owned by the product app (pixsqueeze.alosha.dev).
-export const productPrefixes = ['/login', '/confirm', '/reset-password', '/dashboard', '/docs']
+export const productPrefixes = ['/login', '/confirm', '/reset-password', '/dashboard', '/docs', '/demo']
 
 // Path prefixes owned by the portfolio hub (alosha.dev).
 export const hubPrefixes = ['/products', '/open-source', '/about', '/contact', '/blog']
