@@ -3,6 +3,9 @@ definePageMeta({ layout: 'dashboard' })
 
 const API = PIXSQUEEZE_API
 const pixKey = usePixsqueezeKey()
+const route = useRoute()
+
+const checkoutStatus = computed(() => route.query.status as string | undefined)
 
 const currentPlan = ref<string>('FREE')
 const loadingUsage = ref(true)
@@ -135,6 +138,21 @@ async function openPortal() {
         Manage billing
       </UButton>
     </div>
+
+    <UAlert
+      v-if="checkoutStatus === 'success'"
+      color="success"
+      icon="i-lucide-check-circle"
+      title="Payment successful"
+      description="Your plan is now active. It may take a few seconds to update below."
+    />
+    <UAlert
+      v-else-if="checkoutStatus === 'cancel'"
+      color="neutral"
+      icon="i-lucide-info"
+      title="Checkout canceled"
+      description="No changes were made to your plan."
+    />
 
     <UAlert
       v-if="error"
