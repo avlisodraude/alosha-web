@@ -27,6 +27,7 @@ const error = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
 
 type ImageInfo = { name: string, size: number, url: string }
+const sourceFile = ref<File | null>(null)
 const original = ref<ImageInfo | null>(null)
 const compressed = ref<ImageInfo | null>(null)
 const job = ref<unknown>(null)
@@ -55,12 +56,12 @@ function loadPixSqueeze(): Promise<PixSqueezeCtor> {
   })
 }
 
-async function compress(file: File) {
+// Re-runs compression on the current source file with the current settings.
+async function runCompression() {
+  const file = sourceFile.value
+  if (!file) return
   error.value = ''
   loading.value = true
-  original.value = { name: file.name, size: file.size, url: URL.createObjectURL(file) }
-  compressed.value = null
-
   try {
     const PixSqueeze = await loadPixSqueeze()
     job.value = new PixSqueeze(file, {
@@ -68,6 +69,7 @@ async function compress(file: File) {
       mimeType: format.value,
       maxWidth: 4096,
       success: (result: PixSqueezeResult) => {
+        if (compressed.value) URL.revokeObjectURL(compressed.value.url)
         compressed.value = {
           name: result.name ?? file.name,
           size: result.size,
@@ -86,6 +88,22 @@ async function compress(file: File) {
   }
 }
 
+function loadFile(file: File) {
+  sourceFile.value = file
+  if (original.value) URL.revokeObjectURL(original.value.url)
+  original.value = { name: file.name, size: file.size, url: URL.createObjectURL(file) }
+  compressed.value = null
+  runCompression()
+}
+
+// Re-compress when the user changes quality or format (debounced for slider drags).
+let debounce: ReturnType<typeof setTimeout> | undefined
+watch([quality, format], () => {
+  if (!sourceFile.value) return
+  clearTimeout(debounce)
+  debounce = setTimeout(runCompression, 200)
+})
+
 function pickFirstImage(files?: FileList | null): File | undefined {
   if (!files) return undefined
   return Array.from(files).find(f => f.type.startsWith('image/'))
@@ -93,16 +111,17 @@ function pickFirstImage(files?: FileList | null): File | undefined {
 
 function onInput(e: Event) {
   const file = pickFirstImage((e.target as HTMLInputElement).files)
-  if (file) compress(file)
+  if (file) loadFile(file)
 }
 
 function onDrop(e: DragEvent) {
   dragging.value = false
   const file = pickFirstImage(e.dataTransfer?.files)
-  if (file) compress(file)
+  if (file) loadFile(file)
 }
 
 function reset() {
+  sourceFile.value = null
   original.value = null
   compressed.value = null
   error.value = ''
