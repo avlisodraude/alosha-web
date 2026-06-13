@@ -21,6 +21,17 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  // Two-domain split: alosha.dev = portfolio hub, pixsqueeze.alosha.dev = product app.
+  // Override any of these per environment with NUXT_PUBLIC_HUB_URL / NUXT_PUBLIC_PRODUCT_URL /
+  // NUXT_PUBLIC_FORCE_SITE (set FORCE_SITE to 'hub' or 'product' for local dev).
+  runtimeConfig: {
+    public: {
+      hubUrl: 'https://alosha.dev',
+      productUrl: 'https://pixsqueeze.alosha.dev',
+      forceSite: ''
+    }
+  },
+
   compatibilityDate: '2025-01-15',
 
   typescript: {
@@ -40,7 +51,20 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
-      exclude: ['/', '/login', '/docs', '/reset-password']
+      // '/' + all public hub routes must be excluded from the auth guard.
+      exclude: [
+        '/',
+        '/login',
+        '/docs',
+        '/reset-password',
+        '/products',
+        '/products/**',
+        '/open-source',
+        '/about',
+        '/contact',
+        '/blog',
+        '/blog/**'
+      ]
     }
   }
 })

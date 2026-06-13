@@ -72,7 +72,7 @@ async function handleSignOut() {
       </template>
       <template #right>
         <UButton
-          to="https://github.com/avlisodraude/compressme"
+          to="https://github.com/avlisodraude/pixsqueeze"
           target="_blank"
           icon="i-simple-icons-github"
           color="neutral"
