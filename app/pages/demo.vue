@@ -79,7 +79,7 @@ const numberFields = [
   { key: 'convertSize', label: 'convertSize (bytes)', ph: '5000000' }
 ] as const
 
-type ImageInfo = { name: string, size: number, url: string }
+type ImageInfo = { name: string, size: number, url: string, type: string }
 const sourceFile = ref<File | null>(null)
 const original = ref<ImageInfo | null>(null)
 const compressed = ref<ImageInfo | null>(null)
@@ -96,6 +96,14 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
+
+function shortType(t: string): string {
+  return t ? t.replace('image/', '').toUpperCase() : ''
+}
+
+function metaLine(dims: string, type: string, size: number): string {
+  return [dims, shortType(type), formatBytes(size)].filter(Boolean).join(' · ')
 }
 
 function onImgLoad(e: Event, target: 'orig' | 'comp') {
@@ -144,7 +152,8 @@ async function runCompression() {
         compressed.value = {
           name: result.name ?? file.name,
           size: result.size,
-          url: URL.createObjectURL(result)
+          url: URL.createObjectURL(result),
+          type: result.type
         }
         loading.value = false
       },
@@ -185,7 +194,7 @@ async function runCompression() {
 function loadFile(file: File) {
   sourceFile.value = file
   if (original.value) URL.revokeObjectURL(original.value.url)
-  original.value = { name: file.name, size: file.size, url: URL.createObjectURL(file) }
+  original.value = { name: file.name, size: file.size, url: URL.createObjectURL(file), type: file.type }
   originalDims.value = ''
   compressed.value = null
   runCompression()
@@ -453,7 +462,7 @@ function reset() {
         <template #header>
           <div class="flex items-center justify-between">
             <span class="font-semibold text-sm">Original</span>
-            <span class="text-sm text-muted">{{ (originalDims ? originalDims + ' · ' : '') + formatBytes(original.size) }}</span>
+            <span class="text-sm text-muted">{{ metaLine(originalDims, original.type, original.size) }}</span>
           </div>
         </template>
         <img
@@ -496,7 +505,7 @@ function reset() {
             @load="onImgLoad($event, 'comp')"
           >
           <div class="flex items-center justify-between mt-3">
-            <span class="text-sm text-muted">{{ (compressedDims ? compressedDims + ' · ' : '') + formatBytes(compressed.size) }}</span>
+            <span class="text-sm text-muted">{{ metaLine(compressedDims, compressed.type, compressed.size) }}</span>
             <UButton
               :to="compressed.url"
               :download="compressed.name"
