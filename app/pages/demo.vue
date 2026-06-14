@@ -26,23 +26,64 @@ interface PixSqueezeResult extends Blob { name?: string }
 interface PixSqueezeOptions {
   quality?: number
   mimeType?: string
+  resize?: string
+  strict?: boolean
+  checkOrientation?: boolean
+  retainExif?: boolean
   maxWidth?: number
+  maxHeight?: number
+  minWidth?: number
+  minHeight?: number
+  width?: number
+  height?: number
+  convertTypes?: string
+  convertSize?: number
   success?: (result: PixSqueezeResult) => void
   error?: (err: Error) => void
 }
 interface PixSqueezeCtor { new (file: File, options: PixSqueezeOptions): unknown }
 
 const quality = ref(0.6)
-const format = ref('auto')
+const showAdvanced = ref(false)
 const dragging = ref(false)
 const loading = ref(false)
 const error = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
 
+// Advanced options. Numeric fields are kept as strings so "empty" can be
+// distinguished from 0 — empty fields are omitted so PixSqueeze's defaults apply.
+const adv = reactive({
+  format: 'auto',
+  resize: 'none',
+  strict: true,
+  checkOrientation: true,
+  retainExif: false,
+  maxWidth: '',
+  maxHeight: '',
+  minWidth: '',
+  minHeight: '',
+  width: '',
+  height: '',
+  convertTypes: '',
+  convertSize: ''
+})
+
+const numberFields = [
+  { key: 'maxWidth', label: 'maxWidth (px)', ph: 'Infinity' },
+  { key: 'maxHeight', label: 'maxHeight (px)', ph: 'Infinity' },
+  { key: 'minWidth', label: 'minWidth (px)', ph: '0' },
+  { key: 'minHeight', label: 'minHeight (px)', ph: '0' },
+  { key: 'width', label: 'width (px)', ph: 'auto' },
+  { key: 'height', label: 'height (px)', ph: 'auto' },
+  { key: 'convertSize', label: 'convertSize (bytes)', ph: '5000000' }
+] as const
+
 type ImageInfo = { name: string, size: number, url: string }
 const sourceFile = ref<File | null>(null)
 const original = ref<ImageInfo | null>(null)
 const compressed = ref<ImageInfo | null>(null)
+const originalDims = ref('')
+const compressedDims = ref('')
 const job = ref<unknown>(null)
 
 const savings = computed(() => {
@@ -54,6 +95,13 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
+
+function onImgLoad(e: Event, target: 'orig' | 'comp') {
+  const img = e.target as HTMLImageElement
+  const dims = `${img.naturalWidth}×${img.naturalHeight}`
+  if (target === 'orig') originalDims.value = dims
+  else compressedDims.value = dims
 }
 
 // Load the standalone browser bundle on demand (client only).
@@ -69,18 +117,27 @@ function loadPixSqueeze(): Promise<PixSqueezeCtor> {
   })
 }
 
+function toNumber(raw: string): number | undefined {
+  const n = Number(raw)
+  return raw !== '' && !Number.isNaN(n) ? n : undefined
+}
+
 // Re-runs compression on the current source file with the current settings.
 async function runCompression() {
   const file = sourceFile.value
   if (!file) return
   error.value = ''
   loading.value = true
+  compressedDims.value = ''
   try {
     const PixSqueeze = await loadPixSqueeze()
-    job.value = new PixSqueeze(file, {
+    const options: PixSqueezeOptions = {
       quality: quality.value,
-      mimeType: format.value,
-      maxWidth: 4096,
+      mimeType: adv.format,
+      resize: adv.resize,
+      strict: adv.strict,
+      checkOrientation: adv.checkOrientation,
+      retainExif: adv.retainExif,
       success: (result: PixSqueezeResult) => {
         if (compressed.value) URL.revokeObjectURL(compressed.value.url)
         compressed.value = {
@@ -94,7 +151,26 @@ async function runCompression() {
         error.value = err.message
         loading.value = false
       }
-    })
+    }
+    // Only pass numeric options the user actually set — passing undefined would
+    // override PixSqueeze's defaults (Infinity / 0) and break the resize math.
+    const mw = toNumber(adv.maxWidth)
+    if (mw !== undefined) options.maxWidth = mw
+    const mh = toNumber(adv.maxHeight)
+    if (mh !== undefined) options.maxHeight = mh
+    const nw = toNumber(adv.minWidth)
+    if (nw !== undefined) options.minWidth = nw
+    const nh = toNumber(adv.minHeight)
+    if (nh !== undefined) options.minHeight = nh
+    const w = toNumber(adv.width)
+    if (w !== undefined) options.width = w
+    const h = toNumber(adv.height)
+    if (h !== undefined) options.height = h
+    const cs = toNumber(adv.convertSize)
+    if (cs !== undefined) options.convertSize = cs
+    if (adv.convertTypes.trim()) options.convertTypes = adv.convertTypes.trim()
+
+    job.value = new PixSqueeze(file, options)
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
     loading.value = false
@@ -105,13 +181,14 @@ function loadFile(file: File) {
   sourceFile.value = file
   if (original.value) URL.revokeObjectURL(original.value.url)
   original.value = { name: file.name, size: file.size, url: URL.createObjectURL(file) }
+  originalDims.value = ''
   compressed.value = null
   runCompression()
 }
 
-// Re-compress when the user changes quality or format (debounced for slider drags).
+// Re-compress when quality or any advanced option changes (debounced).
 let debounce: ReturnType<typeof setTimeout> | undefined
-watch([quality, format], () => {
+watch([quality, adv], () => {
   if (!sourceFile.value) return
   clearTimeout(debounce)
   debounce = setTimeout(runCompression, 200)
@@ -137,6 +214,8 @@ function reset() {
   sourceFile.value = null
   original.value = null
   compressed.value = null
+  originalDims.value = ''
+  compressedDims.value = ''
   error.value = ''
 }
 </script>
@@ -215,41 +294,129 @@ function reset() {
       </p>
     </div>
 
-    <!-- Controls -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-      <div>
-        <label class="text-sm font-medium flex justify-between">
-          <span>Quality</span>
-          <span class="text-muted">{{ quality.toFixed(2) }}</span>
-        </label>
-        <input
-          v-model.number="quality"
-          type="range"
-          min="0.1"
-          max="1"
-          step="0.05"
-          class="w-full mt-2 accent-primary"
-        >
-      </div>
-      <div>
-        <label class="text-sm font-medium">Output format</label>
-        <select
-          v-model="format"
-          class="w-full mt-2 rounded-md border border-default bg-default px-3 py-2 text-sm"
-        >
-          <option value="auto">
-            Auto (keep original)
-          </option>
-          <option value="image/jpeg">
-            JPEG
-          </option>
-          <option value="image/png">
-            PNG
-          </option>
-          <option value="image/webp">
-            WebP
-          </option>
-        </select>
+    <!-- Quality (always visible) -->
+    <div>
+      <label class="text-sm font-medium flex justify-between">
+        <span>Quality</span>
+        <span class="text-muted">{{ quality.toFixed(2) }}</span>
+      </label>
+      <input
+        v-model.number="quality"
+        type="range"
+        min="0.1"
+        max="1"
+        step="0.05"
+        class="w-full mt-2 accent-primary"
+      >
+    </div>
+
+    <!-- Advanced options (slide-down) -->
+    <div class="border border-default rounded-xl overflow-hidden">
+      <button
+        type="button"
+        class="w-full flex items-center justify-between px-4 py-3 font-medium"
+        @click="showAdvanced = !showAdvanced"
+      >
+        <span>Advanced options</span>
+        <UIcon
+          name="i-lucide-chevron-down"
+          class="text-muted transition-transform duration-300"
+          :class="showAdvanced ? 'rotate-180' : ''"
+        />
+      </button>
+      <div
+        class="grid transition-all duration-300 ease-out"
+        :class="showAdvanced ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+      >
+        <div class="overflow-hidden">
+          <div class="px-4 pb-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div class="flex flex-col gap-1 text-sm">
+              <label class="text-muted">Output format</label>
+              <select
+                v-model="adv.format"
+                class="rounded-md border border-default bg-default px-2 py-1.5 text-sm"
+              >
+                <option value="auto">
+                  auto
+                </option>
+                <option value="image/jpeg">
+                  JPEG
+                </option>
+                <option value="image/png">
+                  PNG
+                </option>
+                <option value="image/webp">
+                  WebP
+                </option>
+              </select>
+            </div>
+            <div
+              v-for="f in numberFields"
+              :key="f.key"
+              class="flex flex-col gap-1 text-sm"
+            >
+              <label class="text-muted">{{ f.label }}</label>
+              <input
+                v-model="adv[f.key]"
+                type="number"
+                :placeholder="f.ph"
+                class="rounded-md border border-default bg-default px-2 py-1.5 text-sm"
+              >
+            </div>
+            <div class="flex flex-col gap-1 text-sm">
+              <label class="text-muted">resize</label>
+              <select
+                v-model="adv.resize"
+                class="rounded-md border border-default bg-default px-2 py-1.5 text-sm"
+              >
+                <option value="none">
+                  none
+                </option>
+                <option value="contain">
+                  contain
+                </option>
+                <option value="cover">
+                  cover
+                </option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-1 text-sm">
+              <label class="text-muted">convertTypes</label>
+              <input
+                v-model="adv.convertTypes"
+                type="text"
+                placeholder="image/png"
+                class="rounded-md border border-default bg-default px-2 py-1.5 text-sm"
+              >
+            </div>
+          </div>
+          <div class="px-4 pb-4 flex flex-wrap gap-4 text-sm">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                v-model="adv.strict"
+                type="checkbox"
+                class="accent-primary"
+              >
+              strict
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                v-model="adv.checkOrientation"
+                type="checkbox"
+                class="accent-primary"
+              >
+              checkOrientation
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                v-model="adv.retainExif"
+                type="checkbox"
+                class="accent-primary"
+              >
+              retainExif
+            </label>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -269,13 +436,14 @@ function reset() {
         <template #header>
           <div class="flex items-center justify-between">
             <span class="font-semibold text-sm">Original</span>
-            <span class="text-sm text-muted">{{ formatBytes(original.size) }}</span>
+            <span class="text-sm text-muted">{{ (originalDims ? originalDims + ' · ' : '') + formatBytes(original.size) }}</span>
           </div>
         </template>
         <img
           :src="original.url"
           alt="Original"
           class="w-full rounded-md"
+          @load="onImgLoad($event, 'orig')"
         >
       </UCard>
 
@@ -308,9 +476,10 @@ function reset() {
             :src="compressed.url"
             alt="Compressed"
             class="w-full rounded-md"
+            @load="onImgLoad($event, 'comp')"
           >
           <div class="flex items-center justify-between mt-3">
-            <span class="text-sm text-muted">{{ formatBytes(compressed.size) }}</span>
+            <span class="text-sm text-muted">{{ (compressedDims ? compressedDims + ' · ' : '') + formatBytes(compressed.size) }}</span>
             <UButton
               :to="compressed.url"
               :download="compressed.name"
