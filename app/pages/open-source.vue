@@ -6,8 +6,12 @@ useSeoMeta({
   description: 'Open-source projects maintained by Alosha.'
 })
 
-// Client-side so the figure is refreshed live from npm on every page load.
-const { data: stats } = await useFetch('/api/oss-stats', { server: false })
+// Client-side + cache-busted so the figure is pulled fresh from npm on every
+// page load (and never served from a previously cached response).
+const { data: stats } = await useFetch('/api/oss-stats', {
+  server: false,
+  query: { _: Date.now() }
+})
 
 const nf = new Intl.NumberFormat('en-US')
 const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
