@@ -56,9 +56,18 @@ new Chart(canvas, paceChartConfig(activity, stats))`
     >
       <template #links>
         <UButton
+          to="/demo"
+          size="lg"
+          icon="i-lucide-play"
+        >
+          Live demo
+        </UButton>
+        <UButton
           to="https://www.npmjs.com/package/@alosha/stride"
           target="_blank"
           size="lg"
+          color="neutral"
+          variant="subtle"
           trailing-icon="i-lucide-arrow-right"
         >
           View on npm
@@ -103,7 +112,11 @@ new Chart(canvas, paceChartConfig(activity, stats))`
         <UCard :ui="{ body: 'p-0' }">
           <div class="flex items-center gap-2 px-4 py-3 border-b border-default">
             <span class="text-xs text-muted font-mono">install</span>
-            <UBadge color="neutral" variant="subtle" size="xs">
+            <UBadge
+              color="neutral"
+              variant="subtle"
+              size="xs"
+            >
               npm install @alosha/stride
             </UBadge>
           </div>

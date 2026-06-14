@@ -42,7 +42,8 @@ npx monitor watch`
     <UPageHero
       class="hero-glow"
       :links="[
-        { label: 'Get started free', to: 'https://www.npmjs.com/package/@alosha/monitor', target: '_blank', trailingIcon: 'i-lucide-arrow-right', size: 'xl', class: 'btn-grad' },
+        { label: 'Live demo', to: '/demo', icon: 'i-lucide-play', size: 'xl', class: 'btn-grad' },
+        { label: 'Get started free', to: 'https://www.npmjs.com/package/@alosha/monitor', target: '_blank', trailingIcon: 'i-lucide-arrow-right', size: 'xl', color: 'neutral', variant: 'subtle' },
         { label: 'View on GitHub', to: 'https://github.com/avlisodraude/monitor', target: '_blank', size: 'xl', color: 'neutral', variant: 'subtle', icon: 'i-simple-icons-github' }
       ]"
     >

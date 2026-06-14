@@ -1,12 +1,33 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'default' })
 
+// /demo is a shared route: each product subdomain renders its own demo.
+const { isStride, isMonitor } = useSite()
+
+const seo = computed(() => {
+  if (isStride) return {
+    title: 'Stride — Live demo',
+    description: 'Analyse a GPX run right in your browser — pace, splits, elevation and heart-rate zones. Powered by the open-source Stride library.',
+    url: 'https://stride.alosha.dev/demo'
+  }
+  if (isMonitor) return {
+    title: 'Monitor — Live demo',
+    description: 'See what a Monitor run looks like: multi-step checks, assertions, alerts and HTML reports. Powered by the open-source Monitor library.',
+    url: 'https://monitor.alosha.dev/demo'
+  }
+  return {
+    title: 'PixSqueeze — Live demo',
+    description: 'Compress an image right in your browser. No upload, no signup. Powered by the open-source PixSqueeze library.',
+    url: 'https://pixsqueeze.alosha.dev/demo'
+  }
+})
+
 useSeoMeta({
-  title: 'PixSqueeze — Live demo',
-  description: 'Compress an image right in your browser. No upload, no signup. Powered by the open-source PixSqueeze library.',
-  ogTitle: 'PixSqueeze — Live demo',
-  ogDescription: 'Compress an image right in your browser. No upload, no signup.',
-  ogUrl: 'https://pixsqueeze.alosha.dev/demo'
+  title: () => seo.value.title,
+  description: () => seo.value.description,
+  ogTitle: () => seo.value.title,
+  ogDescription: () => seo.value.description,
+  ogUrl: () => seo.value.url
 })
 
 const infoKey = ref<string | null>(null)
@@ -364,7 +385,12 @@ function parseInline(text: string): { code: boolean, value: string }[] {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-10 space-y-8">
+  <DemoStride v-if="isStride" />
+  <DemoMonitor v-else-if="isMonitor" />
+  <div
+    v-else
+    class="max-w-4xl mx-auto px-4 py-10 space-y-8"
+  >
     <div class="text-center">
       <h1 class="text-3xl font-bold tracking-tight">
         Try <span class="text-primary">PixSqueeze</span>
