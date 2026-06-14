@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const { productUrl } = useSite()
+const { productUrl, monitorUrl } = useSite()
 
 useSeoMeta({
   title: 'Alosha — Privacy-first developer tools, powered by open source',
-  description: 'Alosha builds and maintains developer products on open-source foundations — starting with PixSqueeze.',
+  description: 'Alosha builds and maintains developer products on open-source foundations — PixSqueeze, Monitor, and more.',
   ogTitle: 'Alosha — Privacy-first developer tools, powered by open source',
-  ogDescription: 'Alosha builds and maintains developer products on open-source foundations — starting with PixSqueeze.',
+  ogDescription: 'Alosha builds and maintains developer products on open-source foundations — PixSqueeze, Monitor, and more.',
   ogImage: 'https://alosha.dev/og.png',
   ogUrl: 'https://alosha.dev',
   twitterCard: 'summary_large_image'
@@ -14,7 +14,13 @@ useSeoMeta({
 const { data: stats } = await useFetch('/api/oss-stats')
 const nf = new Intl.NumberFormat('en-US')
 
-const products = [
+const totalDownloads = computed(() => {
+  const px = stats.value?.pixsqueeze?.downloads ?? 0
+  const mo = stats.value?.monitor?.downloads ?? 0
+  return px + mo || null
+})
+
+const products = computed(() => [
   {
     name: 'PixSqueeze',
     status: 'Live',
@@ -25,11 +31,11 @@ const products = [
   },
   {
     name: 'Monitor',
-    status: 'Coming soon',
-    description: 'Hosted browser automation and uptime monitoring for teams.',
+    status: 'Live',
+    description: 'Playwright-based website monitoring — checks, retries, screenshots on failure, and multi-channel alerts.',
     icon: 'i-lucide-activity',
-    to: '/products',
-    external: false
+    to: monitorUrl,
+    external: true
   },
   {
     name: 'Stride',
@@ -39,7 +45,7 @@ const products = [
     to: '/products',
     external: false
   }
-]
+])
 
 const steps = [
   { icon: 'i-lucide-git-branch', title: 'Open source', description: 'We find a useful but underserved open-source project, improve it, and ship it in the open under a permissive license.' },
@@ -53,12 +59,12 @@ const steps = [
     <UPageHero>
       <template #headline>
         <UBadge
-          v-if="stats?.downloads"
+          v-if="totalDownloads"
           color="primary"
           variant="subtle"
           size="lg"
         >
-          {{ nf.format(stats.downloads) }} npm downloads a month and counting
+          {{ nf.format(totalDownloads) }} npm downloads a month and counting
         </UBadge>
       </template>
       <template #title>
