@@ -6,8 +6,6 @@ useSeoMeta({
   description: 'Open-source projects maintained by Alosha.'
 })
 
-// Client-side + cache-busted so the figure is pulled fresh from npm on every
-// page load (and never served from a previously cached response).
 const { data: stats } = await useFetch('/api/oss-stats', {
   server: false,
   query: { _: Date.now() }
@@ -15,6 +13,27 @@ const { data: stats } = await useFetch('/api/oss-stats', {
 
 const nf = new Intl.NumberFormat('en-US')
 const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
+
+const packages = computed(() => [
+  {
+    name: 'pixsqueeze',
+    description: 'JavaScript image compressor with server-side HEIC, TIFF & camera-RAW conversion.',
+    stats: stats.value?.pixsqueeze,
+    github: 'https://github.com/avlisodraude/pixsqueeze',
+    npm: 'https://www.npmjs.com/package/pixsqueeze',
+    product: 'https://pixsqueeze.alosha.dev',
+    productLabel: 'Hosted product',
+  },
+  {
+    name: '@alosha/monitor',
+    description: 'Playwright-based website monitoring — checks, retries, screenshots on failure, and multi-channel alerts.',
+    stats: stats.value?.monitor,
+    github: 'https://github.com/avlisodraude/monitor',
+    npm: 'https://www.npmjs.com/package/@alosha/monitor',
+    product: 'https://monitor.alosha.dev',
+    productLabel: 'Product page',
+  },
+])
 </script>
 
 <template>
@@ -24,16 +43,17 @@ const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
       description="We maintain the open-source projects our products are built on. Use them freely — MIT licensed."
     />
     <UPageBody>
-      <div class="max-w-2xl mx-auto">
+      <div class="max-w-2xl mx-auto space-y-6">
         <UPageCard
-          title="pixsqueeze"
-          description="JavaScript image compressor with server-side HEIC, TIFF & camera-RAW conversion."
+          v-for="pkg in packages"
+          :key="pkg.name"
+          :title="pkg.name"
+          :description="pkg.description"
         >
-          <!-- Live stats -->
           <div class="grid grid-cols-3 gap-4 mt-2">
             <div>
               <div class="text-2xl font-bold">
-                {{ fmt(stats?.weeklyDownloads) }}
+                {{ fmt(pkg.stats?.weeklyDownloads) }}
               </div>
               <div class="text-xs text-muted uppercase tracking-wide">
                 Downloads / week
@@ -41,7 +61,7 @@ const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
             </div>
             <div>
               <div class="text-2xl font-bold">
-                {{ fmt(stats?.stars) }}
+                {{ fmt(pkg.stats?.stars) }}
               </div>
               <div class="text-xs text-muted uppercase tracking-wide">
                 GitHub stars
@@ -49,7 +69,7 @@ const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
             </div>
             <div>
               <div class="text-2xl font-bold">
-                {{ stats?.version ? `v${stats.version}` : '—' }}
+                {{ pkg.stats?.version ? `v${pkg.stats.version}` : '—' }}
               </div>
               <div class="text-xs text-muted uppercase tracking-wide">
                 Latest
@@ -67,7 +87,7 @@ const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
                 Active
               </UBadge>
               <UButton
-                to="https://github.com/avlisodraude/pixsqueeze"
+                :to="pkg.github"
                 target="_blank"
                 size="xs"
                 color="neutral"
@@ -77,7 +97,7 @@ const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
                 GitHub
               </UButton>
               <UButton
-                to="https://www.npmjs.com/package/pixsqueeze"
+                :to="pkg.npm"
                 target="_blank"
                 size="xs"
                 color="neutral"
@@ -87,13 +107,13 @@ const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
                 npm
               </UButton>
               <UButton
-                to="https://pixsqueeze.alosha.dev"
+                :to="pkg.product"
                 target="_blank"
                 size="xs"
                 variant="subtle"
                 trailing-icon="i-lucide-arrow-up-right"
               >
-                Hosted product
+                {{ pkg.productLabel }}
               </UButton>
             </div>
           </template>
