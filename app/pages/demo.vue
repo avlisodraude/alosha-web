@@ -252,21 +252,24 @@ const dimMaxDoc: OptionDoc = {
   title: 'maxWidth / maxHeight',
   body: [
     { t: 'p', text: 'Upper bounds on the output size, in pixels (default `Infinity` = no limit). If the image is larger, it is scaled down proportionally to fit.' },
-    { t: 'p', text: 'This is the main lever for shrinking big photos — capping `maxWidth` to e.g. `1920` often cuts file size far more than quality alone.' }
+    { t: 'p', text: 'This is the main lever for shrinking big photos — capping `maxWidth` to e.g. `1920` often cuts file size far more than quality alone.' },
+    { t: 'code', text: 'new PixSqueeze(file, {\n  maxWidth: 1920,\n  maxHeight: 1080\n})' }
   ]
 }
 const dimMinDoc: OptionDoc = {
   title: 'minWidth / minHeight',
   body: [
     { t: 'p', text: 'Lower bounds on the output size (default `0`). If the image is smaller, it is scaled up to meet the minimum.' },
-    { t: 'p', text: 'These are floors, not caps — on a large image they do nothing, so use `maxWidth` / `maxHeight` to shrink.' }
+    { t: 'p', text: 'These are floors, not caps — on a large image they do nothing, so use `maxWidth` / `maxHeight` to shrink.' },
+    { t: 'code', text: 'new PixSqueeze(file, {\n  minWidth: 320,\n  minHeight: 320\n})' }
   ]
 }
 const dimExactDoc: OptionDoc = {
   title: 'width / height',
   body: [
     { t: 'p', text: 'Force an exact output width or height in pixels (default: unset, so the natural size is used).' },
-    { t: 'p', text: 'Set only one and the other follows the aspect ratio. Set both and the `resize` option decides how the image fills that box.' }
+    { t: 'p', text: 'Set only one and the other follows the aspect ratio. Set both and the `resize` option decides how the image fills that box.' },
+    { t: 'code', text: 'new PixSqueeze(file, {\n  width: 800,\n  height: 600,\n  resize: \'cover\'\n})' }
   ]
 }
 
@@ -275,14 +278,16 @@ const optionDocs: Record<string, OptionDoc> = {
     title: 'quality',
     body: [
       { t: 'p', text: 'Compression quality for JPEG and WebP output, from `0` to `1` (default `0.8`). Lower means a smaller file with more visible artifacts; `0.6`–`0.8` is the usual sweet spot for photos.' },
-      { t: 'p', text: 'Has no effect on PNG, which is lossless — to shrink a PNG, convert it to JPEG or WebP instead.' }
+      { t: 'p', text: 'Has no effect on PNG, which is lossless — to shrink a PNG, convert it to JPEG or WebP instead.' },
+      { t: 'code', text: 'new PixSqueeze(file, {\n  quality: 0.6\n})' }
     ]
   },
   mimeType: {
     title: 'mimeType (Output format)',
     body: [
       { t: 'p', text: 'Sets the format of the compressed image. Default `auto` keeps the original format; set it explicitly to convert — e.g. `image/webp` for the best size, or `image/jpeg` for universal support.' },
-      { t: 'p', text: 'Note: Safari cannot output WebP, so `auto` is the safe default for broad compatibility. Quality only applies to JPEG and WebP.' }
+      { t: 'p', text: 'Note: Safari cannot output WebP, so `auto` is the safe default for broad compatibility. Quality only applies to JPEG and WebP.' },
+      { t: 'code', text: 'new PixSqueeze(file, {\n  mimeType: \'image/webp\'\n})' }
     ]
   },
   maxWidth: dimMaxDoc,
@@ -295,14 +300,16 @@ const optionDocs: Record<string, OptionDoc> = {
     title: 'resize',
     body: [
       { t: 'p', text: 'Controls how the image fits when both `width` and `height` are set (default `none`).' },
-      { t: 'p', text: '`contain` fits the whole image inside the box (may letterbox); `cover` fills the box and crops the overflow. Ignored unless both `width` and `height` are provided.' }
+      { t: 'p', text: '`contain` fits the whole image inside the box (may letterbox); `cover` fills the box and crops the overflow. Ignored unless both `width` and `height` are provided.' },
+      { t: 'code', text: 'new PixSqueeze(file, {\n  width: 800,\n  height: 600,\n  resize: \'cover\'\n})' }
     ]
   },
   convertSize: {
     title: 'convertSize',
     body: [
       { t: 'p', text: 'The size threshold in bytes (default `5000000` = 5 MB) used with `convertTypes`: images of those types larger than this are re-encoded to JPEG.' },
-      { t: 'p', text: 'Lower it to convert smaller PNGs too; raise it (or set `Infinity`) to disable size-based conversion.' }
+      { t: 'p', text: 'Lower it to convert smaller PNGs too; raise it (or set `Infinity`) to disable size-based conversion.' },
+      { t: 'code', text: 'new PixSqueeze(file, {\n  convertTypes: [\'image/png\'],\n  convertSize: 1000000 // 1 MB\n})' }
     ]
   },
   convertTypes: {
@@ -320,21 +327,24 @@ const optionDocs: Record<string, OptionDoc> = {
     title: 'strict',
     body: [
       { t: 'p', text: 'When `true` (default), if compression somehow produces a larger file than the original, PixSqueeze returns the original instead — so you never end up bigger.' },
-      { t: 'p', text: 'Turn it off only if you always want the re-encoded output regardless of size.' }
+      { t: 'p', text: 'Turn it off only if you always want the re-encoded output regardless of size.' },
+      { t: 'code', text: 'new PixSqueeze(file, {\n  strict: false\n})' }
     ]
   },
   checkOrientation: {
     title: 'checkOrientation',
     body: [
       { t: 'p', text: 'When `true` (default), reads the image Exif orientation flag and rotates or flips the output so it displays upright — important for iPhone photos, which are often stored sideways.' },
-      { t: 'p', text: 'Disable only if you are certain orientation is already correct and want to skip the work.' }
+      { t: 'p', text: 'Disable only if you are certain orientation is already correct and want to skip the work.' },
+      { t: 'code', text: 'new PixSqueeze(file, {\n  checkOrientation: true\n})' }
     ]
   },
   retainExif: {
     title: 'retainExif',
     body: [
       { t: 'p', text: 'When `true`, preserves the Exif metadata (camera info, GPS, timestamp) in the output; default `false` strips it. Only applies to JPEG output.' },
-      { t: 'p', text: 'Keep it off for privacy and smaller files unless you specifically need the metadata.' }
+      { t: 'p', text: 'Keep it off for privacy and smaller files unless you specifically need the metadata.' },
+      { t: 'code', text: 'new PixSqueeze(file, {\n  mimeType: \'image/jpeg\',\n  retainExif: true\n})' }
     ]
   }
 }
