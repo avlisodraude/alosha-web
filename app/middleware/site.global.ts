@@ -11,11 +11,14 @@
  * specific site locally.
  */
 export default defineNuxtRouteMiddleware((to) => {
-  const { site, isHub, isProdHost, hubUrl, productUrl } = useSite()
+  const { site, isHub, isProdHost, hubUrl, productUrl, monitorUrl, strideUrl } = useSite()
   const target = routeSite(to.path)
 
   if (isProdHost && target !== 'shared' && target !== site) {
-    const base = target === 'product' ? productUrl : hubUrl
+    let base = hubUrl
+    if (target === 'product') base = productUrl
+    else if (target === 'monitor') base = monitorUrl
+    else if (target === 'stride') base = strideUrl
     return navigateTo(`${base}${to.fullPath}`, { external: true })
   }
 
