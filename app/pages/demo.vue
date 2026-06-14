@@ -9,9 +9,12 @@ useSeoMeta({
   ogUrl: 'https://pixsqueeze.alosha.dev/demo'
 })
 
-const infoOpen = ref(false)
+const infoKey = ref<string | null>(null)
+function openInfo(key: string) {
+  infoKey.value = key
+}
 function onEsc(e: KeyboardEvent) {
-  if (e.key === 'Escape') infoOpen.value = false
+  if (e.key === 'Escape') infoKey.value = null
 }
 onMounted(() => window.addEventListener('keydown', onEsc))
 onUnmounted(() => window.removeEventListener('keydown', onEsc))
@@ -239,6 +242,115 @@ function reset() {
   compressedDims.value = ''
   error.value = ''
 }
+
+// Per-option documentation shown in the explainer modal. `backtick` spans render
+// as inline code; the parser below turns them into <code> elements.
+type DocBlock = { t: 'p' | 'rule' | 'code', text: string }
+type OptionDoc = { title: string, body: DocBlock[] }
+
+const dimMaxDoc: OptionDoc = {
+  title: 'maxWidth / maxHeight',
+  body: [
+    { t: 'p', text: 'Upper bounds on the output size, in pixels (default `Infinity` = no limit). If the image is larger, it is scaled down proportionally to fit.' },
+    { t: 'p', text: 'This is the main lever for shrinking big photos — capping `maxWidth` to e.g. `1920` often cuts file size far more than quality alone.' }
+  ]
+}
+const dimMinDoc: OptionDoc = {
+  title: 'minWidth / minHeight',
+  body: [
+    { t: 'p', text: 'Lower bounds on the output size (default `0`). If the image is smaller, it is scaled up to meet the minimum.' },
+    { t: 'p', text: 'These are floors, not caps — on a large image they do nothing, so use `maxWidth` / `maxHeight` to shrink.' }
+  ]
+}
+const dimExactDoc: OptionDoc = {
+  title: 'width / height',
+  body: [
+    { t: 'p', text: 'Force an exact output width or height in pixels (default: unset, so the natural size is used).' },
+    { t: 'p', text: 'Set only one and the other follows the aspect ratio. Set both and the `resize` option decides how the image fills that box.' }
+  ]
+}
+
+const optionDocs: Record<string, OptionDoc> = {
+  quality: {
+    title: 'quality',
+    body: [
+      { t: 'p', text: 'Compression quality for JPEG and WebP output, from `0` to `1` (default `0.8`). Lower means a smaller file with more visible artifacts; `0.6`–`0.8` is the usual sweet spot for photos.' },
+      { t: 'p', text: 'Has no effect on PNG, which is lossless — to shrink a PNG, convert it to JPEG or WebP instead.' }
+    ]
+  },
+  mimeType: {
+    title: 'mimeType (Output format)',
+    body: [
+      { t: 'p', text: 'Sets the format of the compressed image. Default `auto` keeps the original format; set it explicitly to convert — e.g. `image/webp` for the best size, or `image/jpeg` for universal support.' },
+      { t: 'p', text: 'Note: Safari cannot output WebP, so `auto` is the safe default for broad compatibility. Quality only applies to JPEG and WebP.' }
+    ]
+  },
+  maxWidth: dimMaxDoc,
+  maxHeight: dimMaxDoc,
+  minWidth: dimMinDoc,
+  minHeight: dimMinDoc,
+  width: dimExactDoc,
+  height: dimExactDoc,
+  resize: {
+    title: 'resize',
+    body: [
+      { t: 'p', text: 'Controls how the image fits when both `width` and `height` are set (default `none`).' },
+      { t: 'p', text: '`contain` fits the whole image inside the box (may letterbox); `cover` fills the box and crops the overflow. Ignored unless both `width` and `height` are provided.' }
+    ]
+  },
+  convertSize: {
+    title: 'convertSize',
+    body: [
+      { t: 'p', text: 'The size threshold in bytes (default `5000000` = 5 MB) used with `convertTypes`: images of those types larger than this are re-encoded to JPEG.' },
+      { t: 'p', text: 'Lower it to convert smaller PNGs too; raise it (or set `Infinity`) to disable size-based conversion.' }
+    ]
+  },
+  convertTypes: {
+    title: 'convertTypes',
+    body: [
+      { t: 'p', text: 'Re-encodes large images of certain formats to JPEG. It works together with `convertSize`:' },
+      { t: 'rule', text: 'Any input image whose type is listed in `convertTypes` and whose size exceeds `convertSize` is converted to JPEG.' },
+      { t: 'p', text: 'Defaults: `["image/png"]`, with `convertSize` = 5 MB. The conversion target is always JPEG — this only chooses which source formats are eligible.' },
+      { t: 'p', text: 'Why: PNG is lossless, so photos saved as PNG are enormous. JPEG compresses photos far better — big PNGs get auto-rescued, while small PNGs (logos, icons, transparency) stay PNG.' },
+      { t: 'code', text: 'new PixSqueeze(file, {\n  convertTypes: [\'image/png\', \'image/webp\'],\n  convertSize: 1000000 // 1 MB\n})' },
+      { t: 'p', text: 'Valid values: only `image/png` and `image/webp` — where converting to JPEG is meaningful. `image/jpeg` is pointless, and other types are not part of this feature.' }
+    ]
+  },
+  strict: {
+    title: 'strict',
+    body: [
+      { t: 'p', text: 'When `true` (default), if compression somehow produces a larger file than the original, PixSqueeze returns the original instead — so you never end up bigger.' },
+      { t: 'p', text: 'Turn it off only if you always want the re-encoded output regardless of size.' }
+    ]
+  },
+  checkOrientation: {
+    title: 'checkOrientation',
+    body: [
+      { t: 'p', text: 'When `true` (default), reads the image Exif orientation flag and rotates or flips the output so it displays upright — important for iPhone photos, which are often stored sideways.' },
+      { t: 'p', text: 'Disable only if you are certain orientation is already correct and want to skip the work.' }
+    ]
+  },
+  retainExif: {
+    title: 'retainExif',
+    body: [
+      { t: 'p', text: 'When `true`, preserves the Exif metadata (camera info, GPS, timestamp) in the output; default `false` strips it. Only applies to JPEG output.' },
+      { t: 'p', text: 'Keep it off for privacy and smaller files unless you specifically need the metadata.' }
+    ]
+  }
+}
+
+const currentDoc = computed<OptionDoc | null>(() => {
+  return infoKey.value ? (optionDocs[infoKey.value] ?? null) : null
+})
+
+function parseInline(text: string): { code: boolean, value: string }[] {
+  return text.split(/(`[^`]+`)/).filter(s => s !== '').map((part) => {
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return { code: true, value: part.slice(1, -1) }
+    }
+    return { code: false, value: part }
+  })
+}
 </script>
 
 <template>
@@ -317,10 +429,23 @@ function reset() {
 
     <!-- Quality (always visible) -->
     <div>
-      <label class="text-sm font-medium flex justify-between">
-        <span>Quality</span>
+      <div class="text-sm font-medium flex justify-between items-center">
+        <span class="flex items-center gap-1.5">
+          Quality
+          <button
+            type="button"
+            class="inline-flex text-muted hover:text-primary transition-colors"
+            aria-label="About quality"
+            @click="openInfo('quality')"
+          >
+            <UIcon
+              name="i-lucide-info"
+              class="size-3.5"
+            />
+          </button>
+        </span>
         <span class="text-muted">{{ quality.toFixed(2) }}</span>
-      </label>
+      </div>
       <input
         v-model.number="quality"
         type="range"
@@ -352,7 +477,20 @@ function reset() {
         <div class="overflow-hidden">
           <div class="px-4 pb-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             <div class="flex flex-col gap-1 text-sm">
-              <label class="text-muted">Output format</label>
+              <span class="text-muted flex items-center gap-1.5">
+                Output format
+                <button
+                  type="button"
+                  class="inline-flex text-muted hover:text-primary transition-colors"
+                  aria-label="About mimeType"
+                  @click="openInfo('mimeType')"
+                >
+                  <UIcon
+                    name="i-lucide-info"
+                    class="size-3.5"
+                  />
+                </button>
+              </span>
               <select
                 v-model="adv.format"
                 class="rounded-md border border-default bg-default px-2 py-1.5 text-sm"
@@ -376,7 +514,20 @@ function reset() {
               :key="f.key"
               class="flex flex-col gap-1 text-sm"
             >
-              <label class="text-muted">{{ f.label }}</label>
+              <span class="text-muted flex items-center gap-1.5">
+                {{ f.label }}
+                <button
+                  type="button"
+                  class="inline-flex text-muted hover:text-primary transition-colors"
+                  :aria-label="`About ${f.key}`"
+                  @click="openInfo(f.key)"
+                >
+                  <UIcon
+                    name="i-lucide-info"
+                    class="size-3.5"
+                  />
+                </button>
+              </span>
               <input
                 v-model="adv[f.key]"
                 type="number"
@@ -385,7 +536,20 @@ function reset() {
               >
             </div>
             <div class="flex flex-col gap-1 text-sm">
-              <label class="text-muted">resize</label>
+              <span class="text-muted flex items-center gap-1.5">
+                resize
+                <button
+                  type="button"
+                  class="inline-flex text-muted hover:text-primary transition-colors"
+                  aria-label="About resize"
+                  @click="openInfo('resize')"
+                >
+                  <UIcon
+                    name="i-lucide-info"
+                    class="size-3.5"
+                  />
+                </button>
+              </span>
               <select
                 v-model="adv.resize"
                 class="rounded-md border border-default bg-default px-2 py-1.5 text-sm"
@@ -408,7 +572,7 @@ function reset() {
                   type="button"
                   class="inline-flex text-muted hover:text-primary transition-colors"
                   aria-label="About convertTypes"
-                  @click="infoOpen = true"
+                  @click="openInfo('convertTypes')"
                 >
                   <UIcon
                     name="i-lucide-info"
@@ -437,30 +601,69 @@ function reset() {
             </div>
           </div>
           <div class="px-4 pb-4 flex flex-wrap gap-4 text-sm">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input
-                v-model="adv.strict"
-                type="checkbox"
-                class="accent-primary"
+            <div class="flex items-center gap-1.5">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input
+                  v-model="adv.strict"
+                  type="checkbox"
+                  class="accent-primary"
+                >
+                strict
+              </label>
+              <button
+                type="button"
+                class="inline-flex text-muted hover:text-primary transition-colors"
+                aria-label="About strict"
+                @click="openInfo('strict')"
               >
-              strict
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input
-                v-model="adv.checkOrientation"
-                type="checkbox"
-                class="accent-primary"
+                <UIcon
+                  name="i-lucide-info"
+                  class="size-3.5"
+                />
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input
+                  v-model="adv.checkOrientation"
+                  type="checkbox"
+                  class="accent-primary"
+                >
+                checkOrientation
+              </label>
+              <button
+                type="button"
+                class="inline-flex text-muted hover:text-primary transition-colors"
+                aria-label="About checkOrientation"
+                @click="openInfo('checkOrientation')"
               >
-              checkOrientation
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input
-                v-model="adv.retainExif"
-                type="checkbox"
-                class="accent-primary"
+                <UIcon
+                  name="i-lucide-info"
+                  class="size-3.5"
+                />
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input
+                  v-model="adv.retainExif"
+                  type="checkbox"
+                  class="accent-primary"
+                >
+                retainExif
+              </label>
+              <button
+                type="button"
+                class="inline-flex text-muted hover:text-primary transition-colors"
+                aria-label="About retainExif"
+                @click="openInfo('retainExif')"
               >
-              retainExif
-            </label>
+                <UIcon
+                  name="i-lucide-info"
+                  class="size-3.5"
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -565,32 +768,32 @@ function reset() {
       ]"
     />
 
-    <!-- convertTypes explainer modal -->
+    <!-- Option explainer modal -->
     <Teleport to="body">
       <Transition name="modal">
         <div
-          v-if="infoOpen"
+          v-if="currentDoc"
           class="modal-overlay"
-          @click.self="infoOpen = false"
+          @click.self="infoKey = null"
         >
           <div
             class="modal-card"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="ct-title"
+            aria-labelledby="opt-title"
           >
             <div class="flex items-start justify-between gap-4 mb-3">
               <h3
-                id="ct-title"
+                id="opt-title"
                 class="font-mono text-primary text-base"
               >
-                convertTypes
+                {{ currentDoc.title }}
               </h3>
               <button
                 type="button"
                 class="text-muted hover:text-default"
                 aria-label="Close"
-                @click="infoOpen = false"
+                @click="infoKey = null"
               >
                 <UIcon
                   name="i-lucide-x"
@@ -599,25 +802,24 @@ function reset() {
               </button>
             </div>
             <div class="space-y-2.5 text-sm text-muted">
-              <p>
-                Re-encodes large images of certain formats to <strong class="text-default">JPEG</strong>. It works together with <code>convertSize</code>:
-              </p>
-              <p class="ct-rule text-default">
-                Any input image whose type is listed in <code>convertTypes</code> <strong>and</strong> whose size exceeds <code>convertSize</code> is converted to JPEG.
-              </p>
-              <p>
-                <strong class="text-default">Defaults:</strong> <code>["image/png"]</code>, with <code>convertSize</code> = 5&nbsp;MB. The conversion target is always JPEG — this only chooses which source formats are eligible.
-              </p>
-              <p>
-                <strong class="text-default">Why:</strong> PNG is lossless, so photos saved as PNG are enormous. JPEG compresses photos far better — big PNGs get auto-rescued, while small PNGs (logos, icons, anything needing transparency) stay PNG.
-              </p>
-              <pre>new PixSqueeze(file, {
-  convertTypes: ['image/png', 'image/webp'],
-  convertSize: 1000000 // 1 MB
-})</pre>
-              <p>
-                <strong class="text-default">Valid values:</strong> only <code>image/png</code> and <code>image/webp</code> — where converting to JPEG is meaningful. <code>image/jpeg</code> is pointless, and other types aren't part of this feature.
-              </p>
+              <template
+                v-for="(block, i) in currentDoc.body"
+                :key="i"
+              >
+                <pre v-if="block.t === 'code'">{{ block.text }}</pre>
+                <p
+                  v-else
+                  :class="block.t === 'rule' ? 'ct-rule text-default' : ''"
+                >
+                  <template
+                    v-for="(seg, j) in parseInline(block.text)"
+                    :key="j"
+                  >
+                    <code v-if="seg.code">{{ seg.value }}</code>
+                    <span v-else>{{ seg.value }}</span>
+                  </template>
+                </p>
+              </template>
             </div>
           </div>
         </div>
