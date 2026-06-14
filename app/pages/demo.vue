@@ -36,7 +36,7 @@ interface PixSqueezeOptions {
   minHeight?: number
   width?: number
   height?: number
-  convertTypes?: string
+  convertTypes?: string | string[]
   convertSize?: number
   success?: (result: PixSqueezeResult) => void
   error?: (err: Error) => void
@@ -64,7 +64,8 @@ const adv = reactive({
   minHeight: '',
   width: '',
   height: '',
-  convertTypes: '',
+  convertPng: true,
+  convertWebp: false,
   convertSize: ''
 })
 
@@ -168,7 +169,11 @@ async function runCompression() {
     if (h !== undefined) options.height = h
     const cs = toNumber(adv.convertSize)
     if (cs !== undefined) options.convertSize = cs
-    if (adv.convertTypes.trim()) options.convertTypes = adv.convertTypes.trim()
+    // Which source formats get re-encoded to JPEG when larger than convertSize.
+    const convertTypes: string[] = []
+    if (adv.convertPng) convertTypes.push('image/png')
+    if (adv.convertWebp) convertTypes.push('image/webp')
+    options.convertTypes = convertTypes
 
     job.value = new PixSqueeze(file, options)
   } catch (e) {
@@ -381,13 +386,25 @@ function reset() {
               </select>
             </div>
             <div class="flex flex-col gap-1 text-sm">
-              <label class="text-muted">convertTypes</label>
-              <input
-                v-model="adv.convertTypes"
-                type="text"
-                placeholder="image/png"
-                class="rounded-md border border-default bg-default px-2 py-1.5 text-sm"
-              >
+              <label class="text-muted">convertTypes → JPEG</label>
+              <div class="flex gap-3 mt-1.5">
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    v-model="adv.convertPng"
+                    type="checkbox"
+                    class="accent-primary"
+                  >
+                  PNG
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    v-model="adv.convertWebp"
+                    type="checkbox"
+                    class="accent-primary"
+                  >
+                  WebP
+                </label>
+              </div>
             </div>
           </div>
           <div class="px-4 pb-4 flex flex-wrap gap-4 text-sm">
