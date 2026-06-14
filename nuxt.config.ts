@@ -30,6 +30,7 @@ export default defineNuxtConfig({
       hubUrl: 'https://alosha.dev',
       productUrl: 'https://pixsqueeze.alosha.dev',
       monitorUrl: 'https://monitor.alosha.dev',
+      strideUrl: 'https://stride.alosha.dev',
       forceSite: ''
     }
   },

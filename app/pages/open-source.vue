@@ -33,6 +33,15 @@ const packages = computed(() => [
     product: 'https://monitor.alosha.dev',
     productLabel: 'Product page',
   },
+  {
+    name: '@alosha/stride',
+    description: 'Parse GPX files, compute running metrics (pace, HR zones, splits), and render Chart.js dashboards — zero config.',
+    stats: stats.value?.stride,
+    github: 'https://github.com/avlisodraude/stride',
+    npm: 'https://www.npmjs.com/package/@alosha/stride',
+    product: 'https://stride.alosha.dev',
+    productLabel: 'Product page',
+  },
 ])
 </script>
 

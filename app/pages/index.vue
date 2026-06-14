@@ -3,11 +3,12 @@
 // the global `site` middleware selects the matching layout (hub vs default).
 definePageMeta({ layout: 'default' })
 
-const { isHub, isMonitor } = useSite()
+const { isHub, isMonitor, isStride } = useSite()
 </script>
 
 <template>
   <HubHome v-if="isHub" />
   <ProductMonitorLanding v-else-if="isMonitor" />
+  <ProductStrideLanding v-else-if="isStride" />
   <ProductLanding v-else />
 </template>

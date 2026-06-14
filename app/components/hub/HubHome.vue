@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const { productUrl, monitorUrl } = useSite()
+const { productUrl, monitorUrl, strideUrl } = useSite()
 
 useSeoMeta({
   title: 'Alosha — Privacy-first developer tools, powered by open source',
-  description: 'Alosha builds and maintains developer products on open-source foundations — PixSqueeze, Monitor, and more.',
+  description: 'Alosha builds and maintains developer products on open-source foundations — PixSqueeze, Monitor, Stride, and more.',
   ogTitle: 'Alosha — Privacy-first developer tools, powered by open source',
-  ogDescription: 'Alosha builds and maintains developer products on open-source foundations — PixSqueeze, Monitor, and more.',
+  ogDescription: 'Alosha builds and maintains developer products on open-source foundations — PixSqueeze, Monitor, Stride, and more.',
   ogImage: 'https://alosha.dev/og.png',
   ogUrl: 'https://alosha.dev',
   twitterCard: 'summary_large_image'
@@ -17,7 +17,8 @@ const nf = new Intl.NumberFormat('en-US')
 const totalDownloads = computed(() => {
   const px = stats.value?.pixsqueeze?.downloads ?? 0
   const mo = stats.value?.monitor?.downloads ?? 0
-  return px + mo || null
+  const st = stats.value?.stride?.downloads ?? 0
+  return px + mo + st || null
 })
 
 const products = computed(() => [
@@ -39,11 +40,11 @@ const products = computed(() => [
   },
   {
     name: 'Stride',
-    status: 'Coming soon',
-    description: 'Running analytics for athletes and coaches.',
+    status: 'Live',
+    description: 'Parse GPX files, compute running metrics, and render Chart.js dashboards — zero config.',
     icon: 'i-lucide-footprints',
-    to: '/products',
-    external: false
+    to: strideUrl,
+    external: true
   }
 ])
 
