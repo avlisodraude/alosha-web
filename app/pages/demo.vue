@@ -9,6 +9,13 @@ useSeoMeta({
   ogUrl: 'https://pixsqueeze.alosha.dev/demo'
 })
 
+const infoOpen = ref(false)
+function onEsc(e: KeyboardEvent) {
+  if (e.key === 'Escape') infoOpen.value = false
+}
+onMounted(() => window.addEventListener('keydown', onEsc))
+onUnmounted(() => window.removeEventListener('keydown', onEsc))
+
 const { data: stats } = await useFetch('/api/oss-stats')
 
 const copied = ref(false)
@@ -395,7 +402,20 @@ function reset() {
               </select>
             </div>
             <div class="flex flex-col gap-1 text-sm">
-              <label class="text-muted">convertTypes → JPEG</label>
+              <span class="text-muted flex items-center gap-1.5">
+                convertTypes → JPEG
+                <button
+                  type="button"
+                  class="inline-flex text-muted hover:text-primary transition-colors"
+                  aria-label="About convertTypes"
+                  @click="infoOpen = true"
+                >
+                  <UIcon
+                    name="i-lucide-info"
+                    class="size-3.5"
+                  />
+                </button>
+              </span>
               <div class="flex gap-3 mt-1.5">
                 <label class="flex items-center gap-1.5 cursor-pointer">
                   <input
@@ -544,5 +564,141 @@ function reset() {
         { label: 'Read the docs', to: '/docs', color: 'neutral', variant: 'outline' }
       ]"
     />
+
+    <!-- convertTypes explainer modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div
+          v-if="infoOpen"
+          class="modal-overlay"
+          @click.self="infoOpen = false"
+        >
+          <div
+            class="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="ct-title"
+          >
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <h3
+                id="ct-title"
+                class="font-mono text-primary text-base"
+              >
+                convertTypes
+              </h3>
+              <button
+                type="button"
+                class="text-muted hover:text-default"
+                aria-label="Close"
+                @click="infoOpen = false"
+              >
+                <UIcon
+                  name="i-lucide-x"
+                  class="size-4"
+                />
+              </button>
+            </div>
+            <div class="space-y-2.5 text-sm text-muted">
+              <p>
+                Re-encodes large images of certain formats to <strong class="text-default">JPEG</strong>. It works together with <code>convertSize</code>:
+              </p>
+              <p class="ct-rule text-default">
+                Any input image whose type is listed in <code>convertTypes</code> <strong>and</strong> whose size exceeds <code>convertSize</code> is converted to JPEG.
+              </p>
+              <p>
+                <strong class="text-default">Defaults:</strong> <code>["image/png"]</code>, with <code>convertSize</code> = 5&nbsp;MB. The conversion target is always JPEG — this only chooses which source formats are eligible.
+              </p>
+              <p>
+                <strong class="text-default">Why:</strong> PNG is lossless, so photos saved as PNG are enormous. JPEG compresses photos far better — big PNGs get auto-rescued, while small PNGs (logos, icons, anything needing transparency) stay PNG.
+              </p>
+              <pre>new PixSqueeze(file, {
+  convertTypes: ['image/png', 'image/webp'],
+  convertSize: 1000000 // 1 MB
+})</pre>
+              <p>
+                <strong class="text-default">Valid values:</strong> only <code>image/png</code> and <code>image/webp</code> — where converting to JPEG is meaningful. <code>image/jpeg</code> is pointless, and other types aren't part of this feature.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(5, 7, 12, 0.6);
+  backdrop-filter: blur(3px);
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 28rem;
+  padding: 1.5rem;
+  background: var(--ui-bg);
+  border: 1px solid var(--ui-border);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-card code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  background: var(--ui-bg-elevated);
+  color: var(--ui-primary);
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+}
+
+.modal-card pre {
+  background: var(--ui-bg-muted);
+  border: 1px solid var(--ui-border);
+  border-radius: 8px;
+  padding: 0.7rem;
+  font-size: 0.72rem;
+  overflow-x: auto;
+  color: var(--ui-primary);
+}
+
+.ct-rule {
+  background: color-mix(in srgb, var(--ui-primary) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ui-primary) 30%, transparent);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+}
+
+/* Soft scale-in / fade animation */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.22s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .modal-card {
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-enter-from .modal-card {
+  transform: scale(0.95) translateY(8px);
+}
+
+.modal-leave-active .modal-card {
+  transition: transform 0.18s ease;
+}
+
+.modal-leave-to .modal-card {
+  transform: scale(0.98);
+}
+</style>
