@@ -84,6 +84,14 @@ async function handleSignOut() {
       </template>
       <template #right>
         <UButton
+          to="https://www.npmjs.com/package/pixsqueeze"
+          target="_blank"
+          icon="i-simple-icons-npm"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+        />
+        <UButton
           to="https://github.com/avlisodraude/pixsqueeze"
           target="_blank"
           icon="i-simple-icons-github"

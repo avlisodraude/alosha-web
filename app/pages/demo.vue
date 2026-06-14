@@ -9,6 +9,19 @@ useSeoMeta({
   ogUrl: 'https://pixsqueeze.alosha.dev/demo'
 })
 
+const { data: stats } = await useFetch('/api/oss-stats')
+
+const copied = ref(false)
+async function copyInstall() {
+  try {
+    await navigator.clipboard.writeText('npm i pixsqueeze')
+    copied.value = true
+    setTimeout(() => (copied.value = false), 1500)
+  } catch {
+    /* clipboard unavailable */
+  }
+}
+
 interface PixSqueezeResult extends Blob { name?: string }
 interface PixSqueezeOptions {
   quality?: number
@@ -137,6 +150,41 @@ function reset() {
       <p class="text-muted mt-2">
         Compress an image right in your browser. No upload, no signup — it never leaves your device.
       </p>
+
+      <!-- Open-source origin: install command + package links -->
+      <div class="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
+        <button
+          type="button"
+          class="font-mono text-xs bg-default border border-default rounded-md px-3 py-1.5 hover:border-primary/50 transition-colors"
+          @click="copyInstall"
+        >
+          <span class="text-muted">$</span> npm i pixsqueeze
+          <UIcon
+            :name="copied ? 'i-lucide-check' : 'i-lucide-copy'"
+            class="ml-1 size-3.5 align-text-bottom"
+            :class="copied ? 'text-primary' : 'text-muted'"
+          />
+        </button>
+        <ULink
+          to="https://www.npmjs.com/package/pixsqueeze"
+          target="_blank"
+          class="inline-flex items-center gap-1.5 text-muted hover:text-default"
+        >
+          <UIcon name="i-simple-icons-npm" />
+          npm<span
+            v-if="stats?.version"
+            class="opacity-70"
+          > v{{ stats.version }}</span>
+        </ULink>
+        <ULink
+          to="https://github.com/avlisodraude/pixsqueeze"
+          target="_blank"
+          class="inline-flex items-center gap-1.5 text-muted hover:text-default"
+        >
+          <UIcon name="i-simple-icons-github" />
+          GitHub
+        </ULink>
+      </div>
     </div>
 
     <!-- Drop zone -->
