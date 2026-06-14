@@ -6,7 +6,8 @@ useSeoMeta({
   description: 'Open-source projects maintained by Alosha.'
 })
 
-const { data: stats } = await useFetch('/api/oss-stats')
+// Client-side so the figure is refreshed live from npm on every page load.
+const { data: stats } = await useFetch('/api/oss-stats', { server: false })
 
 const nf = new Intl.NumberFormat('en-US')
 const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
@@ -28,10 +29,10 @@ const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
           <div class="grid grid-cols-3 gap-4 mt-2">
             <div>
               <div class="text-2xl font-bold">
-                {{ fmt(stats?.downloads) }}
+                {{ fmt(stats?.weeklyDownloads) }}
               </div>
               <div class="text-xs text-muted uppercase tracking-wide">
-                Downloads / mo
+                Downloads / week
               </div>
             </div>
             <div>
