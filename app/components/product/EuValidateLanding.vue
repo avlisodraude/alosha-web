@@ -5,7 +5,9 @@ useSeoMeta({
   ogTitle: 'eu-validate — offline EU identifier validation',
   ogDescription: 'Validate EU VAT, IBAN, BSN and KvK numbers offline — checksum-accurate, zero dependencies. Free open-source npm package by Alosha.',
   ogUrl: 'https://eu-validate.alosha.dev',
-  twitterCard: 'summary_large_image'
+  ogImage: 'https://eu-validate.alosha.dev/og.png',
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://eu-validate.alosha.dev/og.png'
 })
 
 const features = [
