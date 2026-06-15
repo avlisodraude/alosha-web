@@ -51,6 +51,12 @@ const examples: Record<IdentifierType, { valid: string[], invalid: string }> = {
 // Mixed examples shown in Auto mode — one of each common identifier.
 const autoExamples = ['NL810433941B01', 'NL91ABNA0417164300', '111222333', '69599084']
 
+// Per-country postal-code examples (also drive the placeholder) so the hint
+// matches the selected country instead of always showing the NL format.
+const postalExamples: Record<string, string> = {
+  NL: '1011 AB', DE: '10115', FR: '75008', BE: '1000', ES: '28013', IT: '00184'
+}
+
 const errorLabels: Record<ErrorCode, string> = {
   EMPTY_INPUT: 'No input provided',
   INVALID_FORMAT: 'Format does not match this identifier',
@@ -79,6 +85,20 @@ const inputWrap = ref<HTMLElement | null>(null)
 // Postal countries come straight from the library so the dropdown can never
 // offer a country the shipped package doesn't actually support.
 const postalCountries = computed(() => Object.keys(lib.value?.POSTAL_PATTERNS ?? { NL: 1 }))
+
+// Placeholder + "Try" examples follow the selected postal country.
+const placeholder = computed(() => {
+  if (mode.value === 'postalCode') return postalExamples[country.value] ?? '1011 AB'
+  return tabs.find(t => t.key === mode.value)?.placeholder ?? ''
+})
+
+const validExamples = computed<string[]>(() => {
+  if (mode.value === 'auto') return autoExamples
+  if (mode.value === 'postalCode') return [postalExamples[country.value] ?? '1011 AB']
+  return examples[mode.value].valid
+})
+
+const invalidExample = computed(() => (mode.value === 'auto' ? null : examples[mode.value].invalid))
 
 function loadLib(): Promise<EuValidateApi> {
   return new Promise((resolve, reject) => {
@@ -257,11 +277,21 @@ function checkLabel(c: boolean | null) {
           :color="mode === t.key ? 'primary' : 'neutral'"
           :variant="mode === t.key ? 'solid' : 'soft'"
           size="sm"
+          :title="t.key === 'auto' ? 'Detect the identifier type automatically' : undefined"
           @click="selectMode(t.key)"
         >
           {{ t.label }}
         </UButton>
       </div>
+
+      <p
+        v-if="mode === 'auto'"
+        class="text-sm text-muted -mt-1"
+      >
+        <span class="text-default font-medium">Auto-detect</span> figures out whether your
+        input is a VAT, IBAN, BSN or KvK number — just paste and go. Pick a tab to force a
+        specific check.
+      </p>
 
       <!-- Input row -->
       <div class="flex flex-col sm:flex-row gap-3">
@@ -277,7 +307,7 @@ function checkLabel(c: boolean | null) {
         >
           <UInput
             v-model="value"
-            :placeholder="tabs.find(t => t.key === mode)?.placeholder"
+            :placeholder="placeholder"
             size="lg"
             class="w-full font-mono"
             autofocus
@@ -288,35 +318,23 @@ function checkLabel(c: boolean | null) {
       <!-- Examples -->
       <div class="flex flex-wrap items-center gap-2 text-sm">
         <span class="text-muted">Try:</span>
-        <template v-if="mode === 'auto'">
-          <button
-            v-for="ex in autoExamples"
-            :key="ex"
-            type="button"
-            class="font-mono text-xs bg-default border border-default rounded-md px-2 py-1 hover:border-primary/50 transition-colors"
-            @click="use(ex)"
-          >
-            {{ ex }}
-          </button>
-        </template>
-        <template v-else>
-          <button
-            v-for="ex in examples[mode].valid"
-            :key="ex"
-            type="button"
-            class="font-mono text-xs bg-default border border-default rounded-md px-2 py-1 hover:border-primary/50 transition-colors"
-            @click="use(ex)"
-          >
-            {{ ex }}
-          </button>
-          <button
-            type="button"
-            class="font-mono text-xs bg-default border border-default rounded-md px-2 py-1 hover:border-error/50 text-muted transition-colors"
-            @click="use(examples[mode].invalid)"
-          >
-            {{ examples[mode].invalid }} <span class="opacity-60">(invalid)</span>
-          </button>
-        </template>
+        <button
+          v-for="ex in validExamples"
+          :key="ex"
+          type="button"
+          class="font-mono text-xs bg-default border border-default rounded-md px-2 py-1 hover:border-primary/50 transition-colors"
+          @click="use(ex)"
+        >
+          {{ ex }}
+        </button>
+        <button
+          v-if="invalidExample"
+          type="button"
+          class="font-mono text-xs bg-default border border-default rounded-md px-2 py-1 hover:border-error/50 text-muted transition-colors"
+          @click="use(invalidExample)"
+        >
+          {{ invalidExample }} <span class="opacity-60">(invalid)</span>
+        </button>
       </div>
 
       <!-- Result -->
