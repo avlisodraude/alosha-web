@@ -11,26 +11,26 @@ const packages = [
     name: 'pixsqueeze',
     label: 'PixSqueeze',
     issues: 'https://github.com/avlisodraude/pixsqueeze/issues',
-    icon: 'i-lucide-image',
+    icon: 'i-lucide-image'
   },
   {
     name: 'monitor',
     label: '@alosha/monitor',
     issues: 'https://github.com/avlisodraude/monitor/issues',
-    icon: 'i-lucide-activity',
+    icon: 'i-lucide-activity'
   },
   {
     name: 'stride',
     label: '@alosha/stride',
     issues: 'https://github.com/avlisodraude/stride/issues',
-    icon: 'i-lucide-timer',
+    icon: 'i-lucide-timer'
   },
   {
     name: 'eu-validate',
     label: '@alosha/eu-validate',
     issues: 'https://github.com/avlisodraude/eu-validate/issues',
-    icon: 'i-lucide-badge-check',
-  },
+    icon: 'i-lucide-badge-check'
+  }
 ]
 </script>
 
@@ -42,7 +42,6 @@ const packages = [
     />
     <UPageBody>
       <div class="max-w-2xl mx-auto space-y-10">
-
         <!-- General contact -->
         <div class="flex flex-col items-center text-center gap-4">
           <UButton
@@ -95,8 +94,13 @@ const packages = [
               class="text-center"
             >
               <div class="flex flex-col items-center gap-3 py-2">
-                <UIcon :name="pkg.icon" class="size-6 text-primary" />
-                <p class="text-sm font-medium">{{ pkg.label }}</p>
+                <UIcon
+                  :name="pkg.icon"
+                  class="size-6 text-primary"
+                />
+                <p class="text-sm font-medium">
+                  {{ pkg.label }}
+                </p>
                 <UButton
                   :to="pkg.issues"
                   target="_blank"
@@ -111,7 +115,6 @@ const packages = [
             </UCard>
           </div>
         </div>
-
       </div>
     </UPageBody>
   </UPage>

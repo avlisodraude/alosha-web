@@ -93,7 +93,7 @@ export default defineEventHandler(async (event): Promise<OssStats> => {
     fetchPackageStats('pixsqueeze', 'avlisodraude/pixsqueeze', cachedPixsqueezeStars),
     fetchPackageStats('@alosha/monitor', 'avlisodraude/monitor', cachedMonitorStars),
     fetchPackageStats('@alosha/stride', 'avlisodraude/stride', cachedStrideStars),
-    fetchPackageStats('@alosha/eu-validate', 'avlisodraude/eu-validate', cachedEuValidateStars),
+    fetchPackageStats('@alosha/eu-validate', 'avlisodraude/eu-validate', cachedEuValidateStars)
   ])
 
   return {
@@ -102,6 +102,6 @@ export default defineEventHandler(async (event): Promise<OssStats> => {
     pixsqueeze,
     monitor,
     stride,
-    euValidate,
+    euValidate
   }
 })
