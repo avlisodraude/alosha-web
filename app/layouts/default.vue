@@ -1,7 +1,35 @@
 <script setup lang="ts">
 const { auth } = useSupabaseClient()
 const user = useSupabaseUser()
-const { isMonitor, isStride, hubUrl } = useSite()
+const { isMonitor, isStride, isEuValidate, hubUrl } = useSite()
+
+// Monitor, Stride and eu-validate are open-source package landings: no auth,
+// no dashboard — just a brand, an npm link and a GitHub link.
+const isPackageSite = isMonitor || isStride || isEuValidate
+
+const brand = isMonitor
+  ? 'Monitor'
+  : isStride
+    ? 'Stride'
+    : isEuValidate
+      ? 'eu-validate'
+      : 'PixSqueeze'
+
+const npmUrl = isMonitor
+  ? 'https://www.npmjs.com/package/@alosha/monitor'
+  : isStride
+    ? 'https://www.npmjs.com/package/@alosha/stride'
+    : isEuValidate
+      ? 'https://www.npmjs.com/package/@alosha/eu-validate'
+      : 'https://www.npmjs.com/package/pixsqueeze'
+
+const githubUrl = isMonitor
+  ? 'https://github.com/avlisodraude/monitor'
+  : isStride
+    ? 'https://github.com/avlisodraude/stride'
+    : isEuValidate
+      ? 'https://github.com/avlisodraude/eu-validate'
+      : 'https://github.com/avlisodraude/pixsqueeze'
 
 async function handleSignOut() {
   await auth.signOut()
@@ -17,11 +45,8 @@ async function handleSignOut() {
           to="/"
           class="flex items-center gap-2 font-bold text-lg"
         >
-          <template v-if="isMonitor">
-            <span class="text-primary">Monitor</span>
-          </template>
-          <template v-else-if="isStride">
-            <span class="text-primary">Stride</span>
+          <template v-if="isPackageSite">
+            <span class="text-primary">{{ brand }}</span>
           </template>
           <template v-else>
             <span class="text-primary">Pix</span>Squeeze
@@ -31,13 +56,13 @@ async function handleSignOut() {
 
       <template #right>
         <UNavigationMenu
-          v-if="isMonitor"
-          :items="[{ label: 'Docs', to: '/docs' }, { label: 'npm', to: 'https://www.npmjs.com/package/@alosha/monitor', target: '_blank' }]"
+          v-if="isEuValidate"
+          :items="[{ label: 'npm', to: npmUrl, target: '_blank' }, { label: 'GitHub', to: githubUrl, target: '_blank' }]"
           class="hidden md:flex"
         />
         <UNavigationMenu
-          v-else-if="isStride"
-          :items="[{ label: 'Docs', to: '/docs' }, { label: 'npm', to: 'https://www.npmjs.com/package/@alosha/stride', target: '_blank' }]"
+          v-else-if="isMonitor || isStride"
+          :items="[{ label: 'Docs', to: '/docs' }, { label: 'npm', to: npmUrl, target: '_blank' }]"
           class="hidden md:flex"
         />
         <UNavigationMenu
@@ -45,7 +70,7 @@ async function handleSignOut() {
           :items="[{ label: 'Pricing', to: '/#pricing' }, { label: 'Docs', to: '/docs' }]"
           class="hidden md:flex"
         />
-        <template v-if="!isMonitor && !isStride">
+        <template v-if="!isPackageSite">
           <template v-if="user">
             <UButton
               to="/dashboard"
@@ -89,7 +114,7 @@ async function handleSignOut() {
     <UFooter>
       <template #left>
         <div class="flex items-center gap-2 text-sm text-muted">
-          <span>© {{ new Date().getFullYear() }} {{ isMonitor ? 'Monitor' : isStride ? 'Stride' : 'PixSqueeze' }}</span>
+          <span>© {{ new Date().getFullYear() }} {{ brand }}</span>
           <span aria-hidden="true">·</span>
           <UButton
             :to="hubUrl"
@@ -105,7 +130,7 @@ async function handleSignOut() {
       </template>
       <template #right>
         <UButton
-          :to="isMonitor ? 'https://www.npmjs.com/package/@alosha/monitor' : isStride ? 'https://www.npmjs.com/package/@alosha/stride' : 'https://www.npmjs.com/package/pixsqueeze'"
+          :to="npmUrl"
           target="_blank"
           icon="i-simple-icons-npm"
           color="neutral"
@@ -113,7 +138,7 @@ async function handleSignOut() {
           size="sm"
         />
         <UButton
-          :to="isMonitor ? 'https://github.com/avlisodraude/monitor' : isStride ? 'https://github.com/avlisodraude/stride' : 'https://github.com/avlisodraude/pixsqueeze'"
+          :to="githubUrl"
           target="_blank"
           icon="i-simple-icons-github"
           color="neutral"

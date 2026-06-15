@@ -21,6 +21,7 @@ interface OssStats {
   pixsqueeze: PackageStats
   monitor: PackageStats
   stride: PackageStats
+  euValidate: PackageStats
 }
 
 async function fetchPackageStats(npmName: string, ghRepo: string, starsCache: () => Promise<number | null>): Promise<PackageStats> {
@@ -75,13 +76,24 @@ const cachedStrideStars = defineCachedFunction(async (): Promise<number | null> 
   } catch { return null }
 }, { maxAge: 600, name: 'gh-stars', getKey: () => 'stride' })
 
+const cachedEuValidateStars = defineCachedFunction(async (): Promise<number | null> => {
+  try {
+    const repo = await $fetch<{ stargazers_count: number }>(
+      'https://api.github.com/repos/avlisodraude/eu-validate',
+      { headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'alosha-web' } }
+    )
+    return repo?.stargazers_count ?? null
+  } catch { return null }
+}, { maxAge: 600, name: 'gh-stars', getKey: () => 'eu-validate' })
+
 export default defineEventHandler(async (event): Promise<OssStats> => {
   setHeader(event, 'cache-control', 'no-store')
 
-  const [pixsqueeze, monitor, stride] = await Promise.all([
+  const [pixsqueeze, monitor, stride, euValidate] = await Promise.all([
     fetchPackageStats('pixsqueeze', 'avlisodraude/pixsqueeze', cachedPixsqueezeStars),
     fetchPackageStats('@alosha/monitor', 'avlisodraude/monitor', cachedMonitorStars),
     fetchPackageStats('@alosha/stride', 'avlisodraude/stride', cachedStrideStars),
+    fetchPackageStats('@alosha/eu-validate', 'avlisodraude/eu-validate', cachedEuValidateStars),
   ])
 
   return {
@@ -90,5 +102,6 @@ export default defineEventHandler(async (event): Promise<OssStats> => {
     pixsqueeze,
     monitor,
     stride,
+    euValidate,
   }
 })

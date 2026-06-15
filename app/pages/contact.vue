@@ -25,6 +25,12 @@ const packages = [
     issues: 'https://github.com/avlisodraude/stride/issues',
     icon: 'i-lucide-timer',
   },
+  {
+    name: 'eu-validate',
+    label: '@alosha/eu-validate',
+    issues: 'https://github.com/avlisodraude/eu-validate/issues',
+    icon: 'i-lucide-badge-check',
+  },
 ]
 </script>
 

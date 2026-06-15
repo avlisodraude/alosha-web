@@ -22,15 +22,18 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  // Multi-domain: alosha.dev = hub, pixsqueeze.alosha.dev = PixSqueeze, monitor.alosha.dev = Monitor.
+  // Multi-domain: alosha.dev = hub, pixsqueeze.alosha.dev = PixSqueeze, monitor.alosha.dev = Monitor,
+  // stride.alosha.dev = Stride, eu-validate.alosha.dev = eu-validate.
   // Override per environment with NUXT_PUBLIC_HUB_URL / NUXT_PUBLIC_PRODUCT_URL /
-  // NUXT_PUBLIC_MONITOR_URL / NUXT_PUBLIC_FORCE_SITE (hub|product|monitor for local dev).
+  // NUXT_PUBLIC_MONITOR_URL / NUXT_PUBLIC_STRIDE_URL / NUXT_PUBLIC_EU_VALIDATE_URL /
+  // NUXT_PUBLIC_FORCE_SITE (hub|product|monitor|stride|eu-validate for local dev).
   runtimeConfig: {
     public: {
       hubUrl: 'https://alosha.dev',
       productUrl: 'https://pixsqueeze.alosha.dev',
       monitorUrl: 'https://monitor.alosha.dev',
       strideUrl: 'https://stride.alosha.dev',
+      euValidateUrl: 'https://eu-validate.alosha.dev',
       forceSite: ''
     }
   },

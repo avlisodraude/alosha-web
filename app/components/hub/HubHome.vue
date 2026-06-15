@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { productUrl, monitorUrl, strideUrl } = useSite()
+const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
 
 useSeoMeta({
   title: 'Alosha — Privacy-first developer tools, powered by open source',
@@ -18,7 +18,8 @@ const totalDownloads = computed(() => {
   const px = stats.value?.pixsqueeze?.downloads ?? 0
   const mo = stats.value?.monitor?.downloads ?? 0
   const st = stats.value?.stride?.downloads ?? 0
-  return px + mo + st || null
+  const ev = stats.value?.euValidate?.downloads ?? 0
+  return px + mo + st + ev || null
 })
 
 const products = computed(() => [
@@ -44,6 +45,14 @@ const products = computed(() => [
     description: 'Parse GPX files, compute running metrics, and render Chart.js dashboards — zero config.',
     icon: 'i-lucide-footprints',
     to: strideUrl,
+    external: true
+  },
+  {
+    name: 'eu-validate',
+    status: 'Live',
+    description: 'Offline EU identifier validation — checksum-accurate VAT, IBAN, BSN and KvK checks with zero dependencies.',
+    icon: 'i-lucide-badge-check',
+    to: euValidateUrl,
     external: true
   }
 ])
@@ -102,7 +111,7 @@ const steps = [
       title="Products"
       description="Each product is part of the Alosha ecosystem — grown from an open-source foundation."
     >
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
         <UPageCard
           v-for="p in products"
           :key="p.name"

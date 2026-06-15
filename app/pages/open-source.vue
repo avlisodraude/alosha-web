@@ -42,6 +42,15 @@ const packages = computed(() => [
     product: 'https://stride.alosha.dev',
     productLabel: 'Product page',
   },
+  {
+    name: '@alosha/eu-validate',
+    description: 'Offline EU identifier validation — checksum-accurate VAT (14 countries), IBAN, BSN and KvK checks with zero dependencies.',
+    stats: stats.value?.euValidate,
+    github: 'https://github.com/avlisodraude/eu-validate',
+    npm: 'https://www.npmjs.com/package/@alosha/eu-validate',
+    product: 'https://eu-validate.alosha.dev',
+    productLabel: 'Product page',
+  },
 ])
 </script>
 
