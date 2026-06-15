@@ -1,9 +1,11 @@
 <script setup lang="ts">
+const formats = ['gpx', 'tcx', 'fit']
+
 const features = [
   {
     icon: 'i-lucide-file-text',
-    title: 'GPX parser',
-    description: 'Parse any GPX file — Garmin, Strava export, or raw XML — with full support for HR, cadence, and elevation extensions.'
+    title: 'GPX, TCX & FIT parser',
+    description: 'Parse GPX, TCX or FIT files — Garmin, Strava, Coros, Wahoo and more — auto-detected, with full HR, cadence, and elevation support.'
   },
   {
     icon: 'i-lucide-ruler',
@@ -35,8 +37,8 @@ const features = [
 const codeSnippet = `import { parse, analyze, paceChartConfig } from '@alosha/stride'
 import { Chart } from 'chart.js/auto'
 
-// Parse a GPX file from Garmin / Strava
-const activity = parse('./morning-run.gpx')
+// Parse a GPX, TCX or FIT file from Garmin / Strava / Coros — format auto-detected
+const activity = parse('./morning-run.fit')
 
 // Compute all metrics in one call
 const stats = analyze(activity)
@@ -50,8 +52,8 @@ new Chart(canvas, paceChartConfig(activity, stats))`
   <div>
     <!-- Hero -->
     <UPageHero
-      title="GPX analytics for runners"
-      description="Parse GPX files, compute running metrics, and render Chart.js dashboards — zero config."
+      title="GPX, TCX & FIT analytics for runners"
+      description="Parse GPX, TCX and FIT files, compute running metrics, and render Chart.js dashboards — zero config."
       :ui="{ wrapper: 'py-16 sm:py-24' }"
     >
       <template #links>
@@ -85,6 +87,21 @@ new Chart(canvas, paceChartConfig(activity, stats))`
       </template>
 
       <template #default>
+        <!-- Supported formats — the key differentiator vs GPX-only parsers -->
+        <div class="flex flex-wrap justify-center items-center gap-2 mt-5">
+          <UBadge
+            v-for="fmt in formats"
+            :key="fmt"
+            color="primary"
+            variant="subtle"
+            size="lg"
+            class="font-mono"
+          >
+            .{{ fmt }}
+          </UBadge>
+          <span class="text-muted text-sm ml-1">one API, auto-detected</span>
+        </div>
+
         <!-- npm badge -->
         <div class="flex justify-center gap-3 mt-4">
           <img

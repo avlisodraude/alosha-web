@@ -42,7 +42,7 @@ const products = computed(() => [
   {
     name: 'Stride',
     status: 'Live',
-    description: 'Parse GPX files, compute running metrics, and render Chart.js dashboards — zero config.',
+    description: 'Parse GPX, TCX and FIT files, compute running metrics, and render Chart.js dashboards — zero config.',
     icon: 'i-lucide-footprints',
     to: strideUrl,
     external: true

@@ -26,7 +26,7 @@ interface StrideStats {
 }
 interface StrideActivity { name?: string, points: unknown[] }
 interface StrideApi {
-  parse: (xml: string) => StrideActivity
+  parse: (input: string | Uint8Array) => StrideActivity
   analyze: (a: StrideActivity, maxHR?: number) => StrideStats
   formatPace: (s: number, u?: Units) => string
   formatDistance: (m: number, u?: Units) => string
@@ -88,13 +88,13 @@ function loadChart(): Promise<ChartCtor> {
 
 // ---- parsing --------------------------------------------------------------
 
-async function handleText(xml: string, name: string) {
+async function handleParse(input: string | Uint8Array, name: string) {
   error.value = ''
   loading.value = true
   try {
     const Stride = await loadStride()
     await loadChart()
-    const act = Stride.parse(xml)
+    const act = Stride.parse(input)
     const st = Stride.analyze(act)
     activity.value = act
     stats.value = st
@@ -104,21 +104,31 @@ async function handleText(xml: string, name: string) {
   } catch (e) {
     activity.value = null
     stats.value = null
-    error.value = e instanceof Error ? e.message : 'Could not parse that GPX file.'
+    error.value = e instanceof Error ? e.message : 'Could not parse that file.'
   } finally {
     loading.value = false
   }
 }
 
 function onFile(file: File) {
-  if (!/\.gpx$/i.test(file.name) && file.type !== 'application/gpx+xml') {
-    error.value = 'Please choose a .gpx file.'
+  const isGpx = /\.gpx$/i.test(file.name) || file.type === 'application/gpx+xml'
+  const isTcx = /\.tcx$/i.test(file.name)
+  const isFit = /\.fit$/i.test(file.name)
+  if (!isGpx && !isTcx && !isFit) {
+    error.value = 'Please choose a .gpx, .tcx or .fit file.'
     return
   }
   const reader = new FileReader()
-  reader.onload = () => handleText(String(reader.result), file.name)
   reader.onerror = () => (error.value = 'Could not read that file.')
-  reader.readAsText(file)
+  if (isFit) {
+    // FIT is binary — read raw bytes and hand parse() a Uint8Array.
+    reader.onload = () => handleParse(new Uint8Array(reader.result as ArrayBuffer), file.name)
+    reader.readAsArrayBuffer(file)
+  } else {
+    // GPX and TCX are XML text.
+    reader.onload = () => handleParse(String(reader.result), file.name)
+    reader.readAsText(file)
+  }
 }
 
 function onInputChange(e: Event) {
@@ -139,7 +149,7 @@ async function loadSample() {
     const res = await fetch('/demo/sample-run.gpx')
     if (!res.ok) throw new Error('Could not load the sample run.')
     const xml = await res.text()
-    await handleText(xml, 'sample-run.gpx')
+    await handleParse(xml, 'sample-run.gpx')
   } catch (e) {
     loading.value = false
     error.value = e instanceof Error ? e.message : 'Could not load the sample run.'
@@ -232,7 +242,7 @@ const hasHr = computed(() => !!stats.value?.hrZones)
         Try <span class="text-primary">Stride</span>
       </h1>
       <p class="text-muted mt-2">
-        Drop in a GPX run and get pace, splits, elevation and heart-rate analysis — computed
+        Drop in a GPX, TCX or FIT run and get pace, splits, elevation and heart-rate analysis — computed
         right in your browser. Nothing is uploaded.
       </p>
 
@@ -285,7 +295,9 @@ const hasHr = computed(() => !!stats.value?.hrZones)
         class="size-8 text-muted mx-auto"
       />
       <p class="mt-3 font-medium">
-        Drop a <span class="font-mono text-primary">.gpx</span> file here, or click to choose
+        Drop a <span class="font-mono text-primary">.gpx</span>,
+        <span class="font-mono text-primary">.tcx</span> or
+        <span class="font-mono text-primary">.fit</span> file here, or click to choose
       </p>
       <p class="text-muted text-sm mt-1">
         Exported from Garmin, Strava, Coros, Apple Health…
@@ -305,7 +317,7 @@ const hasHr = computed(() => !!stats.value?.hrZones)
       <input
         ref="fileInput"
         type="file"
-        accept=".gpx,application/gpx+xml"
+        accept=".gpx,.tcx,.fit,application/gpx+xml"
         class="hidden"
         @change="onInputChange"
       >

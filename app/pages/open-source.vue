@@ -38,7 +38,7 @@ const packages = computed(() => [
   {
     name: '@alosha/stride',
     icon: 'i-lucide-footprints',
-    description: 'Parse GPX files, compute running metrics (pace, HR zones, splits), and render Chart.js dashboards — zero config.',
+    description: 'Parse GPX, TCX and FIT files, compute running metrics (pace, HR zones, splits), and render Chart.js dashboards — zero config.',
     stats: stats.value?.stride,
     github: 'https://github.com/avlisodraude/stride',
     npm: 'https://www.npmjs.com/package/@alosha/stride',

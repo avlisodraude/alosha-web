@@ -7,7 +7,7 @@ const { isStride, isMonitor, isEuValidate } = useSite()
 const seo = computed(() => {
   if (isStride) return {
     title: 'Stride — Live demo',
-    description: 'Analyse a GPX run right in your browser — pace, splits, elevation and heart-rate zones. Powered by the open-source Stride library.',
+    description: 'Analyse a GPX, TCX or FIT run right in your browser — pace, splits, elevation and heart-rate zones. Powered by the open-source Stride library.',
     url: 'https://stride.alosha.dev/demo'
   }
   if (isMonitor) return {
