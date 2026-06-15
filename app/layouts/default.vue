@@ -57,7 +57,7 @@ async function handleSignOut() {
       <template #right>
         <UNavigationMenu
           v-if="isEuValidate"
-          :items="[{ label: 'npm', to: npmUrl, target: '_blank' }, { label: 'GitHub', to: githubUrl, target: '_blank' }]"
+          :items="[{ label: 'Demo', to: '/demo' }, { label: 'npm', to: npmUrl, target: '_blank' }, { label: 'GitHub', to: githubUrl, target: '_blank' }]"
           class="hidden md:flex"
         />
         <UNavigationMenu
