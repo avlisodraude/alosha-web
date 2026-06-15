@@ -2,7 +2,7 @@
 definePageMeta({ layout: 'default' })
 
 // /demo is a shared route: each product subdomain renders its own demo.
-const { isStride, isMonitor } = useSite()
+const { isStride, isMonitor, isEuValidate } = useSite()
 
 const seo = computed(() => {
   if (isStride) return {
@@ -14,6 +14,11 @@ const seo = computed(() => {
     title: 'Monitor — Live demo',
     description: 'See what a Monitor run looks like: multi-step checks, assertions, alerts and HTML reports. Powered by the open-source Monitor library.',
     url: 'https://monitor.alosha.dev/demo'
+  }
+  if (isEuValidate) return {
+    title: 'eu-validate — Live demo',
+    description: 'Validate EU VAT, IBAN, BSN, KvK and postal codes right in your browser — offline, checksum-accurate. Powered by the open-source eu-validate library.',
+    url: 'https://eu-validate.alosha.dev/demo'
   }
   return {
     title: 'PixSqueeze — Live demo',
@@ -387,6 +392,7 @@ function parseInline(text: string): { code: boolean, value: string }[] {
 <template>
   <DemoStride v-if="isStride" />
   <DemoMonitor v-else-if="isMonitor" />
+  <DemoEuValidate v-else-if="isEuValidate" />
   <div
     v-else
     class="max-w-4xl mx-auto px-4 py-10 space-y-8"

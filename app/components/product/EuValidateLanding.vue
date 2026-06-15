@@ -20,12 +20,15 @@ const features = [
 const codeExample = `# Install
 npm install @alosha/eu-validate
 
-# Use
-import { isValidVat, isValidIban, isValidBsn } from '@alosha/eu-validate'
+# Use — every validator returns a ValidationResult
+import { validateVAT, validateIBAN, validateBSN } from '@alosha/eu-validate'
 
-isValidVat('NL', '123456789B01')  // → true
-isValidIban('NL91ABNA0417164300') // → true
-isValidBsn('111222333')           // → false (fails 11-proef)`
+validateVAT('NL810433941B01').valid      // → true
+validateIBAN('NL91ABNA0417164300').valid // → true
+
+const r = validateBSN('111222334')
+r.valid   // → false
+r.errors  // → ['CHECKSUM_FAILED']  (fails 11-proef)`
 </script>
 
 <template>
@@ -34,7 +37,8 @@ isValidBsn('111222333')           // → false (fails 11-proef)`
     <UPageHero
       class="hero-glow"
       :links="[
-        { label: 'Get started free', to: 'https://www.npmjs.com/package/@alosha/eu-validate', target: '_blank', trailingIcon: 'i-lucide-arrow-right', size: 'xl', class: 'btn-grad' },
+        { label: 'Live demo', to: '/demo', icon: 'i-lucide-play', size: 'xl', class: 'btn-grad' },
+        { label: 'Get started free', to: 'https://www.npmjs.com/package/@alosha/eu-validate', target: '_blank', trailingIcon: 'i-lucide-arrow-right', size: 'xl', color: 'neutral', variant: 'subtle' },
         { label: 'View on GitHub', to: 'https://github.com/avlisodraude/eu-validate', target: '_blank', size: 'xl', color: 'neutral', variant: 'subtle', icon: 'i-simple-icons-github' }
       ]"
     >
