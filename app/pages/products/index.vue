@@ -1,12 +1,16 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'hub' })
 
-const { productUrl } = useSite()
+const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
 
 useSeoMeta({
   title: 'Products — Alosha',
-  description: 'Developer products from the Alosha studio, each grown from an open-source foundation. Starting with PixSqueeze.'
+  description: 'Developer products built and maintained by Alosha — PixSqueeze, Monitor, Stride and eu-validate. Each grown from an open-source foundation.'
 })
+
+const { data: stats } = await useFetch('/api/oss-stats')
+const nf = new Intl.NumberFormat('en-US')
+const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
 
 const pixsqueezeFeatures = [
   { icon: 'i-lucide-image', title: 'HEIC, TIFF & RAW conversion', description: 'Convert formats browsers can\'t read natively — iPhone HEIC, TIFF, and camera RAW — server-side.' },
@@ -22,20 +26,39 @@ const pixsqueezePlans = [
   { name: 'Business', price: '$99', detail: 'Unlimited' }
 ]
 
-const upcoming = [
+// The rest of the portfolio — all live, open-source-first packages.
+const products = computed(() => [
   {
     name: 'Monitor',
     icon: 'i-lucide-activity',
-    description: 'Hosted browser automation and uptime monitoring for teams — built on the Playwright ecosystem.',
-    audience: 'For businesses and development teams'
+    description: 'Playwright-based website monitoring — multi-step checks, retries, screenshots on failure, and multi-channel alerts.',
+    audience: 'For businesses & development teams',
+    stats: stats.value?.monitor,
+    to: monitorUrl,
+    github: 'https://github.com/avlisodraude/monitor',
+    npm: 'https://www.npmjs.com/package/@alosha/monitor'
   },
   {
     name: 'Stride',
     icon: 'i-lucide-footprints',
-    description: 'Running analytics for athletes and coaches — turn training data into insight.',
-    audience: 'For runners, coaches & endurance athletes'
+    description: 'Parse GPX, TCX and FIT files, compute running metrics — pace, HR zones, splits — and render Chart.js dashboards with zero config.',
+    audience: 'For runners, coaches & endurance athletes',
+    stats: stats.value?.stride,
+    to: strideUrl,
+    github: 'https://github.com/avlisodraude/stride',
+    npm: 'https://www.npmjs.com/package/@alosha/stride'
+  },
+  {
+    name: 'eu-validate',
+    icon: 'i-lucide-badge-check',
+    description: 'Offline EU identifier validation — checksum-accurate VAT (14 countries), IBAN, BSN, KvK and postal codes, with zero dependencies.',
+    audience: 'For EU fintech, billing & compliance',
+    stats: stats.value?.euValidate,
+    to: euValidateUrl,
+    github: 'https://github.com/avlisodraude/eu-validate',
+    npm: 'https://www.npmjs.com/package/@alosha/eu-validate'
   }
-]
+])
 </script>
 
 <template>
@@ -46,7 +69,7 @@ const upcoming = [
     />
 
     <UPageBody class="max-w-5xl mx-auto px-4 w-full">
-      <!-- PixSqueeze — featured / live -->
+      <!-- PixSqueeze — featured / hosted product -->
       <section class="space-y-8">
         <div class="flex items-center gap-3">
           <UIcon
@@ -62,6 +85,13 @@ const upcoming = [
             size="sm"
           >
             Live
+          </UBadge>
+          <UBadge
+            color="neutral"
+            variant="subtle"
+            size="sm"
+          >
+            Hosted API
           </UBadge>
         </div>
 
@@ -139,39 +169,121 @@ const upcoming = [
 
       <USeparator class="my-12" />
 
-      <!-- Upcoming -->
+      <!-- The rest of the portfolio — all live -->
       <section class="space-y-6">
         <div>
           <h2 class="text-2xl font-bold">
-            In the pipeline
+            More from Alosha
           </h2>
           <p class="text-muted mt-1">
-            Next products in the Alosha portfolio. Want early access? <ULink to="/contact">Get in touch</ULink>.
+            Open-source-first packages, each with its own home and live on npm.
           </p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <UPageCard
-            v-for="p in upcoming"
+            v-for="p in products"
             :key="p.name"
-            :icon="p.icon"
-            :title="p.name"
-            :description="p.description"
+            variant="subtle"
+            class="h-full"
           >
-            <template #footer>
-              <div class="flex items-center justify-between w-full">
-                <span class="text-sm text-muted">{{ p.audience }}</span>
-                <UBadge
-                  color="neutral"
-                  variant="subtle"
-                  size="sm"
-                >
-                  Coming soon
-                </UBadge>
+            <div class="flex flex-col h-full">
+              <div class="flex items-start gap-3">
+                <div class="flex items-center justify-center size-10 shrink-0 rounded-lg bg-primary/10 text-primary">
+                  <UIcon
+                    :name="p.icon"
+                    class="size-5"
+                  />
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <h3 class="font-semibold">
+                      {{ p.name }}
+                    </h3>
+                    <UBadge
+                      color="primary"
+                      variant="subtle"
+                      size="sm"
+                    >
+                      Live
+                    </UBadge>
+                  </div>
+                  <p class="text-xs text-muted mt-0.5">
+                    {{ p.audience }}
+                  </p>
+                </div>
               </div>
-            </template>
+
+              <p class="text-sm text-muted mt-4">
+                {{ p.description }}
+              </p>
+
+              <!-- Live npm signal -->
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div>
+                  <div class="text-lg font-bold tabular-nums">
+                    {{ fmt(p.stats?.weeklyDownloads) }}
+                  </div>
+                  <div class="text-xs text-muted uppercase tracking-wide">
+                    Downloads / week
+                  </div>
+                </div>
+                <div>
+                  <div class="text-lg font-bold tabular-nums">
+                    {{ p.stats?.version ? `v${p.stats.version}` : '—' }}
+                  </div>
+                  <div class="text-xs text-muted uppercase tracking-wide">
+                    Latest
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 mt-auto pt-5 border-t border-default">
+                <UButton
+                  :to="p.to"
+                  target="_blank"
+                  size="xs"
+                  variant="subtle"
+                  trailing-icon="i-lucide-arrow-up-right"
+                >
+                  Open
+                </UButton>
+                <UButton
+                  :to="p.github"
+                  target="_blank"
+                  size="xs"
+                  color="neutral"
+                  variant="outline"
+                  icon="i-simple-icons-github"
+                >
+                  GitHub
+                </UButton>
+                <UButton
+                  :to="p.npm"
+                  target="_blank"
+                  size="xs"
+                  color="neutral"
+                  variant="outline"
+                  icon="i-simple-icons-npm"
+                >
+                  npm
+                </UButton>
+              </div>
+            </div>
           </UPageCard>
         </div>
       </section>
+
+      <UPageCTA
+        class="mt-12"
+        title="Built in the open"
+        description="Every product starts as an MIT-licensed package you can use and self-host. See the source and live download stats."
+        variant="subtle"
+        :links="[
+          { label: 'Explore open source', to: '/open-source', trailingIcon: 'i-lucide-arrow-right', class: 'btn-grad' },
+          { label: 'Get in touch', to: '/contact', color: 'neutral', variant: 'outline' }
+        ]"
+      />
     </UPageBody>
   </UPage>
 </template>

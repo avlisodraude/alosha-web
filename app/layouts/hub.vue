@@ -1,13 +1,24 @@
 <script setup lang="ts">
-const { productUrl } = useSite()
+const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
 
 const nav = [
   { label: 'Products', to: '/products' },
   { label: 'Open Source', to: '/open-source' },
+  { label: 'Demo', to: '/demo' },
   { label: 'Blog', to: '/blog' },
   { label: 'About', to: '/about' },
   { label: 'Contact', to: '/contact' }
 ]
+
+// Quick launcher for every live product subdomain.
+const productMenu = [[
+  { label: 'PixSqueeze', icon: 'i-lucide-image', to: productUrl, target: '_blank' },
+  { label: 'Monitor', icon: 'i-lucide-activity', to: monitorUrl, target: '_blank' },
+  { label: 'Stride', icon: 'i-lucide-footprints', to: strideUrl, target: '_blank' },
+  { label: 'eu-validate', icon: 'i-lucide-badge-check', to: euValidateUrl, target: '_blank' }
+], [
+  { label: 'All products', icon: 'i-lucide-layout-grid', to: '/products' }
+]]
 </script>
 
 <template>
@@ -28,15 +39,18 @@ const nav = [
       />
 
       <template #right>
-        <UButton
-          :to="productUrl"
-          target="_blank"
-          size="sm"
-          variant="subtle"
-          trailing-icon="i-lucide-arrow-up-right"
+        <UDropdownMenu
+          :items="productMenu"
+          :content="{ align: 'end' }"
         >
-          PixSqueeze
-        </UButton>
+          <UButton
+            size="sm"
+            variant="subtle"
+            trailing-icon="i-lucide-chevron-down"
+          >
+            Products
+          </UButton>
+        </UDropdownMenu>
         <UColorModeButton />
       </template>
     </UHeader>
