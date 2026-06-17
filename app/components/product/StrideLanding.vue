@@ -4,10 +4,10 @@ useSeoMeta({
   description: 'Parse GPX, TCX and FIT files, compute running metrics — pace, HR zones, splits, elevation — and render Chart.js dashboards. Free open-source npm package.',
   ogTitle: 'Stride — GPX, TCX & FIT analytics for runners',
   ogDescription: 'Parse GPX, TCX and FIT files, compute running metrics, and render Chart.js dashboards — zero config. Free open-source npm package by Alosha.',
-  ogImage: 'https://stride.alosha.dev/og.png',
+  ogImage: 'https://stride.alosha.dev/og-stride.png',
   ogUrl: 'https://stride.alosha.dev',
   twitterCard: 'summary_large_image',
-  twitterImage: 'https://stride.alosha.dev/og.png'
+  twitterImage: 'https://stride.alosha.dev/og-stride.png'
 })
 
 const formats = ['gpx', 'tcx', 'fit']
