@@ -1,10 +1,16 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'default' })
 
-// /demo is a shared route: each product subdomain renders its own demo.
-const { isStride, isMonitor, isEuValidate } = useSite()
+// /demo is a shared route: each product subdomain renders its own demo, and the
+// hub (alosha.dev) renders a landing that links out to all of them.
+const { isHub, isStride, isMonitor, isEuValidate } = useSite()
 
 const seo = computed(() => {
+  if (isHub) return {
+    title: 'Live demos — Alosha',
+    description: 'Try every Alosha product in your browser — compress images with PixSqueeze, analyse runs with Stride, validate EU identifiers with eu-validate, and more.',
+    url: 'https://alosha.dev/demo'
+  }
   if (isStride) return {
     title: 'Stride — Live demo',
     description: 'Analyse a GPX, TCX or FIT run right in your browser — pace, splits, elevation and heart-rate zones. Powered by the open-source Stride library.',
@@ -390,7 +396,8 @@ function parseInline(text: string): { code: boolean, value: string }[] {
 </script>
 
 <template>
-  <DemoStride v-if="isStride" />
+  <DemoHub v-if="isHub" />
+  <DemoStride v-else-if="isStride" />
   <DemoMonitor v-else-if="isMonitor" />
   <DemoEuValidate v-else-if="isEuValidate" />
   <div

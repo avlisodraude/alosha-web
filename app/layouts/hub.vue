@@ -35,13 +35,14 @@ const productMenu = [[
 
       <UNavigationMenu
         :items="nav"
-        class="hidden md:flex"
+        class="hidden lg:flex"
       />
 
       <template #right>
         <UDropdownMenu
           :items="productMenu"
           :content="{ align: 'end' }"
+          class="hidden lg:block"
         >
           <UButton
             size="sm"
@@ -52,6 +53,26 @@ const productMenu = [[
           </UButton>
         </UDropdownMenu>
         <UColorModeButton />
+      </template>
+
+      <!-- Mobile menu (opens from the hamburger toggle below lg) -->
+      <template #body>
+        <UNavigationMenu
+          :items="nav"
+          orientation="vertical"
+          class="-mx-2.5"
+        />
+
+        <USeparator class="my-4" />
+
+        <p class="px-2.5 text-xs font-semibold text-muted uppercase tracking-wide mb-1">
+          Products
+        </p>
+        <UNavigationMenu
+          :items="productMenu"
+          orientation="vertical"
+          class="-mx-2.5"
+        />
       </template>
     </UHeader>
 
