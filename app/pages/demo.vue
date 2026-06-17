@@ -450,9 +450,14 @@ function parseInline(text: string): { code: boolean, value: string }[] {
 
     <!-- Drop zone -->
     <div
-      class="rounded-xl border-2 border-dashed p-10 text-center cursor-pointer transition-colors"
+      role="button"
+      tabindex="0"
+      aria-label="Upload an image to compress"
+      class="rounded-xl border-2 border-dashed p-10 text-center cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       :class="dragging ? 'border-primary bg-primary/5' : 'border-default hover:border-primary/50'"
       @click="fileInput?.click()"
+      @keydown.enter.prevent="fileInput?.click()"
+      @keydown.space.prevent="fileInput?.click()"
       @dragover.prevent="dragging = true"
       @dragleave.prevent="dragging = false"
       @drop.prevent="onDrop"
@@ -501,6 +506,7 @@ function parseInline(text: string): { code: boolean, value: string }[] {
         min="0.1"
         max="1"
         step="0.05"
+        aria-label="Compression quality"
         class="w-full mt-2 accent-primary"
       >
     </div>

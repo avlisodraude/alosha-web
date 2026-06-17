@@ -188,6 +188,7 @@ async function handleSignOut() {
           color="neutral"
           variant="ghost"
           size="sm"
+          :aria-label="`${brand} on npm`"
         />
         <UButton
           :to="githubUrl"
@@ -196,6 +197,7 @@ async function handleSignOut() {
           color="neutral"
           variant="ghost"
           size="sm"
+          :aria-label="`${brand} on GitHub`"
         />
       </template>
     </UFooter>

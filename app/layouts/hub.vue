@@ -94,6 +94,7 @@ const productMenu = [[
           color="neutral"
           variant="ghost"
           size="sm"
+          aria-label="Alosha on GitHub"
         />
       </template>
     </UFooter>
