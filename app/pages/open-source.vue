@@ -12,6 +12,11 @@ useSeoMeta({
   twitterImage: 'https://alosha.dev/og.png'
 })
 
+useBreadcrumbs([
+  { name: 'Home', path: '/' },
+  { name: 'Open Source' }
+])
+
 const { data: stats } = await useFetch('/api/oss-stats', {
   server: false,
   query: { _: Date.now() }

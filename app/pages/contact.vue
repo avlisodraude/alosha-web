@@ -6,6 +6,11 @@ useSeoMeta({
   description: 'Get in touch with Alosha — partnerships, early access, or open-source support.'
 })
 
+useBreadcrumbs([
+  { name: 'Home', path: '/' },
+  { name: 'Contact' }
+])
+
 const topics = [
   'Partnership or licensing',
   'Early access',

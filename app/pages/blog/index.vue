@@ -12,6 +12,11 @@ useSeoMeta({
   twitterImage: 'https://alosha.dev/og-blog.png'
 })
 
+useBreadcrumbs([
+  { name: 'Home', path: '/' },
+  { name: 'Blog' }
+])
+
 const { data: posts } = await useAsyncData('blog-list', () =>
   queryCollection('blog').order('date', 'DESC').all()
 )

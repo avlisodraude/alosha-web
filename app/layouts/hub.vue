@@ -22,6 +22,15 @@ useJsonLd({
   'logo': 'https://alosha.dev/og.png',
   'sameAs': ['https://github.com/avlisodraude']
 })
+useJsonLd({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  'name': 'Alosha',
+  'url': 'https://alosha.dev',
+  'description': 'A software studio building privacy-first developer tools on open-source foundations.',
+  'inLanguage': 'en',
+  'publisher': { '@type': 'Organization', 'name': 'Alosha', 'url': 'https://alosha.dev' }
+})
 
 const nav = [
   { label: 'Products', to: '/products' },

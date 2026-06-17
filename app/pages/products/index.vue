@@ -14,6 +14,11 @@ useSeoMeta({
   twitterImage: 'https://alosha.dev/og.png'
 })
 
+useBreadcrumbs([
+  { name: 'Home', path: '/' },
+  { name: 'Products' }
+])
+
 const { data: stats } = await useFetch('/api/oss-stats')
 const nf = new Intl.NumberFormat('en-US')
 const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))

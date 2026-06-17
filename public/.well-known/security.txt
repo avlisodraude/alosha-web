@@ -1,0 +1,6 @@
+# Security policy for alosha.dev — https://securitytxt.org
+# If you believe you've found a security issue, please email us.
+Contact: mailto:hello@alosha.dev
+Expires: 2027-06-17T00:00:00.000Z
+Preferred-Languages: en, nl
+Canonical: https://alosha.dev/.well-known/security.txt

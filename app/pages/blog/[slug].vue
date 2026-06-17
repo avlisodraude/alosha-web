@@ -43,6 +43,12 @@ useJsonLd({
   'mainEntityOfPage': `https://alosha.dev${route.path}`
 })
 
+useBreadcrumbs([
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog' },
+  { name: post.value?.title || 'Post' }
+])
+
 const meta = computed(() => {
   const d = formatDate(post.value?.date)
   return post.value?.author ? `${d} · ${post.value.author}` : d

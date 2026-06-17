@@ -8,6 +8,11 @@ useSeoMeta({
   description: 'The Alosha philosophy: improve open source, distribute it, build sustainable products with AI-assisted development. The portfolio today: PixSqueeze, Monitor, Stride and eu-validate.'
 })
 
+useBreadcrumbs([
+  { name: 'Home', path: '/' },
+  { name: 'About' }
+])
+
 const steps = [
   { icon: 'i-lucide-git-branch', title: 'Open source', description: 'Find a useful but underserved project, make it genuinely better, and ship it in the open under a permissive license.' },
   { icon: 'i-lucide-heart-handshake', title: 'Trust', description: 'Developers adopt it, file issues, and star it. Credibility compounds in public — no marketing required.' },
