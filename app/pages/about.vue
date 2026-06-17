@@ -27,6 +27,7 @@ const portfolio = [
     <UPageHero
       title="About Alosha"
       description="A solo-founder software studio operating as Product Owner, using AI to build and maintain a portfolio of developer products."
+      :ui="{ container: 'py-12 sm:py-16 lg:py-20' }"
     />
     <UPageBody>
       <!-- Intro -->
@@ -56,15 +57,15 @@ const portfolio = [
           <div
             v-for="(step, i) in steps"
             :key="step.title"
-            class="relative rounded-xl border border-default bg-elevated/40 p-6"
+            class="rounded-xl border border-default bg-elevated/40 p-6"
           >
-            <span class="absolute -top-3 left-6 text-xs font-mono text-muted bg-default px-2">
-              0{{ i + 1 }}
-            </span>
-            <UIcon
-              :name="step.icon"
-              class="size-6 text-primary"
-            />
+            <div class="flex items-center justify-between">
+              <UIcon
+                :name="step.icon"
+                class="size-6 text-primary"
+              />
+              <span class="text-xs font-mono text-muted">0{{ i + 1 }}</span>
+            </div>
             <h3 class="font-semibold text-highlighted mt-3">
               {{ step.title }}
             </h3>
