@@ -10,6 +10,19 @@ useSeoMeta({
   twitterImage: 'https://pixsqueeze.alosha.dev/og-pixsqueeze.png'
 })
 
+useJsonLd({
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  'name': 'PixSqueeze',
+  'applicationCategory': 'DeveloperApplication',
+  'operatingSystem': 'Any',
+  'description': 'Batch image compression API with server-side HEIC, TIFF and camera-RAW conversion.',
+  'url': 'https://pixsqueeze.alosha.dev',
+  'image': 'https://pixsqueeze.alosha.dev/og-pixsqueeze.png',
+  'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD', 'description': '100 images free every month' },
+  'publisher': { '@type': 'Organization', 'name': 'Alosha', 'url': 'https://alosha.dev' }
+})
+
 const features = [
   { icon: 'i-lucide-zap', title: 'Fast batch processing', description: 'Send multiple images in a single API call. We handle compression in parallel and return results in seconds.' },
   { icon: 'i-lucide-sliders-horizontal', title: 'Full control', description: 'Set quality, max width, and output format per request. JPEG, PNG, and WebP supported out of the box.' },

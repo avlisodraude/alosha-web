@@ -25,6 +25,24 @@ useSeoMeta({
   twitterImage: () => ogImage.value
 })
 
+useJsonLd({
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  'headline': post.value?.title,
+  'description': post.value?.description,
+  'datePublished': post.value?.date,
+  'dateModified': post.value?.date,
+  'author': { '@type': 'Person', 'name': post.value?.author || 'Eduardo' },
+  'publisher': {
+    '@type': 'Organization',
+    'name': 'Alosha',
+    'logo': { '@type': 'ImageObject', 'url': 'https://alosha.dev/og.png' }
+  },
+  'image': ogImage.value,
+  'url': `https://alosha.dev${route.path}`,
+  'mainEntityOfPage': `https://alosha.dev${route.path}`
+})
+
 const meta = computed(() => {
   const d = formatDate(post.value?.date)
   return post.value?.author ? `${d} · ${post.value.author}` : d

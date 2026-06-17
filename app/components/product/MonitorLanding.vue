@@ -10,6 +10,19 @@ useSeoMeta({
   twitterImage: 'https://monitor.alosha.dev/og-monitor.png'
 })
 
+useJsonLd({
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  'name': '@alosha/monitor',
+  'applicationCategory': 'DeveloperApplication',
+  'operatingSystem': 'Node.js',
+  'description': 'Playwright-based website monitoring — checks, retries, screenshots on failure, and multi-channel alerts.',
+  'url': 'https://monitor.alosha.dev',
+  'image': 'https://monitor.alosha.dev/og-monitor.png',
+  'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+  'publisher': { '@type': 'Organization', 'name': 'Alosha', 'url': 'https://alosha.dev' }
+})
+
 const features = [
   { icon: 'i-lucide-eye', title: 'Real browser checks', description: 'Uses Playwright under the hood — catches JS errors, redirects, and anything a headless Chrome would catch.' },
   { icon: 'i-lucide-refresh-cw', title: 'Automatic retries', description: 'Configurable retry attempts before marking a check as failed. No false alarms from flaky networks.' },

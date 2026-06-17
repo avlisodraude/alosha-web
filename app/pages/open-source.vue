@@ -3,7 +3,13 @@ definePageMeta({ layout: 'hub' })
 
 useSeoMeta({
   title: 'Open Source — Alosha',
-  description: 'Open-source projects maintained by Alosha.'
+  description: 'Open-source projects maintained by Alosha — pixsqueeze, @alosha/monitor, @alosha/stride and @alosha/eu-validate. MIT licensed, free to use.',
+  ogTitle: 'Open Source — Alosha',
+  ogDescription: 'MIT-licensed developer packages maintained by Alosha — pixsqueeze, monitor, stride and eu-validate.',
+  ogImage: 'https://alosha.dev/og.png',
+  ogUrl: 'https://alosha.dev/open-source',
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://alosha.dev/og.png'
 })
 
 const { data: stats } = await useFetch('/api/oss-stats', {

@@ -3,6 +3,8 @@ const { auth } = useSupabaseClient()
 const user = useSupabaseUser()
 const { isMonitor, isStride, isEuValidate, hubUrl } = useSite()
 
+useCanonical()
+
 // Monitor, Stride and eu-validate are open-source package landings: no auth,
 // no dashboard — just a brand, an npm link and a GitHub link.
 const isPackageSite = isMonitor || isStride || isEuValidate

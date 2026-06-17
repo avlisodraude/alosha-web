@@ -10,6 +10,19 @@ useSeoMeta({
   twitterImage: 'https://stride.alosha.dev/og-stride.png'
 })
 
+useJsonLd({
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  'name': '@alosha/stride',
+  'applicationCategory': 'DeveloperApplication',
+  'operatingSystem': 'Node.js',
+  'description': 'Parse GPX, TCX and FIT files, compute running metrics, and render Chart.js dashboards — zero config.',
+  'url': 'https://stride.alosha.dev',
+  'image': 'https://stride.alosha.dev/og-stride.png',
+  'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+  'publisher': { '@type': 'Organization', 'name': 'Alosha', 'url': 'https://alosha.dev' }
+})
+
 const formats = ['gpx', 'tcx', 'fit']
 
 const features = [

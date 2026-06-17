@@ -1,6 +1,17 @@
 <script setup lang="ts">
 const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
 
+useCanonical()
+useJsonLd({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  'name': 'Alosha',
+  'url': 'https://alosha.dev',
+  'description': 'A software studio building privacy-first developer tools on open-source foundations.',
+  'logo': 'https://alosha.dev/og.png',
+  'sameAs': ['https://github.com/avlisodraude']
+})
+
 const nav = [
   { label: 'Products', to: '/products' },
   { label: 'Open Source', to: '/open-source' },

@@ -10,6 +10,19 @@ useSeoMeta({
   twitterImage: 'https://eu-validate.alosha.dev/og-eu-validate.png'
 })
 
+useJsonLd({
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  'name': '@alosha/eu-validate',
+  'applicationCategory': 'DeveloperApplication',
+  'operatingSystem': 'Node.js, Browser',
+  'description': 'Offline EU identifier validation — checksum-accurate VAT, IBAN, BSN and KvK checks with zero dependencies.',
+  'url': 'https://eu-validate.alosha.dev',
+  'image': 'https://eu-validate.alosha.dev/og-eu-validate.png',
+  'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+  'publisher': { '@type': 'Organization', 'name': 'Alosha', 'url': 'https://alosha.dev' }
+})
+
 const features = [
   { icon: 'i-lucide-wifi-off', title: 'Fully offline', description: 'Every check runs locally with no network calls — no VIES round-trips, no rate limits, no data leaving your server.' },
   { icon: 'i-lucide-badge-check', title: 'VAT for 14 countries', description: 'Country-specific VAT checksum validation for 14 EU member states — structure and check digits, not just a regex.' },

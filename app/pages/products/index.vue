@@ -5,7 +5,13 @@ const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
 
 useSeoMeta({
   title: 'Products — Alosha',
-  description: 'Developer products built and maintained by Alosha — PixSqueeze, Monitor, Stride and eu-validate. Each grown from an open-source foundation.'
+  description: 'Developer products built and maintained by Alosha — PixSqueeze, Monitor, Stride and eu-validate. Each grown from an open-source foundation.',
+  ogTitle: 'Products — Alosha',
+  ogDescription: 'Developer products built and maintained by Alosha — PixSqueeze, Monitor, Stride and eu-validate.',
+  ogImage: 'https://alosha.dev/og.png',
+  ogUrl: 'https://alosha.dev/products',
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://alosha.dev/og.png'
 })
 
 const { data: stats } = await useFetch('/api/oss-stats')
