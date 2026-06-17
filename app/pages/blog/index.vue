@@ -3,7 +3,13 @@ definePageMeta({ layout: 'hub' })
 
 useSeoMeta({
   title: 'Blog — Alosha',
-  description: 'Notes on open-source maintenance, AI-assisted development, and building products in the open.'
+  description: 'Notes on open-source maintenance, AI-assisted development, and building products in the open.',
+  ogTitle: 'Blog — Alosha',
+  ogDescription: 'Notes on open-source maintenance, AI-assisted development, and building products in the open.',
+  ogImage: 'https://alosha.dev/og-blog.png',
+  ogUrl: 'https://alosha.dev/blog',
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://alosha.dev/og-blog.png'
 })
 
 const { data: posts } = await useAsyncData('blog-list', () =>

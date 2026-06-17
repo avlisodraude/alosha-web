@@ -11,9 +11,18 @@ if (!post.value) {
   throw createError({ statusCode: 404, statusMessage: 'Post not found', fatal: true })
 }
 
+const slug = computed(() => route.path.split('/').filter(Boolean).pop())
+const ogImage = computed(() => `https://alosha.dev/og-blog-${slug.value}.png`)
+
 useSeoMeta({
   title: () => `${post.value?.title} — Alosha`,
-  description: () => post.value?.description
+  description: () => post.value?.description,
+  ogTitle: () => post.value?.title,
+  ogDescription: () => post.value?.description,
+  ogImage: () => ogImage.value,
+  ogUrl: () => `https://alosha.dev${route.path}`,
+  twitterCard: 'summary_large_image',
+  twitterImage: () => ogImage.value
 })
 
 const meta = computed(() => {

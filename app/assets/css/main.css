@@ -52,6 +52,22 @@ body {
   box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45);
 }
 
+/* Prose (blog posts) — use the app's text tokens so article bodies have strong
+   contrast in both light and dark mode instead of the washed-out default greys.
+   Declared after the @nuxt/ui import so these win over `dark:prose-invert`. */
+.prose,
+.dark .prose {
+  --tw-prose-body: var(--ui-text-toned);
+  --tw-prose-headings: var(--ui-text-highlighted);
+  --tw-prose-bold: var(--ui-text-highlighted);
+  --tw-prose-links: var(--ui-primary);
+  --tw-prose-code: var(--ui-text-highlighted);
+  --tw-prose-quotes: var(--ui-text-toned);
+  --tw-prose-counters: var(--ui-text-muted);
+  --tw-prose-bullets: var(--ui-text-dimmed);
+  --tw-prose-hr: var(--ui-border);
+}
+
 /* Hero glow blobs */
 .hero-glow {
   position: relative;
