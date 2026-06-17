@@ -74,7 +74,9 @@ export default defineNuxtConfig({
         '/about',
         '/contact',
         '/blog',
-        '/blog/**'
+        '/blog/**',
+        '/privacy',
+        '/terms'
       ]
     }
   }
