@@ -110,6 +110,16 @@ const productMenu = [[
       </template>
       <template #right>
         <UButton
+          to="/rss.xml"
+          external
+          target="_blank"
+          icon="i-lucide-rss"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          aria-label="Subscribe to the blog RSS feed"
+        />
+        <UButton
           to="https://github.com/avlisodraude"
           target="_blank"
           icon="i-simple-icons-github"
