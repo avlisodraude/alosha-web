@@ -9,6 +9,9 @@ useSeoMeta({
 const { data: posts } = await useAsyncData('blog-list', () =>
   queryCollection('blog').order('date', 'DESC').all()
 )
+
+const meta = (post: { date: string, author?: string }) =>
+  post.author ? `${formatDate(post.date)} · ${post.author}` : formatDate(post.date)
 </script>
 
 <template>
@@ -17,21 +20,40 @@ const { data: posts } = await useAsyncData('blog-list', () =>
       title="Blog"
       description="Notes on open-source maintenance, AI-assisted development, and building products in the open."
     />
-    <UPageBody>
+    <UPageBody class="max-w-5xl mx-auto px-4 w-full">
       <div
         v-if="posts && posts.length"
-        class="space-y-4 max-w-2xl mx-auto"
+        class="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
         <UPageCard
-          v-for="post in posts"
+          v-for="(post, i) in posts"
           :key="post.path"
+          :to="post.path"
           :title="post.title"
           :description="post.description"
-          :to="post.path"
+          :variant="i === 0 ? 'subtle' : 'outline'"
+          :class="i === 0 ? 'md:col-span-2' : ''"
           spotlight
         >
           <template #footer>
-            <span class="text-sm text-muted">{{ formatDate(post.date) }}</span>
+            <div class="flex items-center justify-between w-full">
+              <span class="text-sm text-muted">{{ meta(post) }}</span>
+              <UBadge
+                v-if="i === 0"
+                color="primary"
+                variant="subtle"
+                size="sm"
+              >
+                Latest
+              </UBadge>
+              <span
+                v-else
+                class="inline-flex items-center gap-1 text-sm font-medium text-primary"
+              >
+                Read
+                <UIcon name="i-lucide-arrow-right" />
+              </span>
+            </div>
           </template>
         </UPageCard>
       </div>
