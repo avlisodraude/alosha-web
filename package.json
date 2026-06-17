@@ -3,13 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
+    "build": "node scripts/gen-sitemap.mjs && nuxt build",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
-    "gen:eu-validate": "node scripts/gen-eu-validate-bundle.mjs"
+    "gen:eu-validate": "node scripts/gen-eu-validate-bundle.mjs",
+    "gen:sitemap": "node scripts/gen-sitemap.mjs"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.111",
