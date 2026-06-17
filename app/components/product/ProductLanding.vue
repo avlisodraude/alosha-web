@@ -6,7 +6,8 @@ useSeoMeta({
   ogDescription: 'Batch compress images at scale with a simple API. Free tier, no credit card required.',
   ogImage: 'https://pixsqueeze.alosha.dev/og.png',
   ogUrl: 'https://pixsqueeze.alosha.dev',
-  twitterCard: 'summary_large_image'
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://pixsqueeze.alosha.dev/og.png'
 })
 
 const features = [

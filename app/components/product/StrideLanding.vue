@@ -1,4 +1,15 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Stride — GPX, TCX & FIT analytics for runners',
+  description: 'Parse GPX, TCX and FIT files, compute running metrics — pace, HR zones, splits, elevation — and render Chart.js dashboards. Free open-source npm package.',
+  ogTitle: 'Stride — GPX, TCX & FIT analytics for runners',
+  ogDescription: 'Parse GPX, TCX and FIT files, compute running metrics, and render Chart.js dashboards — zero config. Free open-source npm package by Alosha.',
+  ogImage: 'https://stride.alosha.dev/og.png',
+  ogUrl: 'https://stride.alosha.dev',
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://stride.alosha.dev/og.png'
+})
+
 const formats = ['gpx', 'tcx', 'fit']
 
 const features = [
@@ -34,7 +45,7 @@ const features = [
   }
 ]
 
-const codeSnippet = `import { parse, analyze, paceChartConfig } from '@alosha/stride'
+const codeExample = `import { parse, analyze, paceChartConfig } from '@alosha/stride'
 import { Chart } from 'chart.js/auto'
 
 // Parse a GPX, TCX or FIT file from Garmin / Strava / Coros — format auto-detected
@@ -52,43 +63,32 @@ new Chart(canvas, paceChartConfig(activity, stats))`
   <div>
     <!-- Hero -->
     <UPageHero
-      title="GPX, TCX & FIT analytics for runners"
-      description="Parse GPX, TCX and FIT files, compute running metrics, and render Chart.js dashboards — zero config."
-      :ui="{ wrapper: 'py-16 sm:py-24' }"
+      class="hero-glow"
+      :links="[
+        { label: 'Live demo', to: '/demo', icon: 'i-lucide-play', size: 'xl', class: 'btn-grad' },
+        { label: 'Get started free', to: 'https://www.npmjs.com/package/@alosha/stride', target: '_blank', trailingIcon: 'i-lucide-arrow-right', size: 'xl', color: 'neutral', variant: 'subtle' },
+        { label: 'View on GitHub', to: 'https://github.com/avlisodraude/stride', target: '_blank', size: 'xl', color: 'neutral', variant: 'subtle', icon: 'i-simple-icons-github' }
+      ]"
     >
-      <template #links>
-        <UButton
-          to="/demo"
-          size="lg"
-          icon="i-lucide-play"
-        >
-          Live demo
-        </UButton>
-        <UButton
-          to="https://www.npmjs.com/package/@alosha/stride"
-          target="_blank"
-          size="lg"
-          color="neutral"
-          variant="subtle"
-          trailing-icon="i-lucide-arrow-right"
-        >
-          View on npm
-        </UButton>
-        <UButton
-          to="https://github.com/avlisodraude/stride"
-          target="_blank"
-          size="lg"
-          color="neutral"
-          variant="subtle"
-          icon="i-simple-icons-github"
-        >
-          GitHub
-        </UButton>
+      <template #headline>
+        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-default bg-default font-mono text-xs text-muted">
+          <span class="size-1.5 rounded-full bg-primary shadow-[0_0_0_3px_rgba(16,185,129,.25)]" />
+          Open source · Free npm package
+        </span>
+      </template>
+      <template #title>
+        GPX, TCX &amp; FIT analytics<br><span class="text-grad">for runners</span>
+      </template>
+      <template #description>
+        <p class="text-lg text-muted max-w-xl mx-auto">
+          Parse GPX, TCX and FIT files, compute running metrics, and render Chart.js dashboards.
+          <strong class="text-default">Zero config, zero dependencies.</strong>
+        </p>
       </template>
 
       <template #default>
         <!-- Supported formats — the key differentiator vs GPX-only parsers -->
-        <div class="flex flex-wrap justify-center items-center gap-2 mt-5">
+        <div class="flex flex-wrap justify-center items-center gap-2 mt-6">
           <UBadge
             v-for="fmt in formats"
             :key="fmt"
@@ -101,77 +101,33 @@ new Chart(canvas, paceChartConfig(activity, stats))`
           </UBadge>
           <span class="text-muted text-sm ml-1">one API, auto-detected</span>
         </div>
-
-        <!-- npm badge -->
-        <div class="flex justify-center gap-3 mt-4">
-          <img
-            src="https://img.shields.io/npm/v/@alosha/stride?style=flat-square"
-            alt="npm version"
-            class="h-5"
-          >
-          <img
-            src="https://img.shields.io/npm/dm/@alosha/stride?style=flat-square"
-            alt="monthly downloads"
-            class="h-5"
-          >
-          <img
-            src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square"
-            alt="MIT License"
-            class="h-5"
-          >
-        </div>
       </template>
     </UPageHero>
 
     <!-- Code snippet -->
-    <UContainer class="pb-16">
-      <div class="max-w-3xl mx-auto">
-        <UCard :ui="{ body: 'p-0' }">
-          <div class="flex items-center gap-2 px-4 py-3 border-b border-default">
-            <span class="text-xs text-muted font-mono">install</span>
-            <UBadge
-              color="neutral"
-              variant="subtle"
-              size="xs"
-            >
-              npm install @alosha/stride
-            </UBadge>
-          </div>
-          <pre class="p-4 text-sm font-mono overflow-x-auto text-highlighted leading-relaxed">{{ codeSnippet }}</pre>
-        </UCard>
+    <UPageSection
+      title="Parse, analyse, chart"
+      description="Three imports and a file path. You own the canvas; Stride does the maths."
+    >
+      <div class="bg-gray-900 dark:bg-gray-950 rounded-xl p-5 text-sm font-mono text-green-400 overflow-x-auto max-w-2xl mx-auto shadow-lg">
+        <pre>{{ codeExample }}</pre>
       </div>
-    </UContainer>
+    </UPageSection>
 
     <!-- Features -->
-    <UContainer class="pb-24">
-      <div class="text-center mb-12">
-        <h2 class="text-2xl font-bold tracking-tight">
-          Everything you need to visualise a run
-        </h2>
-        <p class="mt-2 text-muted">
-          One package. No wrappers around wrappers.
-        </p>
-      </div>
-      <UPageGrid>
-        <UPageCard
-          v-for="f in features"
-          :key="f.title"
-          :title="f.title"
-          :description="f.description"
-          :icon="f.icon"
-        />
-      </UPageGrid>
-    </UContainer>
+    <UPageSection
+      title="Everything you need to visualise a run"
+      description="One package, no wrappers around wrappers. Works in the browser and in Node."
+      :features="features"
+    />
 
     <!-- CLI demo -->
-    <div class="bg-elevated py-16">
-      <UContainer>
-        <div class="max-w-2xl mx-auto">
-          <h2 class="text-xl font-bold mb-6 text-center">
-            CLI — analyze a run in seconds
-          </h2>
-          <UCard :ui="{ body: 'p-0' }">
-            <pre class="p-5 text-sm font-mono text-highlighted leading-relaxed overflow-x-auto">$ npx stride analyze morning-run.gpx
+    <UPageSection
+      title="CLI — analyse a run in seconds"
+      description="Point it at a file and get a full activity summary in your terminal."
+    >
+      <div class="bg-gray-900 dark:bg-gray-950 rounded-xl p-5 text-sm font-mono text-green-400 overflow-x-auto max-w-2xl mx-auto shadow-lg">
+        <pre>$ npx stride analyze morning-run.gpx
 
 🏃 @alosha/stride — Morning Run
 
@@ -190,39 +146,20 @@ new Chart(canvas, paceChartConfig(activity, stats))`
     km  2  5:03/km  ↑8m   HR 156bpm
     km  3  4:58/km  ↑5m   HR 159bpm
     ...</pre>
-          </UCard>
-        </div>
-      </UContainer>
-    </div>
+      </div>
+    </UPageSection>
 
     <!-- CTA -->
-    <UContainer class="py-20 text-center">
-      <h2 class="text-2xl font-bold mb-4">
-        Add Stride to your project
-      </h2>
-      <p class="text-muted mb-8 max-w-md mx-auto">
-        Open source, MIT licensed, zero config. Drop it in and start parsing GPX files in minutes.
-      </p>
-      <div class="flex justify-center gap-4 flex-wrap">
-        <UButton
-          to="https://github.com/avlisodraude/stride"
-          target="_blank"
-          size="lg"
-          color="neutral"
-          variant="outline"
-          icon="i-simple-icons-github"
-        >
-          View source
-        </UButton>
-        <UButton
-          to="https://www.npmjs.com/package/@alosha/stride"
-          target="_blank"
-          size="lg"
-          trailing-icon="i-lucide-arrow-right"
-        >
-          npm install @alosha/stride
-        </UButton>
-      </div>
-    </UContainer>
+    <UPageSection>
+      <UPageCTA
+        title="Add Stride to your project"
+        description="Open source, MIT licensed, zero config. Drop it in and start parsing GPX, TCX and FIT files in minutes."
+        variant="subtle"
+        :links="[
+          { label: 'npm install @alosha/stride', to: 'https://www.npmjs.com/package/@alosha/stride', target: '_blank', trailingIcon: 'i-lucide-arrow-right', class: 'btn-grad' },
+          { label: 'View on GitHub', to: 'https://github.com/avlisodraude/stride', target: '_blank', icon: 'i-simple-icons-github', color: 'neutral', variant: 'outline' }
+        ]"
+      />
+    </UPageSection>
   </div>
 </template>

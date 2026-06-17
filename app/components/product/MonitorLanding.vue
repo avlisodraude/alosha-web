@@ -4,8 +4,10 @@ useSeoMeta({
   description: 'Define checks, get notified on failures, and generate HTML reports — all from your terminal or CI pipeline. Free open-source npm package.',
   ogTitle: 'Monitor — Playwright-based website monitoring',
   ogDescription: 'Define checks, get notified on failures, and generate HTML reports — free open-source npm package by Alosha.',
+  ogImage: 'https://monitor.alosha.dev/og.png',
   ogUrl: 'https://monitor.alosha.dev',
-  twitterCard: 'summary_large_image'
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://monitor.alosha.dev/og.png'
 })
 
 const features = [
