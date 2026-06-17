@@ -31,6 +31,21 @@ const githubUrl = isMonitor
       ? 'https://github.com/avlisodraude/eu-validate'
       : 'https://github.com/avlisodraude/pixsqueeze'
 
+// Package sites (Monitor, Stride, eu-validate) have no docs page of their own —
+// /docs is PixSqueeze-only — so they link to Demo · npm · GitHub instead.
+const nav = computed(() =>
+  isPackageSite
+    ? [
+        { label: 'Demo', to: '/demo' },
+        { label: 'npm', to: npmUrl, target: '_blank' },
+        { label: 'GitHub', to: githubUrl, target: '_blank' }
+      ]
+    : [
+        { label: 'Pricing', to: '/#pricing' },
+        { label: 'Docs', to: '/docs' }
+      ]
+)
+
 async function handleSignOut() {
   await auth.signOut()
   await navigateTo('/')
@@ -56,21 +71,13 @@ async function handleSignOut() {
 
       <template #right>
         <UNavigationMenu
-          v-if="isEuValidate"
-          :items="[{ label: 'Demo', to: '/demo' }, { label: 'npm', to: npmUrl, target: '_blank' }, { label: 'GitHub', to: githubUrl, target: '_blank' }]"
-          class="hidden md:flex"
+          :items="nav"
+          class="hidden lg:flex"
         />
-        <UNavigationMenu
-          v-else-if="isMonitor || isStride"
-          :items="[{ label: 'Docs', to: '/docs' }, { label: 'npm', to: npmUrl, target: '_blank' }]"
-          class="hidden md:flex"
-        />
-        <UNavigationMenu
-          v-else
-          :items="[{ label: 'Pricing', to: '/#pricing' }, { label: 'Docs', to: '/docs' }]"
-          class="hidden md:flex"
-        />
-        <template v-if="!isPackageSite">
+        <div
+          v-if="!isPackageSite"
+          class="hidden lg:flex items-center gap-1.5"
+        >
           <template v-if="user">
             <UButton
               to="/dashboard"
@@ -102,8 +109,53 @@ async function handleSignOut() {
               Get started
             </UButton>
           </template>
-        </template>
+        </div>
         <UColorModeButton />
+      </template>
+
+      <!-- Mobile menu (opens from the hamburger toggle below lg) -->
+      <template #body>
+        <UNavigationMenu
+          :items="nav"
+          orientation="vertical"
+          class="-mx-2.5"
+        />
+        <template v-if="!isPackageSite">
+          <USeparator class="my-4" />
+          <div class="flex flex-col gap-2">
+            <template v-if="user">
+              <UButton
+                to="/dashboard"
+                variant="subtle"
+                block
+              >
+                Dashboard
+              </UButton>
+              <UButton
+                variant="ghost"
+                block
+                @click="handleSignOut"
+              >
+                Sign out
+              </UButton>
+            </template>
+            <template v-else>
+              <UButton
+                to="/login?signup=1"
+                block
+              >
+                Get started
+              </UButton>
+              <UButton
+                to="/login"
+                variant="ghost"
+                block
+              >
+                Sign in
+              </UButton>
+            </template>
+          </div>
+        </template>
       </template>
     </UHeader>
 
