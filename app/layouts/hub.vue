@@ -2,6 +2,17 @@
 const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
 
 useCanonical()
+
+// Let feed readers and crawlers discover the blog RSS feed from any hub page.
+useHead({
+  link: [{
+    rel: 'alternate',
+    type: 'application/rss+xml',
+    title: 'Alosha — Blog',
+    href: 'https://alosha.dev/rss.xml'
+  }]
+})
+
 useJsonLd({
   '@context': 'https://schema.org',
   '@type': 'Organization',

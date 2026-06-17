@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Alosha — Blog</title>
+    <link>https://alosha.dev/blog</link>
+    <description>Notes on building privacy-first developer tools, from the Alosha studio.</description>
+    <language>en</language>
+    <lastBuildDate>Wed, 17 Jun 2026 00:00:00 GMT</lastBuildDate>
+    <atom:link href="https://alosha.dev/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Website monitoring that lives in your repo</title>
+      <link>https://alosha.dev/blog/website-monitoring-from-your-terminal</link>
+      <guid isPermaLink="true">https://alosha.dev/blog/website-monitoring-from-your-terminal</guid>
+      <description>Most uptime tools are dashboards you log into. Monitor is a config file and two commands — real-browser checks, alerts and reports, versioned with your code.</description>
+      <dc:creator>Eduardo</dc:creator>
+      <pubDate>Wed, 17 Jun 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Why we built Stride</title>
+      <link>https://alosha.dev/blog/why-we-built-stride</link>
+      <guid isPermaLink="true">https://alosha.dev/blog/why-we-built-stride</guid>
+      <description>Parsing a run sounds simple until you meet GPX, TCX and FIT in the wild. Stride turns any of them into clean metrics and charts with zero config.</description>
+      <dc:creator>Eduardo</dc:creator>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Introducing eu-validate: offline EU identifier validation</title>
+      <link>https://alosha.dev/blog/introducing-eu-validate</link>
+      <guid isPermaLink="true">https://alosha.dev/blog/introducing-eu-validate</guid>
+      <description>Checksum-accurate VAT, IBAN, BSN and KvK validation that runs entirely on your own machine — no network calls, no dependencies.</description>
+      <dc:creator>Eduardo</dc:creator>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Why we retired CompressMe</title>
+      <link>https://alosha.dev/blog/why-we-retired-compressme</link>
+      <guid isPermaLink="true">https://alosha.dev/blog/why-we-retired-compressme</guid>
+      <description>How a single npm package, a docs site, and a commercial domain became three brands — and why we collapsed them into one.</description>
+      <dc:creator>Eduardo</dc:creator>
+      <pubDate>Sat, 13 Jun 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Maintaining open source with AI-assisted development</title>
+      <link>https://alosha.dev/blog/maintaining-open-source-with-ai</link>
+      <guid isPermaLink="true">https://alosha.dev/blog/maintaining-open-source-with-ai</guid>
+      <description>How a solo founder runs a portfolio of products by treating AI as the execution layer.</description>
+      <dc:creator>Eduardo</dc:creator>
+      <pubDate>Fri, 12 Jun 2026 00:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>
