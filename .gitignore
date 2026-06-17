@@ -22,3 +22,6 @@ logs
 .env
 .env.*
 !.env.example
+
+# Internal infra docs — keep private, never commit
+INFRASTRUCTURE.md

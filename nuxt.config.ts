@@ -28,6 +28,10 @@ export default defineNuxtConfig({
   // NUXT_PUBLIC_MONITOR_URL / NUXT_PUBLIC_STRIDE_URL / NUXT_PUBLIC_EU_VALIDATE_URL /
   // NUXT_PUBLIC_FORCE_SITE (hub|product|monitor|stride|eu-validate for local dev).
   runtimeConfig: {
+    // Server-only. Override in prod via env: RESEND_API_KEY / NUXT_CONTACT_TO / NUXT_CONTACT_FROM
+    resendApiKey: '',
+    contactTo: 'hello@alosha.dev',
+    contactFrom: 'Alosha Contact <noreply@alosha.dev>',
     public: {
       hubUrl: 'https://alosha.dev',
       productUrl: 'https://pixsqueeze.alosha.dev',
