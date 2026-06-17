@@ -29,6 +29,17 @@ const meta = computed(() => {
   const d = formatDate(post.value?.date)
   return post.value?.author ? `${d} · ${post.value.author}` : d
 })
+
+// Adjacent posts for prev/next navigation (newest-first list).
+const { data: allPosts } = await useAsyncData('blog-list-nav', () =>
+  queryCollection('blog').order('date', 'DESC').all()
+)
+const idx = computed(() => allPosts.value?.findIndex(p => p.path === route.path) ?? -1)
+const newer = computed(() => (idx.value > 0 ? allPosts.value?.[idx.value - 1] : null))
+const older = computed(() => {
+  const list = allPosts.value
+  return list && idx.value >= 0 && idx.value < list.length - 1 ? list[idx.value + 1] : null
+})
 </script>
 
 <template>
@@ -57,6 +68,42 @@ const meta = computed(() => {
           :value="post"
           class="prose dark:prose-invert mt-8 max-w-none"
         />
+
+        <!-- Prev / next navigation -->
+        <template v-if="newer || older">
+          <USeparator class="my-12" />
+          <nav class="grid grid-cols-2 gap-4">
+            <NuxtLink
+              v-if="newer"
+              :to="newer.path"
+              class="group rounded-xl border border-default p-5 transition-colors hover:border-primary/50"
+            >
+              <span class="inline-flex items-center gap-1 text-xs text-muted">
+                <UIcon name="i-lucide-arrow-left" />
+                Newer post
+              </span>
+              <p class="font-semibold text-highlighted mt-1 transition-colors group-hover:text-primary">
+                {{ newer.title }}
+              </p>
+            </NuxtLink>
+            <div v-else />
+
+            <NuxtLink
+              v-if="older"
+              :to="older.path"
+              class="group rounded-xl border border-default p-5 text-right transition-colors hover:border-primary/50"
+            >
+              <span class="inline-flex items-center gap-1 text-xs text-muted">
+                Older post
+                <UIcon name="i-lucide-arrow-right" />
+              </span>
+              <p class="font-semibold text-highlighted mt-1 transition-colors group-hover:text-primary">
+                {{ older.title }}
+              </p>
+            </NuxtLink>
+            <div v-else />
+          </nav>
+        </template>
       </article>
     </UPageBody>
   </UPage>
