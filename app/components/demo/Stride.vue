@@ -280,12 +280,14 @@ const hasHr = computed(() => !!stats.value?.hrZones)
 
     <!-- Dropzone -->
     <div
-      class="rounded-xl border-2 border-dashed transition-colors p-8 text-center cursor-pointer"
+      class="rounded-xl border-2 border-dashed transition-colors p-8 text-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       :class="dragging ? 'border-primary bg-primary/5' : 'border-default hover:border-primary/40'"
       role="button"
       tabindex="0"
+      aria-label="Upload a GPX, TCX or FIT file to analyse"
       @click="fileInput?.click()"
-      @keydown.enter="fileInput?.click()"
+      @keydown.enter.prevent="fileInput?.click()"
+      @keydown.space.prevent="fileInput?.click()"
       @dragover.prevent="dragging = true"
       @dragleave.prevent="dragging = false"
       @drop.prevent="onDrop"
