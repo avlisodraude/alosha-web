@@ -104,9 +104,22 @@ const productMenu = [[
 
     <UFooter>
       <template #left>
-        <p class="text-sm text-muted">
-          © {{ new Date().getFullYear() }} Alosha · Built in the open
-        </p>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+          <span>© {{ new Date().getFullYear() }} Alosha · Built in the open</span>
+          <span aria-hidden="true">·</span>
+          <ULink
+            to="/privacy"
+            class="hover:text-default"
+          >
+            Privacy
+          </ULink>
+          <ULink
+            to="/terms"
+            class="hover:text-default"
+          >
+            Terms
+          </ULink>
+        </div>
       </template>
       <template #right>
         <UButton

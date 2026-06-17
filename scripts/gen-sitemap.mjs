@@ -16,7 +16,9 @@ const hubPages = [
   ['/blog', 'weekly', '0.8'],
   ['/demo', 'monthly', '0.7'],
   ['/about', 'monthly', '0.6'],
-  ['/contact', 'monthly', '0.5']
+  ['/contact', 'monthly', '0.5'],
+  ['/privacy', 'yearly', '0.3'],
+  ['/terms', 'yearly', '0.3']
 ]
 
 // Product subdomains: [absolute-url, changefreq, priority]

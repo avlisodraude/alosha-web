@@ -36,6 +36,16 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://alosha.dev/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://alosha.dev/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
     <loc>https://alosha.dev/blog/website-monitoring-from-your-terminal</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
