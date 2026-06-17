@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/gen-sitemap.mjs && node scripts/gen-rss.mjs && nuxt build",
+    "build": "node scripts/check-og-images.mjs && node scripts/gen-sitemap.mjs && node scripts/gen-rss.mjs && nuxt build",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -11,7 +11,8 @@
     "typecheck": "nuxt typecheck",
     "gen:eu-validate": "node scripts/gen-eu-validate-bundle.mjs",
     "gen:sitemap": "node scripts/gen-sitemap.mjs",
-    "gen:rss": "node scripts/gen-rss.mjs"
+    "gen:rss": "node scripts/gen-rss.mjs",
+    "check:og": "node scripts/check-og-images.mjs"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.111",
