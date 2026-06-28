@@ -27,12 +27,12 @@ const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
 
 const packages = computed(() => [
   {
-    name: 'pixsqueeze',
+    name: '@alosha/pixsqueeze',
     icon: 'i-lucide-image',
     description: 'JavaScript image compressor with server-side HEIC, TIFF & camera-RAW conversion.',
     stats: stats.value?.pixsqueeze,
     github: 'https://github.com/avlisodraude/pixsqueeze',
-    npm: 'https://www.npmjs.com/package/pixsqueeze',
+    npm: 'https://www.npmjs.com/package/@alosha/pixsqueeze',
     product: 'https://pixsqueeze.alosha.dev',
     productLabel: 'Hosted product'
   },

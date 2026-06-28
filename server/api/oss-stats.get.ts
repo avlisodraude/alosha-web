@@ -90,7 +90,7 @@ export default defineEventHandler(async (event): Promise<OssStats> => {
   setHeader(event, 'cache-control', 'no-store')
 
   const [pixsqueeze, monitor, stride, euValidate] = await Promise.all([
-    fetchPackageStats('pixsqueeze', 'avlisodraude/pixsqueeze', cachedPixsqueezeStars),
+    fetchPackageStats('@alosha/pixsqueeze', 'avlisodraude/pixsqueeze', cachedPixsqueezeStars),
     fetchPackageStats('@alosha/monitor', 'avlisodraude/monitor', cachedMonitorStars),
     fetchPackageStats('@alosha/stride', 'avlisodraude/stride', cachedStrideStars),
     fetchPackageStats('@alosha/eu-validate', 'avlisodraude/eu-validate', cachedEuValidateStars)

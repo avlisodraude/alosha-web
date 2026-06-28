@@ -23,7 +23,7 @@ const npmUrl = isMonitor
     ? 'https://www.npmjs.com/package/@alosha/stride'
     : isEuValidate
       ? 'https://www.npmjs.com/package/@alosha/eu-validate'
-      : 'https://www.npmjs.com/package/pixsqueeze'
+      : 'https://www.npmjs.com/package/@alosha/pixsqueeze'
 
 const githubUrl = isMonitor
   ? 'https://github.com/avlisodraude/monitor'

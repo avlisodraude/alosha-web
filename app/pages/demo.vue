@@ -56,7 +56,7 @@ const { data: stats } = await useFetch('/api/oss-stats')
 const copied = ref(false)
 async function copyInstall() {
   try {
-    await navigator.clipboard.writeText('npm i pixsqueeze')
+    await navigator.clipboard.writeText('npm i @alosha/pixsqueeze')
     copied.value = true
     setTimeout(() => (copied.value = false), 1500)
   } catch {
@@ -419,7 +419,7 @@ function parseInline(text: string): { code: boolean, value: string }[] {
           class="font-mono text-xs bg-default border border-default rounded-md px-3 py-1.5 hover:border-primary/50 transition-colors"
           @click="copyInstall"
         >
-          <span class="text-muted">$</span> npm i pixsqueeze
+          <span class="text-muted">$</span> npm i @alosha/pixsqueeze
           <UIcon
             :name="copied ? 'i-lucide-check' : 'i-lucide-copy'"
             class="ml-1 size-3.5 align-text-bottom"
@@ -427,7 +427,7 @@ function parseInline(text: string): { code: boolean, value: string }[] {
           />
         </button>
         <ULink
-          to="https://www.npmjs.com/package/pixsqueeze"
+          to="https://www.npmjs.com/package/@alosha/pixsqueeze"
           target="_blank"
           class="inline-flex items-center gap-1.5 text-muted hover:text-default"
         >
