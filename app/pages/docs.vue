@@ -53,7 +53,7 @@ const usageResponse = `{
 }`
 
 const compressParams = [
-  { name: 'files', type: 'file', required: true, description: 'One or more image files (multipart). Repeat the field for each file. JPEG, PNG, WebP, GIF, HEIC and TIFF are accepted.' },
+  { name: 'files', type: 'file', required: true, description: 'One or more image files (multipart). Repeat the field for each file. JPEG, PNG, WebP, GIF, HEIC, TIFF and camera RAW are accepted (RAW is compressed from its embedded full-resolution preview).' },
   { name: 'quality', type: 'number', required: false, description: 'Compression quality between 0.1 and 1. Default 0.8.' },
   { name: 'maxWidth', type: 'number', required: false, description: 'Resize images wider than this to fit. Aspect ratio is preserved.' },
   { name: 'maxHeight', type: 'number', required: false, description: 'Resize images taller than this to fit. Aspect ratio is preserved.' },

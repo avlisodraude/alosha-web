@@ -16,7 +16,7 @@ useJsonLd({
   'name': 'PixSqueeze',
   'applicationCategory': 'DeveloperApplication',
   'operatingSystem': 'Any',
-  'description': 'Batch image compression API with server-side HEIC and TIFF conversion and JPEG, PNG or WebP output.',
+  'description': 'Batch image compression API with server-side HEIC, TIFF and camera-RAW handling and JPEG, PNG or WebP output.',
   'url': 'https://pixsqueeze.alosha.dev',
   'image': 'https://pixsqueeze.alosha.dev/og-pixsqueeze.png',
   'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD', 'description': '100 images free every month' },
@@ -95,7 +95,7 @@ console.log(usage.remaining + ' compressions left this month')`,
   },
   {
     title: 'Convert iPhone HEIC uploads to WebP on the fly',
-    problem: 'Phones upload HEIC and scanners upload TIFF — formats browsers cannot display — and decoding them client-side is a non-starter.',
+    problem: 'Phones upload HEIC, cameras shoot RAW, scanners output TIFF — formats browsers cannot display — and decoding them client-side is a non-starter.',
     code: `// Browsers can't decode HEIC — let PixSqueeze convert + compress server-side.
 const form = new FormData()
 form.append('files', heicFile)         // a .heic straight from an iPhone
@@ -110,7 +110,7 @@ const res = await fetch('${PIXSQUEEZE_API}/compress/batch', {
 
 const { results } = await res.json()
 const src = 'data:image/webp;base64,' + results[0].data  // ready for <img src>`,
-    why: 'PixSqueeze decodes HEIC and TIFF server-side and re-encodes to JPEG, PNG or WebP in the same request, so you accept whatever a device produces and hand the browser an image it can actually render — no client-side codec.',
+    why: 'PixSqueeze decodes HEIC, TIFF and camera RAW server-side and re-encodes to JPEG, PNG or WebP in the same request, so you accept whatever a device produces and hand the browser an image it can actually render — no client-side codec.',
     sandbox: 'https://stackblitz.com/github/avlisodraude/pixsqueeze/tree/main/examples/heic-to-webp'
   }
 ]
@@ -118,7 +118,7 @@ const src = 'data:image/webp;base64,' + results[0].data  // ready for <img src>`
 // Phase-2 trust matrix. Every row reflects the documented API behaviour.
 const trustRows = [
   { icon: 'i-lucide-lock', metric: 'Data isolation', target: 'In-memory, never stored', value: 'Uploads are processed in memory and discarded — your files never touch our disk.' },
-  { icon: 'i-lucide-images', metric: 'Formats', target: 'JPEG · PNG · WebP · GIF · HEIC · TIFF in', value: 'Accept whatever a phone, scanner or camera produces; output JPEG, PNG or WebP — decoding happens server-side.' },
+  { icon: 'i-lucide-images', metric: 'Formats', target: 'JPEG · PNG · WebP · GIF · HEIC · TIFF · RAW in', value: 'Accept whatever a phone, scanner or camera produces — including HEIC and camera RAW; output JPEG, PNG or WebP, all decoded server-side.' },
   { icon: 'i-lucide-code-2', metric: 'Integration', target: 'One endpoint, Bearer key', value: 'Works from any language — curl, Node, Python, Go.' },
   { icon: 'i-lucide-gift', metric: 'Free tier', target: '100 images / mo, no card', value: 'Evaluate in production before you pay a cent.' },
   { icon: 'i-lucide-gauge', metric: 'Usage', target: 'Live quota in every response', value: 'Track spend inline — no separate metering call.' },
