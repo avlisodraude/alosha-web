@@ -141,6 +141,12 @@ const supportLinks = [
       </div>
     </UPageSection>
 
+    <!-- Business use cases (risk assessment + latency/flow visuals) -->
+    <ProductUseCases
+      v-if="config.useCases"
+      :config="config.useCases"
+    />
+
     <!-- Production recipes -->
     <ProductRecipes
       :title="config.recipesTitle"

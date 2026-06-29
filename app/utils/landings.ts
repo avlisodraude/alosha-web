@@ -37,6 +37,48 @@ export interface LandingTrustRow {
   value: string
 }
 
+/** A single risk of the network-based / status-quo approach. */
+export interface UseCaseRisk {
+  icon: string
+  /** Short risk header, e.g. "Latency". */
+  label: string
+  /** One-sentence explanation of the risk. */
+  detail: string
+}
+
+export interface UseCase {
+  icon: string
+  /** Risk-assessment title. */
+  title: string
+  /** 1–2 sentence framing of the business problem. */
+  lead: string
+  /** What goes wrong with the network/external-API approach. */
+  risks: UseCaseRisk[]
+  /** How the offline package removes those risks. */
+  mitigation: string
+}
+
+/** One bar in the latency-comparison chart (representative milliseconds). */
+export interface LatencyBar {
+  label: string
+  /** Representative latency in ms (use a tiny value for "offline"). */
+  ms: number
+  /** Optional caption shown next to the value. */
+  note?: string
+  /** Highlight this bar as the winning/offline option. */
+  highlight?: boolean
+}
+
+export interface UseCasesConfig {
+  title: string
+  description: string
+  cases: UseCase[]
+  /** Latency comparison chart (network round-trip vs offline computation). */
+  latency: { title: string, description: string, bars: LatencyBar[] }
+  /** Architecture flow comparison captions. */
+  flow: { networkLabel: string, networkNote: string, offlineLabel: string, offlineNote: string }
+}
+
 export interface LandingConfig {
   /** Pill text above the hero title. */
   headline: string
@@ -64,6 +106,9 @@ export interface LandingConfig {
 
   /** Optional CLI/extra code demo rendered after the features. */
   cliDemo?: { title: string, description: string, code: string }
+
+  /** Optional business use-case section (risk assessment + latency/flow visuals). */
+  useCases?: UseCasesConfig
 
   /** Production recipes. */
   recipesTitle: string
@@ -174,6 +219,50 @@ export function validateOnboarding(form: { bsn: string; iban: string }) {
       { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT (core)', value: 'MIT-licensed core runs entirely in your infra — clears legal review and never breaks if alosha.dev goes away.' },
       { icon: 'i-lucide-cloud', metric: 'Live lookups', target: 'Optional /cloud, API-key', value: 'Opt-in VIES & KvK registration checks when you need them.' }
     ],
+    useCases: {
+      title: 'The business case for offline validation',
+      description: 'Why engineering leads at EU fintech, billing and B2B-checkout teams move identifier validation off the network.',
+      cases: [
+        {
+          icon: 'i-lucide-timer',
+          title: 'Eliminate checkout friction and 5xx errors from external API networks',
+          lead: 'Calling VIES or a third-party VAT API in the hot path of a payment ties your checkout’s success rate to someone else’s uptime — and to the public internet on a bad day.',
+          risks: [
+            { icon: 'i-lucide-gauge', label: 'Latency', detail: 'A live VAT/IBAN lookup adds 400–2000 ms to the request — paid for on every submit, right when the user is about to convert.' },
+            { icon: 'i-lucide-server-crash', label: 'Single point of failure', detail: 'VIES has scheduled downtime and per-member-state outages; when it 5xxs or times out, your checkout inherits the failure.' },
+            { icon: 'i-lucide-thermometer-snowflake', label: 'Rate limits', detail: 'Government endpoints throttle aggressively, so traffic spikes — exactly when revenue is highest — get rejected.' }
+          ],
+          mitigation: 'eu-validate runs the structural and checksum validation in-process (Modulo-97 for IBAN, 11-proef for BSN, country VAT rules) with zero network calls — instant, 100% uptime. You only ever spend a VIES round-trip on numbers that already passed the offline checksum, so live lookups become rare and non-blocking.'
+        },
+        {
+          icon: 'i-lucide-shield-alert',
+          title: 'GDPR alignment: network-based VAT lookups leak user data',
+          lead: 'Every mid-checkout call to a third-party validation network ships personal and transactional metadata off your infrastructure — a data-egress event you have to account for under audit.',
+          risks: [
+            { icon: 'i-lucide-share-2', label: 'Data egress', detail: 'The VAT/BSN/IBAN, plus the originating client IP and request timing, land in an external provider’s infrastructure logs.' },
+            { icon: 'i-lucide-file-warning', label: 'Extra DPAs', detail: 'Each external validator becomes a sub-processor you must disclose, contract with, and defend in a data-protection review.' },
+            { icon: 'i-lucide-map-pin', label: 'Location leakage', detail: 'Client IPs exposed to downstream networks reveal user location to parties outside your trust boundary.' }
+          ],
+          mitigation: 'Because every core validator is a pure, synchronous function, sensitive identifiers never leave the user’s session or your server. There is no external sub-processor, no IP exposure and no egress to document — the simplest possible GDPR posture for identifier validation.'
+        }
+      ],
+      latency: {
+        title: 'Network round-trip vs offline computation',
+        description: 'Representative time added to a single validation. Offline checksums run in-process; network lookups pay for the public internet on every call.',
+        bars: [
+          { label: 'eu-validate (offline checksum)', ms: 0.05, note: '~0 ms · no network', highlight: true },
+          { label: 'VIES lookup — best case', ms: 400, note: 'healthy, uncongested' },
+          { label: 'VIES lookup — typical', ms: 900, note: 'normal load' },
+          { label: 'VIES lookup — under load / retry', ms: 2000, note: 'throttled or degraded' }
+        ]
+      },
+      flow: {
+        networkLabel: 'Network-based lookup',
+        networkNote: 'Identifier + client IP leave your trust boundary, cross the public internet to an external validator, and land in its logs — added latency and a new sub-processor.',
+        offlineLabel: 'Offline validation (eu-validate)',
+        offlineNote: 'Identifier is validated in-process against the checksum algorithm and never leaves your environment — no network, no egress, instant result.'
+      }
+    },
     supportPoints: [
       'Hosted VIES VAT registration lookups via @alosha/eu-validate/cloud (coming soon)',
       'KvK company-register lookups with a single API key',
