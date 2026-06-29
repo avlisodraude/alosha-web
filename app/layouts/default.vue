@@ -1,37 +1,19 @@
 <script setup lang="ts">
 const { auth } = useSupabaseClient()
 const user = useSupabaseUser()
-const { isMonitor, isStride, isEuValidate, hubUrl } = useSite()
+const { product, hubUrl } = useSite()
 
 useCanonical()
 
-// Monitor, Stride and eu-validate are open-source package landings: no auth,
-// no dashboard — just a brand, an npm link and a GitHub link.
-const isPackageSite = isMonitor || isStride || isEuValidate
+// Package landings (Monitor, Stride, eu-validate, …) are open-source: no auth,
+// no dashboard — just a brand, an npm link and a GitHub link. PixSqueeze is the
+// one hosted-api product, so it keeps the auth nav. All metadata comes from the
+// registry via the active `product`.
+const isPackageSite = product?.kind === 'package'
 
-const brand = isMonitor
-  ? 'Monitor'
-  : isStride
-    ? 'Stride'
-    : isEuValidate
-      ? 'eu-validate'
-      : 'PixSqueeze'
-
-const npmUrl = isMonitor
-  ? 'https://www.npmjs.com/package/@alosha/monitor'
-  : isStride
-    ? 'https://www.npmjs.com/package/@alosha/stride'
-    : isEuValidate
-      ? 'https://www.npmjs.com/package/@alosha/eu-validate'
-      : 'https://www.npmjs.com/package/@alosha/pixsqueeze'
-
-const githubUrl = isMonitor
-  ? 'https://github.com/avlisodraude/monitor'
-  : isStride
-    ? 'https://github.com/avlisodraude/stride'
-    : isEuValidate
-      ? 'https://github.com/avlisodraude/eu-validate'
-      : 'https://github.com/avlisodraude/pixsqueeze'
+const brand = product?.name ?? 'PixSqueeze'
+const npmUrl = product?.npm ?? 'https://www.npmjs.com/package/@alosha/pixsqueeze'
+const githubUrl = product?.repo ?? 'https://github.com/avlisodraude/pixsqueeze'
 
 // Package sites (Monitor, Stride, eu-validate) have no docs page of their own —
 // /docs is PixSqueeze-only — so they link to Demo · npm · GitHub instead.

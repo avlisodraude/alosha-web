@@ -72,6 +72,7 @@ export default defineNuxtConfig({
         '/products/**',
         '/open-source',
         '/about',
+        '/support',
         '/contact',
         '/blog',
         '/blog/**',

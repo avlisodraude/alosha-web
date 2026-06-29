@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
+const { products } = useSite()
 
 useCanonical()
 
@@ -38,18 +38,15 @@ const nav = [
   { label: 'Demo', to: '/demo' },
   { label: 'Blog', to: '/blog' },
   { label: 'About', to: '/about' },
+  { label: 'Support', to: '/support' },
   { label: 'Contact', to: '/contact' }
 ]
 
-// Quick launcher for every live product subdomain.
-const productMenu = [[
-  { label: 'PixSqueeze', icon: 'i-lucide-image', to: productUrl, target: '_blank' },
-  { label: 'Monitor', icon: 'i-lucide-activity', to: monitorUrl, target: '_blank' },
-  { label: 'Stride', icon: 'i-lucide-footprints', to: strideUrl, target: '_blank' },
-  { label: 'eu-validate', icon: 'i-lucide-badge-check', to: euValidateUrl, target: '_blank' }
-], [
-  { label: 'All products', icon: 'i-lucide-layout-grid', to: '/products' }
-]]
+// Quick launcher for every live product subdomain — built from the registry.
+const productMenu = [
+  products.map(p => ({ label: p.name, icon: p.icon, to: p.url, target: '_blank' })),
+  [{ label: 'All products', icon: 'i-lucide-layout-grid', to: '/products' }]
+]
 </script>
 
 <template>

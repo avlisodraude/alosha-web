@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'hub' })
 
-const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
+const { products } = useSite()
 
 useSeoMeta({
   title: 'About — Alosha',
@@ -19,12 +19,8 @@ const steps = [
   { icon: 'i-lucide-rocket', title: 'Product', description: 'A hosted service or premium tier turns that trust into a sustainable product, while the core stays free.' }
 ]
 
-const portfolio = [
-  { name: 'PixSqueeze', icon: 'i-lucide-image', description: 'Image compression API with HEIC, TIFF & camera-RAW conversion.', to: productUrl },
-  { name: 'Monitor', icon: 'i-lucide-activity', description: 'Playwright-based website monitoring with alerts and HTML reports.', to: monitorUrl },
-  { name: 'Stride', icon: 'i-lucide-footprints', description: 'GPX, TCX & FIT running analytics and Chart.js dashboards.', to: strideUrl },
-  { name: 'eu-validate', icon: 'i-lucide-badge-check', description: 'Offline, checksum-accurate EU VAT, IBAN, BSN & KvK validation.', to: euValidateUrl }
-]
+// Portfolio comes from the registry — no per-package edits here.
+const portfolio = products
 </script>
 
 <template>
@@ -92,11 +88,11 @@ const portfolio = [
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
           <UPageCard
             v-for="p in portfolio"
-            :key="p.name"
+            :key="p.slug"
             :icon="p.icon"
             :title="p.name"
-            :description="p.description"
-            :to="p.to"
+            :description="p.blurb"
+            :to="p.url"
             target="_blank"
             variant="subtle"
             spotlight

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'hub' })
 
-const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
+const { productUrl, products } = useSite()
 
 useSeoMeta({
   title: 'Products — Alosha',
@@ -37,39 +37,23 @@ const pixsqueezePlans = [
   { name: 'Business', price: '$99', detail: 'Unlimited' }
 ]
 
-// The rest of the portfolio — all live, open-source-first packages.
-const products = computed(() => [
-  {
-    name: 'Monitor',
-    icon: 'i-lucide-activity',
-    description: 'Playwright-based website monitoring — multi-step checks, retries, screenshots on failure, and multi-channel alerts.',
-    audience: 'For businesses & development teams',
-    stats: stats.value?.monitor,
-    to: monitorUrl,
-    github: 'https://github.com/avlisodraude/monitor',
-    npm: 'https://www.npmjs.com/package/@alosha/monitor'
-  },
-  {
-    name: 'Stride',
-    icon: 'i-lucide-footprints',
-    description: 'Parse GPX, TCX and FIT files, compute running metrics — pace, HR zones, splits — and render Chart.js dashboards with zero config.',
-    audience: 'For runners, coaches & endurance athletes',
-    stats: stats.value?.stride,
-    to: strideUrl,
-    github: 'https://github.com/avlisodraude/stride',
-    npm: 'https://www.npmjs.com/package/@alosha/stride'
-  },
-  {
-    name: 'eu-validate',
-    icon: 'i-lucide-badge-check',
-    description: 'Offline EU identifier validation — checksum-accurate VAT (14 countries), IBAN, BSN, KvK and postal codes, with zero dependencies.',
-    audience: 'For EU fintech, billing & compliance',
-    stats: stats.value?.euValidate,
-    to: euValidateUrl,
-    github: 'https://github.com/avlisodraude/eu-validate',
-    npm: 'https://www.npmjs.com/package/@alosha/eu-validate'
-  }
-])
+// The rest of the portfolio — everything except the featured hosted product —
+// straight from the registry, with live npm stats joined by statsKey.
+const moreProducts = computed(() =>
+  products
+    .filter(p => p.site !== 'product')
+    .map(p => ({
+      ...p,
+      stats: p.statsKey ? (stats.value as unknown as Record<string, PackageStats | undefined>)?.[p.statsKey] : undefined
+    }))
+)
+
+interface PackageStats {
+  downloads: number | null
+  weeklyDownloads: number | null
+  version: string | null
+  stars: number | null
+}
 </script>
 
 <template>
@@ -193,8 +177,8 @@ const products = computed(() => [
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <UPageCard
-            v-for="p in products"
-            :key="p.name"
+            v-for="p in moreProducts"
+            :key="p.slug"
             variant="subtle"
             class="h-full"
           >
@@ -226,7 +210,7 @@ const products = computed(() => [
               </div>
 
               <p class="text-sm text-muted mt-4">
-                {{ p.description }}
+                {{ p.blurb }}
               </p>
 
               <!-- Live npm signal -->
@@ -251,7 +235,7 @@ const products = computed(() => [
 
               <div class="flex flex-wrap items-center gap-2 mt-auto pt-5 border-t border-default">
                 <UButton
-                  :to="p.to"
+                  :to="p.url"
                   target="_blank"
                   size="xs"
                   variant="subtle"
@@ -260,7 +244,7 @@ const products = computed(() => [
                   Open
                 </UButton>
                 <UButton
-                  :to="p.github"
+                  :to="p.repo"
                   target="_blank"
                   size="xs"
                   color="neutral"

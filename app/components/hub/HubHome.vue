@@ -1,5 +1,9 @@
 <script setup lang="ts">
-const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
+// Portfolio comes straight from the registry — adding a package needs no edit here.
+const { products } = useSite()
+
+const statusColor = (s: string) => (s === 'live' ? 'primary' : s === 'beta' ? 'warning' : 'neutral')
+const statusLabel = (s: string) => (s === 'live' ? 'Live' : s === 'beta' ? 'Beta' : 'Coming soon')
 
 useSeoMeta({
   title: 'Alosha — Privacy-first developer tools, powered by open source',
@@ -21,41 +25,6 @@ const totalDownloads = computed(() => {
   const ev = stats.value?.euValidate?.downloads ?? 0
   return px + mo + st + ev || null
 })
-
-const products = computed(() => [
-  {
-    name: 'PixSqueeze',
-    status: 'Live',
-    description: 'Image compression API with HEIC, TIFF & camera-RAW conversion. Open-source core, hosted batch API.',
-    icon: 'i-lucide-image',
-    to: productUrl,
-    external: true
-  },
-  {
-    name: 'Monitor',
-    status: 'Live',
-    description: 'Playwright-based website monitoring — checks, retries, screenshots on failure, and multi-channel alerts.',
-    icon: 'i-lucide-activity',
-    to: monitorUrl,
-    external: true
-  },
-  {
-    name: 'Stride',
-    status: 'Live',
-    description: 'Parse GPX, TCX and FIT files, compute running metrics, and render Chart.js dashboards — zero config.',
-    icon: 'i-lucide-footprints',
-    to: strideUrl,
-    external: true
-  },
-  {
-    name: 'eu-validate',
-    status: 'Live',
-    description: 'Offline EU identifier validation — checksum-accurate VAT, IBAN, BSN and KvK checks with zero dependencies.',
-    icon: 'i-lucide-badge-check',
-    to: euValidateUrl,
-    external: true
-  }
-])
 
 const steps = [
   { icon: 'i-lucide-git-branch', title: 'Open source', description: 'We find a useful but underserved open-source project, improve it, and ship it in the open under a permissive license.' },
@@ -106,32 +75,46 @@ const steps = [
       </template>
     </UPageHero>
 
-    <!-- Products -->
+    <!-- Package matrix -->
     <UPageSection
-      title="Products"
-      description="Each product is part of the Alosha ecosystem — grown from an open-source foundation."
+      title="The package matrix"
+      description="One toolkit, many single-purpose packages — each free and open-source at its core, each with its own home. Mix and match the ones your stack needs."
     >
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         <UPageCard
           v-for="p in products"
-          :key="p.name"
+          :key="p.slug"
           :icon="p.icon"
           :title="p.name"
-          :description="p.description"
-          :to="p.to"
-          :target="p.external ? '_blank' : undefined"
+          :description="p.blurb"
+          :to="p.url"
+          target="_blank"
           spotlight
         >
           <template #footer>
-            <UBadge
-              :color="p.status === 'Live' ? 'primary' : 'neutral'"
-              variant="subtle"
-              size="sm"
-            >
-              {{ p.status }}
-            </UBadge>
+            <div class="flex items-center justify-between w-full gap-2">
+              <span class="text-xs text-muted">{{ p.audience }}</span>
+              <UBadge
+                :color="statusColor(p.status)"
+                variant="subtle"
+                size="sm"
+              >
+                {{ statusLabel(p.status) }}
+              </UBadge>
+            </div>
           </template>
         </UPageCard>
+      </div>
+
+      <div class="flex justify-center mt-8">
+        <UButton
+          to="/products"
+          color="neutral"
+          variant="subtle"
+          trailing-icon="i-lucide-arrow-right"
+        >
+          Compare all products
+        </UButton>
       </div>
     </UPageSection>
 
@@ -166,11 +149,11 @@ const steps = [
     <UPageSection>
       <UPageCTA
         title="Open source is the foundation"
-        description="We build trust in the open, then offer hosted and premium versions for teams that want them."
+        description="We build trust in the open, then offer hosted tiers, priority support and custom work for teams that want them."
         variant="subtle"
         :links="[
-          { label: 'See our open source', to: '/open-source', trailingIcon: 'i-lucide-arrow-right', class: 'btn-grad' },
-          { label: 'About Alosha', to: '/about', color: 'neutral', variant: 'outline' }
+          { label: 'Support & custom work', to: '/support', trailingIcon: 'i-lucide-arrow-right', class: 'btn-grad' },
+          { label: 'See our open source', to: '/open-source', color: 'neutral', variant: 'outline' }
         ]"
       />
     </UPageSection>

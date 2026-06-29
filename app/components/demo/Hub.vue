@@ -4,38 +4,22 @@
  * subdomain (the shared /demo route renders the matching demo per host), so the
  * hub can't render them inline — instead it links out to each live demo.
  */
-const { productUrl, monitorUrl, strideUrl, euValidateUrl } = useSite()
+const { products } = useSite()
 
-const demos = computed(() => [
-  {
-    name: 'PixSqueeze',
-    icon: 'i-lucide-image',
-    tagline: 'Compress JPEG, PNG & WebP right in your browser — no upload, no signup.',
-    cta: 'Compress an image',
-    to: `${productUrl}/demo`
-  },
-  {
-    name: 'Stride',
-    icon: 'i-lucide-footprints',
-    tagline: 'Drop a GPX, TCX or FIT file and see pace, splits, elevation and heart-rate zones.',
-    cta: 'Analyse a run',
-    to: `${strideUrl}/demo`
-  },
-  {
-    name: 'Monitor',
-    icon: 'i-lucide-activity',
-    tagline: 'Watch a monitoring run: multi-step checks, assertions, alerts and HTML reports.',
-    cta: 'See a run',
-    to: `${monitorUrl}/demo`
-  },
-  {
-    name: 'eu-validate',
-    icon: 'i-lucide-badge-check',
-    tagline: 'Validate EU VAT, IBAN, BSN, KvK and postal codes — offline and instant.',
-    cta: 'Validate an identifier',
-    to: `${euValidateUrl}/demo`
-  }
-])
+// Demo-specific copy, keyed by product slug. Add a package's slug here to give
+// it a demo card; products without an entry are skipped.
+const demoCopy: Record<string, { tagline: string, cta: string }> = {
+  'pixsqueeze': { tagline: 'Compress JPEG, PNG & WebP right in your browser — no upload, no signup.', cta: 'Compress an image' },
+  'stride': { tagline: 'Drop a GPX, TCX or FIT file and see pace, splits, elevation and heart-rate zones.', cta: 'Analyse a run' },
+  'monitor': { tagline: 'Watch a monitoring run: multi-step checks, assertions, alerts and HTML reports.', cta: 'See a run' },
+  'eu-validate': { tagline: 'Validate EU VAT, IBAN, BSN, KvK and postal codes — offline and instant.', cta: 'Validate an identifier' }
+}
+
+const demos = computed(() =>
+  products
+    .filter(p => demoCopy[p.slug])
+    .map(p => ({ name: p.name, icon: p.icon, to: `${p.url}/demo`, ...demoCopy[p.slug]! }))
+)
 </script>
 
 <template>
