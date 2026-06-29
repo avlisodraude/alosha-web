@@ -24,7 +24,7 @@ interface StrideStats {
   avgCadence: number | null
   splits: Split[]
 }
-interface StrideActivity { name?: string, points: unknown[] }
+interface StrideActivity { name?: string, format?: string, type?: string, startTime?: string, points: unknown[] }
 interface StrideApi {
   parse: (input: string | Uint8Array) => StrideActivity
   analyze: (a: StrideActivity, maxHR?: number) => StrideStats
@@ -233,6 +233,61 @@ const summary = computed<Stat[]>(() => {
 })
 
 const hasHr = computed(() => !!stats.value?.hrZones)
+
+// ---- developer output: structured payload + the code that produced it -------
+
+const devTab = ref<'json' | 'code'>('json')
+
+// A clean, filtered payload — the analysis output plus an activity summary and a
+// single sample point, instead of the full (potentially huge) points array.
+const payload = computed(() => {
+  const act = activity.value
+  const st = stats.value
+  if (!act || !st) return null
+  return {
+    activity: {
+      name: act.name ?? null,
+      format: act.format ?? null,
+      type: act.type ?? null,
+      startTime: act.startTime ?? null,
+      points: act.points.length,
+      samplePoint: act.points[0] ?? null
+    },
+    stats: st
+  }
+})
+
+const payloadJson = computed(() => (payload.value ? JSON.stringify(payload.value, null, 2) : ''))
+
+const codeSnippet = computed(() => {
+  const act = activity.value
+  if (!act) return ''
+  const fmt = act.format ?? 'gpx'
+  const isFit = fmt === 'fit'
+  const hrLines = hasHr.value
+    ? `\nnew Chart(zonesCanvas, hrZonesChartConfig(stats))`
+    : ''
+  const extraImport = hasHr.value ? ', hrZonesChartConfig' : ''
+  return `import { parse, analyze, paceChartConfig${extraImport} } from '@alosha/stride'
+import { Chart } from 'chart.js/auto'
+
+// ${fileName.value || `your-run.${fmt}`} — format auto-detected (GPX · TCX · FIT)
+const activity = parse(${isFit ? 'bytes' : 'xml'})   // ${isFit ? 'Uint8Array for binary FIT' : 'GPX / TCX as a string'}
+const stats = analyze(activity)        // ← the payload shown on the right
+
+new Chart(paceCanvas, paceChartConfig(activity, stats, { units: '${units.value}' }))${hrLines}`
+})
+
+const copiedDev = ref<'json' | 'code' | null>(null)
+async function copyDev(which: 'json' | 'code') {
+  const text = which === 'json' ? payloadJson.value : codeSnippet.value
+  if (!text) return
+  try {
+    await navigator.clipboard.writeText(text)
+    copiedDev.value = which
+    setTimeout(() => (copiedDev.value = null), 1500)
+  } catch { /* clipboard unavailable */ }
+}
 </script>
 
 <template>
@@ -415,6 +470,49 @@ const hasHr = computed(() => !!stats.value?.hrZones)
             </div>
           </div>
         </template>
+      </div>
+
+      <!-- Developer output: structured payload + the code that produced it -->
+      <div class="rounded-lg border border-default bg-default overflow-hidden">
+        <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-default">
+          <div class="inline-flex items-center gap-2 text-sm font-medium">
+            <UIcon
+              name="i-lucide-braces"
+              class="text-primary"
+            />
+            Developer output
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="inline-flex rounded-md border border-default overflow-hidden text-xs">
+              <button
+                type="button"
+                class="px-2.5 py-1 transition-colors"
+                :class="devTab === 'json' ? 'bg-primary text-inverted' : 'text-muted hover:text-default'"
+                @click="devTab = 'json'"
+              >
+                JSON
+              </button>
+              <button
+                type="button"
+                class="px-2.5 py-1 transition-colors"
+                :class="devTab === 'code' ? 'bg-primary text-inverted' : 'text-muted hover:text-default'"
+                @click="devTab = 'code'"
+              >
+                Code
+              </button>
+            </div>
+            <UButton
+              :icon="copiedDev === devTab ? 'i-lucide-check' : 'i-lucide-copy'"
+              color="neutral"
+              variant="soft"
+              size="xs"
+              @click="copyDev(devTab)"
+            >
+              {{ copiedDev === devTab ? 'Copied' : (devTab === 'json' ? 'Copy JSON' : 'Copy code') }}
+            </UButton>
+          </div>
+        </div>
+        <pre class="bg-gray-900 dark:bg-gray-950 text-green-400 text-xs font-mono p-4 overflow-x-auto max-h-96">{{ devTab === 'json' ? payloadJson : codeSnippet }}</pre>
       </div>
 
       <p class="text-center text-muted text-sm">
