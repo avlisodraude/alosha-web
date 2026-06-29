@@ -1,4 +1,4 @@
-import type { Site } from '~/composables/useSite'
+import type { Site } from '~/utils/products'
 
 // Path prefixes owned by the product app (pixsqueeze.alosha.dev).
 // NB: /demo is intentionally NOT here — it's a shared route so each product
@@ -6,7 +6,7 @@ import type { Site } from '~/composables/useSite'
 export const productPrefixes = ['/login', '/confirm', '/reset-password', '/dashboard', '/docs']
 
 // Path prefixes owned by the portfolio hub (alosha.dev).
-export const hubPrefixes = ['/products', '/open-source', '/about', '/contact', '/blog']
+export const hubPrefixes = ['/products', '/open-source', '/about', '/support', '/contact', '/blog']
 
 /**
  * Which site a given path belongs to. '/' (and anything unclassified) is

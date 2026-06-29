@@ -1,4 +1,4 @@
-export type Site = 'hub' | 'product' | 'monitor' | 'stride' | 'eu-validate'
+import { PRODUCTS, resolveProduct, resolvedProducts, productForSite, type Site } from '../utils/products'
 
 /**
  * Resolves which site the current request belongs to.
@@ -9,6 +9,9 @@ export type Site = 'hub' | 'product' | 'monitor' | 'stride' | 'eu-validate'
  *   stride.alosha.dev       → 'stride'       (Stride app)
  *   eu-validate.alosha.dev  → 'eu-validate'  (eu-validate package landing)
  *
+ * Subdomain → site matching is driven by the product registry
+ * (`app/utils/products.ts`), so adding a package is a one-line registry change.
+ *
  * SSR-safe: host comes from useRequestURL(), which is populated on both the
  * server and the client. For local dev, set NUXT_PUBLIC_FORCE_SITE=hub|product|monitor|stride|eu-validate.
  */
@@ -18,20 +21,18 @@ export function useSite() {
   const host = url.host || ''
 
   const force = String(config.public.forceSite || '')
+  const validForce = force === 'hub' || PRODUCTS.some(p => p.site === force)
+
   let site: Site
-  if (force === 'hub' || force === 'product' || force === 'monitor' || force === 'stride' || force === 'eu-validate') {
-    site = force
-  } else if (host.startsWith('pixsqueeze.')) {
-    site = 'product'
-  } else if (host.startsWith('monitor.')) {
-    site = 'monitor'
-  } else if (host.startsWith('stride.')) {
-    site = 'stride'
-  } else if (host.startsWith('eu-validate.')) {
-    site = 'eu-validate'
+  if (validForce) {
+    site = force as Site
   } else {
-    site = 'hub'
+    // Match the host's leading label (e.g. "monitor.") against a registry slug.
+    const match = PRODUCTS.find(p => host.startsWith(`${p.slug}.`))
+    site = match ? match.site : 'hub'
   }
+
+  const product = productForSite(site)
 
   return {
     site,
@@ -42,10 +43,15 @@ export function useSite() {
     isEuValidate: site === 'eu-validate',
     host,
     isProdHost: host.endsWith('alosha.dev'),
+    /** The active product (registry entry with resolved links), or null on the hub. */
+    product,
+    /** The full portfolio with links resolved — drives matrices, nav and grids. */
+    products: resolvedProducts(),
     hubUrl: String(config.public.hubUrl),
-    productUrl: String(config.public.productUrl),
-    monitorUrl: String(config.public.monitorUrl),
-    strideUrl: String(config.public.strideUrl),
-    euValidateUrl: String(config.public.euValidateUrl)
+    // Backward-compatible per-product URLs, now derived from the registry.
+    productUrl: resolveProduct(PRODUCTS.find(p => p.site === 'product')!).url,
+    monitorUrl: resolveProduct(PRODUCTS.find(p => p.site === 'monitor')!).url,
+    strideUrl: resolveProduct(PRODUCTS.find(p => p.site === 'stride')!).url,
+    euValidateUrl: resolveProduct(PRODUCTS.find(p => p.site === 'eu-validate')!).url
   }
 }
