@@ -58,25 +58,37 @@ export interface UseCase {
   mitigation: string
 }
 
-/** One bar in the latency-comparison chart (representative milliseconds). */
-export interface LatencyBar {
+/** One bar in a comparison chart (latency in ms, or monthly cost in USD). */
+export interface CompareBar {
   label: string
-  /** Representative latency in ms (use a tiny value for "offline"). */
-  ms: number
+  /** Numeric value — milliseconds when unit is 'ms', US dollars when 'usd'. */
+  value: number
   /** Optional caption shown next to the value. */
   note?: string
-  /** Highlight this bar as the winning/offline option. */
+  /** Highlight this bar as the winning option. */
   highlight?: boolean
+}
+
+export interface CompareChart {
+  title: string
+  description: string
+  /** How bar values are formatted: 'ms' (latency) or 'usd' (monthly cost). */
+  unit: 'ms' | 'usd'
+  bars: CompareBar[]
 }
 
 export interface UseCasesConfig {
   title: string
   description: string
+  /** Brand name used in the "With <brand>:" mitigation footer of each case. */
+  mitigationBrand: string
+  /** Heading above each case's risk grid (e.g. risk of the SaaS/network approach). */
+  risksLabel: string
   cases: UseCase[]
-  /** Latency comparison chart (network round-trip vs offline computation). */
-  latency: { title: string, description: string, bars: LatencyBar[] }
-  /** Architecture flow comparison captions. */
-  flow: { networkLabel: string, networkNote: string, offlineLabel: string, offlineNote: string }
+  /** Comparison chart (network vs offline latency, or hosted vs self-run cost). */
+  chart: CompareChart
+  /** Optional architecture flow comparison (network/offline trust-boundary story). */
+  flow?: { networkLabel: string, networkNote: string, offlineLabel: string, offlineNote: string }
 }
 
 export interface LandingConfig {
@@ -222,6 +234,8 @@ export function validateOnboarding(form: { bsn: string; iban: string }) {
     useCases: {
       title: 'The business case for offline validation',
       description: 'Why engineering leads at EU fintech, billing and B2B-checkout teams move identifier validation off the network.',
+      mitigationBrand: 'eu-validate',
+      risksLabel: 'Risk of the network-based approach',
       cases: [
         {
           icon: 'i-lucide-timer',
@@ -246,14 +260,15 @@ export function validateOnboarding(form: { bsn: string; iban: string }) {
           mitigation: 'Because every core validator is a pure, synchronous function, sensitive identifiers never leave the user’s session or your server. There is no external sub-processor, no IP exposure and no egress to document — the simplest possible GDPR posture for identifier validation.'
         }
       ],
-      latency: {
+      chart: {
         title: 'Network round-trip vs offline computation',
         description: 'Representative time added to a single validation. Offline checksums run in-process; network lookups pay for the public internet on every call.',
+        unit: 'ms',
         bars: [
-          { label: 'eu-validate (offline checksum)', ms: 0.05, note: '~0 ms · no network', highlight: true },
-          { label: 'VIES lookup — best case', ms: 400, note: 'healthy, uncongested' },
-          { label: 'VIES lookup — typical', ms: 900, note: 'normal load' },
-          { label: 'VIES lookup — under load / retry', ms: 2000, note: 'throttled or degraded' }
+          { label: 'eu-validate (offline checksum)', value: 0.05, note: '~0 ms · no network', highlight: true },
+          { label: 'VIES lookup — best case', value: 400, note: 'healthy, uncongested' },
+          { label: 'VIES lookup — typical', value: 900, note: 'normal load' },
+          { label: 'VIES lookup — under load / retry', value: 2000, note: 'throttled or degraded' }
         ]
       },
       flow: {
@@ -313,6 +328,46 @@ npx monitor watch`,
       { icon: 'i-lucide-clock', title: 'Built-in scheduler', description: 'Run `monitor watch` and each check fires on its own interval — no cron, no external scheduler needed.' },
       { icon: 'i-lucide-file-text', title: 'HTML reports', description: 'Auto-generated report after every run. Open it in your browser, share it with your team.' }
     ],
+    useCases: {
+      title: 'The "Datadog tax": what hosted synthetics really cost',
+      description: 'Why teams move browser-level uptime checks off per-run SaaS pricing and into their own CI and infrastructure.',
+      mitigationBrand: 'Monitor',
+      risksLabel: 'The cost of the hosted-SaaS approach',
+      cases: [
+        {
+          icon: 'i-lucide-receipt',
+          title: 'Per-run pricing punishes you for monitoring well',
+          lead: 'Hosted synthetic monitoring meters every browser run, so the exact levers that improve reliability — higher frequency, more regions, deeper journeys — are the levers that inflate the bill.',
+          risks: [
+            { icon: 'i-lucide-gauge', label: 'Frequency = cost', detail: 'Moving a check from 5-minute to 1-minute intervals multiplies its billed runs by five. Better detection time, five times the bill.' },
+            { icon: 'i-lucide-globe', label: 'Per-region multiplier', detail: 'Each location you check from re-bills the same run, so multi-region coverage scales cost linearly with geography.' },
+            { icon: 'i-lucide-list-checks', label: 'Per-step browser pricing', detail: 'Browser tests are billed per scripted step, so a realistic login-to-checkout journey costs more than a single page load.' }
+          ],
+          mitigation: 'Monitor runs as a devDependency in your CI or on a small box you already own. Frequency, regions and journey length change how thorough you are — not what you pay. The marginal cost of one more check run is zero.'
+        },
+        {
+          icon: 'i-lucide-lock',
+          title: 'Your checks and history live in someone else’s product',
+          lead: 'Synthetic tests authored in a vendor’s recorder — plus the failure history and screenshots — are trapped there. Leaving means re-writing every journey and losing the timeline, which is exactly what keeps the renewal quote climbing.',
+          risks: [
+            { icon: 'i-lucide-file-lock-2', label: 'Trapped scripts', detail: 'Journeys built in a proprietary recorder don’t export into anything you can run yourself.' },
+            { icon: 'i-lucide-database', label: 'History stays behind', detail: 'Run history and failure screenshots live in the vendor; churning the subscription loses the record.' },
+            { icon: 'i-lucide-plug', label: 'Switching cost', detail: 'Migrating providers means re-authoring every check in a new DSL — so the renewal always wins the build-vs-buy argument.' }
+          ],
+          mitigation: 'Checks are plain TypeScript in your repo, versioned alongside the app they test. Results, screenshots and HTML reports are written to your own storage. There is nothing to export and no renewal holding your monitoring hostage.'
+        }
+      ],
+      chart: {
+        title: 'What 5 browser checks cost per month',
+        description: 'Same workload — 5 checks at 5-minute intervals — priced three ways. Hosted figures use Datadog’s published list rate of $12 per 1,000 browser-test runs (~8,640 runs per check per month).',
+        unit: 'usd',
+        bars: [
+          { label: 'Hosted synthetics — 5 checks · 3 regions', value: 1555, note: '~129,600 browser runs/mo × $0.012' },
+          { label: 'Hosted synthetics — 5 checks · 1 region', value: 518, note: '~43,200 browser runs/mo × $0.012' },
+          { label: 'Monitor — watch on a $6/mo VPS', value: 6, note: 'flat — runs, regions and journeys don’t change it', highlight: true }
+        ]
+      }
+    },
     recipesTitle: 'Production recipes',
     recipesDescription: 'The monitoring problems real teams hit — solved with the published API.',
     recipes: [
@@ -341,6 +396,34 @@ if (report.failed > 0) process.exit(1)`,
         sandbox: 'https://stackblitz.com/github/avlisodraude/monitor/tree/main/examples/ci-gate'
       },
       {
+        title: 'Run synthetic checks on a schedule with no server to babysit',
+        problem: 'You want real browser checks every few minutes, but you don’t want to own a box, a cron daemon, or a per-run monitoring bill to get them.',
+        code: `# .github/workflows/synthetics.yml
+name: Synthetics
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # every 15 minutes
+  workflow_dispatch:          # ...and on demand
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # 'monitor run' exits 1 on failure — the run goes red AND
+      # the Slack notifier in monitor.config.ts fires.
+      - run: npx monitor run
+        env:
+          SLACK_WEBHOOK_URL: \${{ secrets.SLACK_WEBHOOK_URL }}`,
+        why: 'GitHub schedules and runs the job for you — no server, no cron daemon, no hosted bill. monitor run exits non-zero when any check fails, so the workflow goes red and your config’s Slack notifier alerts at the same moment. (GitHub cron is best-effort, so treat very short intervals as approximate.)',
+        sandbox: 'https://stackblitz.com/github/avlisodraude/monitor/tree/main/examples/github-actions'
+      },
+      {
         title: 'Get a Slack alert with a screenshot the moment a page goes down',
         problem: 'Uptime pings tell you a URL returns 200, not that the page actually rendered — and they rarely show you what the user saw.',
         code: `import { watch } from '@alosha/monitor'
@@ -355,6 +438,42 @@ await watch({
 })`,
         why: 'watch() schedules each check independently and, on failure, captures a full-page screenshot before posting to Slack — so your first signal of an outage is an alert with visual proof, not a support ticket.',
         sandbox: 'https://stackblitz.com/github/avlisodraude/monitor/tree/main/examples/slack-alert'
+      },
+      {
+        title: 'Page on-call through PagerDuty when a critical check fails',
+        problem: 'A failed checkout at 3am needs to wake someone. Monitor ships Slack, Discord, email and webhook notifiers — but no native PagerDuty integration.',
+        code: `import { run } from '@alosha/monitor'
+
+const report = await run({
+  checks: [
+    { name: 'Checkout', url: 'https://app.example.com/checkout', maxResponseTimeMs: 3000 }
+  ]
+})
+
+// No built-in PagerDuty notifier — page on-call yourself from the
+// structured report via the Events API v2.
+const down = report.results.filter((r) => r.status === 'fail')
+
+await Promise.all(down.map((r) =>
+  fetch('https://events.pagerduty.com/v2/enqueue', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      routing_key: process.env.PAGERDUTY_ROUTING_KEY,
+      event_action: 'trigger',
+      dedup_key: \`monitor-\${r.name}\`,        // collapse repeats into one incident
+      payload: {
+        summary: \`\${r.name} is DOWN — \${r.error ?? 'check failed'}\`,
+        source: r.url,
+        severity: 'critical'
+      }
+    })
+  })
+))
+
+if (report.failed > 0) process.exit(1)`,
+        why: 'run() returns every check as a structured CheckResult, so mapping failures onto PagerDuty’s Events API v2 is a few lines — a trigger event plus a stable dedup_key that collapses repeat alerts into a single incident. You get real on-call escalation without waiting for a built-in integration.',
+        sandbox: 'https://stackblitz.com/github/avlisodraude/monitor/tree/main/examples/pagerduty'
       }
     ],
     trustRows: [
@@ -363,6 +482,7 @@ await watch({
       { icon: 'i-lucide-file-code-2', metric: 'Type safety', target: 'Ships .d.ts (ESM + CJS)', value: 'Fully typed config, results and assertions — autocompletion out of the box.' },
       { icon: 'i-lucide-git-branch', metric: 'Install model', target: 'devDependency + CLI', value: 'Lives in your repo and runs in CI — nothing hosted to trust or pay for.' },
       { icon: 'i-lucide-bell', metric: 'Alerting', target: 'Slack · Discord · email · webhook', value: 'Notify where your team already works, with no extra service.' },
+      { icon: 'i-lucide-banknote', metric: 'Cost model', target: 'Flat · $0 per run', value: 'Runs on CI or infra you already own — no per-run, per-region or per-seat metering as you add checks.' },
       { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT', value: 'MIT-licensed and runs entirely in your infra — clears legal review and never breaks if alosha.dev goes away.' }
     ],
     supportTitle: 'Start monitoring in minutes',

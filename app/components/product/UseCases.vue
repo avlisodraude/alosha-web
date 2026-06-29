@@ -12,17 +12,21 @@ import type { UseCasesConfig } from '~/utils/landings'
 
 const props = defineProps<{ config: UseCasesConfig }>()
 
-const maxMs = computed(() =>
-  Math.max(...props.config.latency.bars.map(b => b.ms))
+const maxVal = computed(() =>
+  Math.max(...props.config.chart.bars.map(b => b.value))
 )
 
-/** Bar width as a % of the slowest bar, with a visible minimum sliver. */
-function barWidth(ms: number): string {
-  return `${Math.max((ms / maxMs.value) * 100, 1.5)}%`
+/** Bar width as a % of the largest bar, with a visible minimum sliver. */
+function barWidth(value: number): string {
+  return `${Math.max((value / maxVal.value) * 100, 1.5)}%`
 }
 
-function fmtMs(ms: number): string {
-  return ms < 1 ? '~0 ms' : `${Math.round(ms).toLocaleString('en-US')} ms`
+/** Format a bar value according to the chart's unit. */
+function fmtValue(value: number): string {
+  if (props.config.chart.unit === 'usd') {
+    return `$${Math.round(value).toLocaleString('en-US')}/mo`
+  }
+  return value < 1 ? '~0 ms' : `${Math.round(value).toLocaleString('en-US')} ms`
 }
 </script>
 
@@ -56,7 +60,7 @@ function fmtMs(ms: number): string {
         </template>
 
         <p class="text-xs font-medium uppercase tracking-wide text-muted mb-3">
-          Risk of the network-based approach
+          {{ config.risksLabel }}
         </p>
         <ul class="grid sm:grid-cols-3 gap-3">
           <li
@@ -84,26 +88,26 @@ function fmtMs(ms: number): string {
               class="size-4 text-primary mt-0.5 shrink-0"
             />
             <p class="text-muted">
-              <span class="font-medium text-default">With eu-validate:</span> {{ uc.mitigation }}
+              <span class="font-medium text-default">With {{ config.mitigationBrand }}:</span> {{ uc.mitigation }}
             </p>
           </div>
         </template>
       </UCard>
 
-      <!-- Latency comparison chart -->
+      <!-- Comparison chart (latency or cost) -->
       <UCard variant="subtle">
         <template #header>
           <h3 class="font-semibold text-base text-highlighted">
-            {{ config.latency.title }}
+            {{ config.chart.title }}
           </h3>
           <p class="text-sm text-muted mt-1">
-            {{ config.latency.description }}
+            {{ config.chart.description }}
           </p>
         </template>
 
         <div class="space-y-3.5">
           <div
-            v-for="bar in config.latency.bars"
+            v-for="bar in config.chart.bars"
             :key="bar.label"
           >
             <div class="flex items-baseline justify-between gap-3 mb-1">
@@ -114,13 +118,13 @@ function fmtMs(ms: number): string {
               <span
                 class="font-mono text-xs shrink-0"
                 :class="bar.highlight ? 'text-primary' : 'text-muted'"
-              >{{ fmtMs(bar.ms) }}</span>
+              >{{ fmtValue(bar.value) }}</span>
             </div>
             <div class="h-2.5 w-full rounded-full bg-elevated overflow-hidden">
               <div
                 class="h-full rounded-full"
                 :class="bar.highlight ? 'bg-primary' : 'bg-amber-500/80'"
-                :style="{ width: barWidth(bar.ms) }"
+                :style="{ width: barWidth(bar.value) }"
               />
             </div>
             <p
@@ -133,8 +137,11 @@ function fmtMs(ms: number): string {
         </div>
       </UCard>
 
-      <!-- Architecture flow diagram -->
-      <UCard variant="subtle">
+      <!-- Architecture flow diagram (optional) -->
+      <UCard
+        v-if="config.flow"
+        variant="subtle"
+      >
         <div class="grid md:grid-cols-2 gap-6">
           <!-- Network path -->
           <div>
@@ -143,7 +150,7 @@ function fmtMs(ms: number): string {
                 name="i-lucide-shield-alert"
                 class="size-4 text-amber-500"
               />
-              <span class="font-medium text-sm text-highlighted">{{ config.flow.networkLabel }}</span>
+              <span class="font-medium text-sm text-highlighted">{{ config.flow?.networkLabel }}</span>
             </div>
             <div class="rounded-lg border border-dashed border-amber-500/50 p-3">
               <span class="text-xs uppercase tracking-wide text-muted">Your trust boundary</span>
@@ -170,7 +177,7 @@ function fmtMs(ms: number): string {
               External validator (VIES / API)
             </div>
             <p class="text-xs text-muted mt-3">
-              {{ config.flow.networkNote }}
+              {{ config.flow?.networkNote }}
             </p>
           </div>
 
@@ -181,7 +188,7 @@ function fmtMs(ms: number): string {
                 name="i-lucide-shield-check"
                 class="size-4 text-primary"
               />
-              <span class="font-medium text-sm text-highlighted">{{ config.flow.offlineLabel }}</span>
+              <span class="font-medium text-sm text-highlighted">{{ config.flow?.offlineLabel }}</span>
             </div>
             <div class="rounded-lg border border-dashed border-primary/50 p-3">
               <span class="text-xs uppercase tracking-wide text-muted">Your trust boundary</span>
@@ -216,7 +223,7 @@ function fmtMs(ms: number): string {
               <span class="text-xs">nothing leaves the boundary</span>
             </div>
             <p class="text-xs text-muted mt-3">
-              {{ config.flow.offlineNote }}
+              {{ config.flow?.offlineNote }}
             </p>
           </div>
         </div>
