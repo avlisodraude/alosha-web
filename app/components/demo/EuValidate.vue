@@ -242,6 +242,13 @@ function checkLabel(c: boolean | null) {
           aria-live="polite"
         >{{ copied ? 'Install command copied to clipboard' : '' }}</span>
         <ULink
+          to="/generator"
+          class="inline-flex items-center gap-1.5 text-muted hover:text-default"
+        >
+          <UIcon name="i-lucide-wand-sparkles" />
+          Generator
+        </ULink>
+        <ULink
           to="https://www.npmjs.com/package/@alosha/eu-validate"
           target="_blank"
           class="inline-flex items-center gap-1.5 text-muted hover:text-default"
