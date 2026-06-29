@@ -5,8 +5,16 @@
     <link>https://alosha.dev/blog</link>
     <description>Notes on building privacy-first developer tools, from the Alosha studio.</description>
     <language>en</language>
-    <lastBuildDate>Wed, 17 Jun 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 29 Jun 2026 00:00:00 GMT</lastBuildDate>
     <atom:link href="https://alosha.dev/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The math behind offline validation: Modulo 97 and the 11-proef</title>
+      <link>https://alosha.dev/blog/the-math-behind-offline-validation</link>
+      <guid isPermaLink="true">https://alosha.dev/blog/the-math-behind-offline-validation</guid>
+      <description>A regex checks the shape of an IBAN or a BSN. The check digit proves it could be real. Here&apos;s the arithmetic that makes offline validation possible — worked out by hand.</description>
+      <dc:creator>Eduardo</dc:creator>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 GMT</pubDate>
+    </item>
     <item>
       <title>Website monitoring that lives in your repo</title>
       <link>https://alosha.dev/blog/website-monitoring-from-your-terminal</link>
