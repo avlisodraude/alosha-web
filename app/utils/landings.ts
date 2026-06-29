@@ -166,11 +166,12 @@ export function validateOnboarding(form: { bsn: string; iban: string }) {
       }
     ],
     trustRows: [
+      { icon: 'i-lucide-gauge', metric: 'Performance', target: '0 ms network · synchronous', value: 'Offline checksum runs in-process — no VIES round-trip, no latency, 100% uptime.' },
+      { icon: 'i-lucide-wifi-off', metric: 'Data isolation', target: 'No network in core', value: 'Identifiers never leave your environment — simpler GDPR posture.' },
       { icon: 'i-lucide-feather', metric: 'Bundle size', target: '~3 KB min+gzip', value: 'Negligible impact on your app’s Core Web Vitals.' },
       { icon: 'i-lucide-package-x', metric: 'Dependencies', target: '0 runtime deps', value: 'No third-party supply-chain surface added to your build.' },
       { icon: 'i-lucide-file-code-2', metric: 'Type safety', target: 'Ships .d.ts (ESM + CJS)', value: 'Autocompletion and compile-time safety out of the box.' },
-      { icon: 'i-lucide-wifi-off', metric: 'Network', target: 'No network in core', value: 'Identifiers never leave your environment — simpler GDPR posture.' },
-      { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT (core)', value: 'Clears standard corporate legal review with no friction.' },
+      { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT (core)', value: 'MIT-licensed core runs entirely in your infra — clears legal review and never breaks if alosha.dev goes away.' },
       { icon: 'i-lucide-cloud', metric: 'Live lookups', target: 'Optional /cloud, API-key', value: 'Opt-in VIES & KvK registration checks when you need them.' }
     ],
     supportPoints: [
@@ -269,11 +270,11 @@ await watch({
     ],
     trustRows: [
       { icon: 'i-lucide-chrome', metric: 'Check engine', target: 'Playwright (Chromium)', value: 'Catches JS errors, redirects and broken renders a curl ping never would.' },
-      { icon: 'i-lucide-server', metric: 'Data residency', target: 'Runs in your CI / infra', value: 'Check results and failure screenshots never leave your environment.' },
+      { icon: 'i-lucide-server', metric: 'Data isolation', target: 'Runs in your CI / infra', value: 'Check results and failure screenshots never leave your environment.' },
       { icon: 'i-lucide-file-code-2', metric: 'Type safety', target: 'Ships .d.ts (ESM + CJS)', value: 'Fully typed config, results and assertions — autocompletion out of the box.' },
       { icon: 'i-lucide-git-branch', metric: 'Install model', target: 'devDependency + CLI', value: 'Lives in your repo and runs in CI — nothing hosted to trust or pay for.' },
       { icon: 'i-lucide-bell', metric: 'Alerting', target: 'Slack · Discord · email · webhook', value: 'Notify where your team already works, with no extra service.' },
-      { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT', value: 'Clears standard corporate legal review with no friction.' }
+      { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT', value: 'MIT-licensed and runs entirely in your infra — clears legal review and never breaks if alosha.dev goes away.' }
     ],
     supportTitle: 'Start monitoring in minutes',
     supportPoints: [
@@ -383,11 +384,12 @@ new Chart(canvas, hrZonesChartConfig(stats))`,
     ],
     trustRows: [
       { icon: 'i-lucide-file-stack', metric: 'Formats', target: 'GPX · TCX · FIT', value: 'One API across Garmin, Strava, Coros and Wahoo exports — auto-detected.' },
+      { icon: 'i-lucide-wifi-off', metric: 'Data isolation', target: 'Parsed locally, never uploaded', value: 'Runs in the browser or Node — activity files are parsed in-process and never sent anywhere.' },
       { icon: 'i-lucide-globe', metric: 'Runtime', target: 'Browser + Node', value: 'Ships a prebuilt browser bundle plus ESM/CJS — no build step required.' },
       { icon: 'i-lucide-bar-chart-2', metric: 'Charts', target: 'Side-effect-free configs', value: 'Returns plain Chart.js configs; you own the canvas and keep it tree-shakeable.' },
       { icon: 'i-lucide-package', metric: 'Dependencies', target: 'chart.js + 2 parsers', value: 'Built on chart.js and battle-tested parsers — nothing exotic in your tree.' },
       { icon: 'i-lucide-file-code-2', metric: 'Type safety', target: 'Ships .d.ts (ESM + CJS)', value: 'Fully typed Activity and stats — autocompletion out of the box.' },
-      { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT', value: 'Clears standard corporate legal review with no friction.' }
+      { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT', value: 'MIT-licensed and runs entirely in your infra — clears legal review and never breaks if alosha.dev goes away.' }
     ],
     supportTitle: 'Add Stride to your project',
     supportPoints: [

@@ -117,12 +117,12 @@ const src = 'data:image/webp;base64,' + results[0].data  // ready for <img src>`
 
 // Phase-2 trust matrix. Every row reflects the documented API behaviour.
 const trustRows = [
-  { icon: 'i-lucide-lock', metric: 'Privacy', target: 'In-memory, never stored', value: 'Uploads are processed in memory and discarded — your files never touch our disk.' },
+  { icon: 'i-lucide-lock', metric: 'Data isolation', target: 'In-memory, never stored', value: 'Uploads are processed in memory and discarded — your files never touch our disk.' },
   { icon: 'i-lucide-images', metric: 'Input formats', target: 'JPEG · PNG · WebP · GIF · HEIC · TIFF · RAW', value: 'Accept whatever a phone or camera produces; decoding happens server-side.' },
   { icon: 'i-lucide-code-2', metric: 'Integration', target: 'One endpoint, Bearer key', value: 'Works from any language — curl, Node, Python, Go.' },
   { icon: 'i-lucide-gift', metric: 'Free tier', target: '100 images / mo, no card', value: 'Evaluate in production before you pay a cent.' },
   { icon: 'i-lucide-gauge', metric: 'Usage', target: 'Live quota in every response', value: 'Track spend inline — no separate metering call.' },
-  { icon: 'i-lucide-package', metric: 'Core engine', target: 'Open-source (MIT)', value: 'The compression core is auditable, not a black box.' }
+  { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT (core)', value: 'Open-source compression core — auditable and self-hostable, never a black box or a lock-in.' }
 ]
 </script>
 
@@ -133,7 +133,8 @@ const trustRows = [
       class="hero-glow"
       :links="[
         { label: 'Start for free', to: '/login?signup=1', trailingIcon: 'i-lucide-arrow-right', size: 'xl', class: 'btn-grad' },
-        { label: 'See pricing', to: '#pricing', size: 'xl', color: 'neutral', variant: 'subtle' }
+        { label: 'See pricing', to: '#pricing', size: 'xl', color: 'neutral', variant: 'subtle' },
+        { label: 'View on GitHub', to: 'https://github.com/avlisodraude/pixsqueeze', target: '_blank', size: 'xl', color: 'neutral', variant: 'subtle', icon: 'i-simple-icons-github' }
       ]"
     >
       <template #headline>
