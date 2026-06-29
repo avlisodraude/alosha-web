@@ -140,7 +140,8 @@ export async function resolveVat(input: string) {
   const live = await eu.verifyVAT(offline.normalized!)
   return { ok: live.registered, company: live.name }
 }`,
-        why: 'The offline checksum filters out typos and fabricated numbers for free, so the slow, rate-limited VIES call only ever runs on structurally valid input. You cut checkout latency and stop burning your VIES quota on garbage.'
+        why: 'The offline checksum filters out typos and fabricated numbers for free, so the slow, rate-limited VIES call only ever runs on structurally valid input. You cut checkout latency and stop burning your VIES quota on garbage.',
+        sandbox: 'https://stackblitz.com/github/avlisodraude/eu-validate/tree/main/examples/reject-bad-vat'
       },
       {
         title: 'Validate Dutch BSN and IBAN without sending PII anywhere',
@@ -160,7 +161,8 @@ export function validateOnboarding(form: { bsn: string; iban: string }) {
     }
   }
 }`,
-        why: 'Every validator is a pure function with no network call, so sensitive identifiers like a BSN never reach an external processor. You get instant inline form feedback and one fewer data-processing agreement to sign.'
+        why: 'Every validator is a pure function with no network call, so sensitive identifiers like a BSN never reach an external processor. You get instant inline form feedback and one fewer data-processing agreement to sign.',
+        sandbox: 'https://stackblitz.com/github/avlisodraude/eu-validate/tree/main/examples/validate-onboarding'
       }
     ],
     trustRows: [
@@ -245,7 +247,8 @@ const report = await run({
 
 // Break the build if any check failed.
 if (report.failed > 0) process.exit(1)`,
-        why: 'run() drives a real Chromium session through the journey and returns a structured RunReport, so a single exit-code check turns "does login still work?" into a CI gate that blocks the deploy before users ever see the break.'
+        why: 'run() drives a real Chromium session through the journey and returns a structured RunReport, so a single exit-code check turns "does login still work?" into a CI gate that blocks the deploy before users ever see the break.',
+        sandbox: 'https://stackblitz.com/github/avlisodraude/monitor/tree/main/examples/ci-gate'
       },
       {
         title: 'Get a Slack alert with a screenshot the moment a page goes down',
@@ -260,7 +263,8 @@ await watch({
   ],
   notify: { slack: { webhookUrl: process.env.SLACK_WEBHOOK_URL! } }
 })`,
-        why: 'watch() schedules each check independently and, on failure, captures a full-page screenshot before posting to Slack — so your first signal of an outage is an alert with visual proof, not a support ticket.'
+        why: 'watch() schedules each check independently and, on failure, captures a full-page screenshot before posting to Slack — so your first signal of an outage is an alert with visual proof, not a support ticket.',
+        sandbox: 'https://stackblitz.com/github/avlisodraude/monitor/tree/main/examples/slack-alert'
       }
     ],
     trustRows: [
@@ -358,7 +362,8 @@ async function renderUpload(file: File, canvas: HTMLCanvasElement) {
   new Chart(canvas, paceChartConfig(activity, stats))
   return stats
 }`,
-        why: 'parse() auto-detects the format and returns one normalised Activity, so the same analyze() and chart configs work no matter which watch produced the file — no per-vendor branching in your upload handler.'
+        why: 'parse() auto-detects the format and returns one normalised Activity, so the same analyze() and chart configs work no matter which watch produced the file — no per-vendor branching in your upload handler.',
+        sandbox: 'https://stackblitz.com/github/avlisodraude/stride/tree/main/examples/pace-chart'
       },
       {
         title: 'Build a heart-rate zone breakdown without writing the maths',
@@ -372,7 +377,8 @@ const stats = analyze(activity, 188)   // pass the athlete's max HR
 // Seconds spent in each zone, ready for a doughnut chart.
 console.log(stats.hrZones)             // { z1, z2, z3, z4, z5 } | null
 new Chart(canvas, hrZonesChartConfig(stats))`,
-        why: 'analyze() computes Z1–Z5 time-in-zone from the HR stream against the max HR you pass and returns a ready Chart.js config — you get a training-quality breakdown without ever touching the zone formula.'
+        why: 'analyze() computes Z1–Z5 time-in-zone from the HR stream against the max HR you pass and returns a ready Chart.js config — you get a training-quality breakdown without ever touching the zone formula.',
+        sandbox: 'https://stackblitz.com/github/avlisodraude/stride/tree/main/examples/hr-zones'
       }
     ],
     trustRows: [

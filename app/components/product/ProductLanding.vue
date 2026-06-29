@@ -90,7 +90,8 @@ for (const img of results) {
   await writeFile(img.originalName, Buffer.from(img.data, 'base64'))
 }
 console.log(usage.remaining + ' compressions left this month')`,
-    why: 'The batch endpoint returns each compressed image as base64 plus a live usage counter in one round-trip, so you compress, persist and track quota without a second call or any image library in your own stack.'
+    why: 'The batch endpoint returns each compressed image as base64 plus a live usage counter in one round-trip, so you compress, persist and track quota without a second call or any image library in your own stack.',
+    sandbox: 'https://stackblitz.com/github/avlisodraude/pixsqueeze/tree/main/examples/batch-compress'
   },
   {
     title: 'Convert iPhone HEIC uploads to WebP on the fly',
@@ -109,7 +110,8 @@ const res = await fetch('${PIXSQUEEZE_API}/compress/batch', {
 
 const { results } = await res.json()
 const src = 'data:image/webp;base64,' + results[0].data  // ready for <img src>`,
-    why: 'PixSqueeze decodes HEIC/RAW/TIFF server-side and re-encodes to a web format in the same request, so you accept whatever a device produces and hand the browser a WebP it can actually render — no client-side codec.'
+    why: 'PixSqueeze decodes HEIC/RAW/TIFF server-side and re-encodes to a web format in the same request, so you accept whatever a device produces and hand the browser a WebP it can actually render — no client-side codec.',
+    sandbox: 'https://stackblitz.com/github/avlisodraude/pixsqueeze/tree/main/examples/heic-to-webp'
   }
 ]
 
