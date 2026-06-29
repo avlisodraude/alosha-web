@@ -65,6 +65,63 @@ const codeExample = `curl -X POST ${PIXSQUEEZE_API}/compress/batch \\
   -F "files[]=@photo2.heic" \\
   -F "quality=0.7" \\
   -F "maxWidth=1280"`
+
+// Phase-2 problem-centric recipes. Code uses the documented REST contract.
+const recipes = [
+  {
+    title: 'Compress and store user uploads in your Node backend',
+    problem: 'You want to shrink every uploaded image before it hits storage, without bundling an image library or a native codec into your API.',
+    code: `import { writeFile } from 'node:fs/promises'
+
+// Forward an upload to PixSqueeze, then persist the compressed result.
+const form = new FormData()
+form.append('files[]', new Blob([buffer]), 'upload.jpg')
+form.append('quality', '0.7')
+form.append('maxWidth', '1600')
+
+const res = await fetch('${PIXSQUEEZE_API}/compress/batch', {
+  method: 'POST',
+  headers: { Authorization: 'Bearer ' + process.env.PIXSQUEEZE_KEY },
+  body: form
+})
+
+const { results, usage } = await res.json()
+for (const img of results) {
+  await writeFile(img.originalName, Buffer.from(img.data, 'base64'))
+}
+console.log(usage.remaining + ' compressions left this month')`,
+    why: 'The batch endpoint returns each compressed image as base64 plus a live usage counter in one round-trip, so you compress, persist and track quota without a second call or any image library in your own stack.'
+  },
+  {
+    title: 'Convert iPhone HEIC uploads to WebP on the fly',
+    problem: 'Phones upload HEIC and cameras upload RAW — formats browsers cannot display — and decoding them client-side is a non-starter.',
+    code: `// Browsers can't decode HEIC — let PixSqueeze convert + compress server-side.
+const form = new FormData()
+form.append('files[]', heicFile)       // a .heic straight from an iPhone
+form.append('mimeType', 'image/webp')  // force WebP output
+form.append('quality', '0.8')
+
+const res = await fetch('${PIXSQUEEZE_API}/compress/batch', {
+  method: 'POST',
+  headers: { Authorization: 'Bearer ' + apiKey },
+  body: form
+})
+
+const { results } = await res.json()
+const src = 'data:image/webp;base64,' + results[0].data  // ready for <img src>`,
+    why: 'PixSqueeze decodes HEIC/RAW/TIFF server-side and re-encodes to a web format in the same request, so you accept whatever a device produces and hand the browser a WebP it can actually render — no client-side codec.'
+  }
+]
+
+// Phase-2 trust matrix. Every row reflects the documented API behaviour.
+const trustRows = [
+  { icon: 'i-lucide-lock', metric: 'Privacy', target: 'In-memory, never stored', value: 'Uploads are processed in memory and discarded — your files never touch our disk.' },
+  { icon: 'i-lucide-images', metric: 'Input formats', target: 'JPEG · PNG · WebP · GIF · HEIC · TIFF · RAW', value: 'Accept whatever a phone or camera produces; decoding happens server-side.' },
+  { icon: 'i-lucide-code-2', metric: 'Integration', target: 'One endpoint, Bearer key', value: 'Works from any language — curl, Node, Python, Go.' },
+  { icon: 'i-lucide-gift', metric: 'Free tier', target: '100 images / mo, no card', value: 'Evaluate in production before you pay a cent.' },
+  { icon: 'i-lucide-gauge', metric: 'Usage', target: 'Live quota in every response', value: 'Track spend inline — no separate metering call.' },
+  { icon: 'i-lucide-package', metric: 'Core engine', target: 'Open-source (MIT)', value: 'The compression core is auditable, not a black box.' }
+]
 </script>
 
 <template>
@@ -110,6 +167,16 @@ const codeExample = `curl -X POST ${PIXSQUEEZE_API}/compress/batch \\
       description="Built for developers who want compression handled and out of the way."
       :features="features"
     />
+
+    <!-- Production recipes (Phase 2) -->
+    <ProductRecipes
+      title="Production recipes"
+      description="Drop-in solutions to the image problems every app eventually hits."
+      :recipes="recipes"
+    />
+
+    <!-- Trust / compliance matrix (Phase 2) -->
+    <ProductTrustMatrix :rows="trustRows" />
 
     <!-- Pricing -->
     <UPageSection
