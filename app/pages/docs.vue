@@ -23,18 +23,19 @@ const registerResponse = `{
 
 const compressExample = `curl -X POST ${PIXSQUEEZE_API}/compress/batch \\
   -H "Authorization: Bearer psx_YOUR_API_KEY" \\
-  -F "files[]=@photo1.jpg" \\
-  -F "files[]=@photo2.heic" \\
+  -F "files=@photo1.jpg" \\
+  -F "files=@photo2.heic" \\
   -F "quality=0.7" \\
   -F "maxWidth=1280"`
 
 const compressResponse = `{
   "processed": 2,
+  "failed": 0,
   "results": [
-    { "originalName": "photo1.jpg",  "mimeType": "image/jpeg", "data": "base64..." },
-    { "originalName": "photo2.heic", "mimeType": "image/jpeg", "data": "base64..." }
+    { "name": "photo1.jpg", "originalName": "photo1.jpg",  "size": 84213, "mimeType": "image/jpeg", "data": "base64..." },
+    { "name": "photo2.jpg", "originalName": "photo2.heic", "size": 91067, "mimeType": "image/jpeg", "data": "base64..." }
   ],
-  "usage": { "used": 2, "limit": 100, "remaining": 98 }
+  "usage": { "used": 2, "limit": 100, "remaining": 98, "plan": "FREE" }
 }`
 
 const rotateExample = `curl -X POST ${PIXSQUEEZE_API}/auth/rotate-key \\
@@ -52,11 +53,11 @@ const usageResponse = `{
 }`
 
 const compressParams = [
-  { name: 'files[]', type: 'file', required: true, description: 'One or more image files (multipart). Repeat the field for each file.' },
-  { name: 'quality', type: 'number', required: false, description: 'Compression quality between 0 and 1. Default 0.8.' },
+  { name: 'files', type: 'file', required: true, description: 'One or more image files (multipart). Repeat the field for each file. JPEG, PNG, WebP, GIF, HEIC and TIFF are accepted.' },
+  { name: 'quality', type: 'number', required: false, description: 'Compression quality between 0.1 and 1. Default 0.8.' },
   { name: 'maxWidth', type: 'number', required: false, description: 'Resize images wider than this to fit. Aspect ratio is preserved.' },
   { name: 'maxHeight', type: 'number', required: false, description: 'Resize images taller than this to fit. Aspect ratio is preserved.' },
-  { name: 'mimeType', type: 'string', required: false, description: 'Force an output format: image/jpeg, image/png, or image/webp.' }
+  { name: 'mimeType', type: 'string', required: false, description: 'Output format: image/jpeg (default), image/png, or image/webp.' }
 ]
 
 const errors = [

@@ -16,7 +16,7 @@ useJsonLd({
   'name': 'PixSqueeze',
   'applicationCategory': 'DeveloperApplication',
   'operatingSystem': 'Any',
-  'description': 'Batch image compression API with server-side HEIC, TIFF and camera-RAW conversion.',
+  'description': 'Batch image compression API with server-side HEIC and TIFF conversion and JPEG, PNG or WebP output.',
   'url': 'https://pixsqueeze.alosha.dev',
   'image': 'https://pixsqueeze.alosha.dev/og-pixsqueeze.png',
   'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD', 'description': '100 images free every month' },
@@ -25,7 +25,7 @@ useJsonLd({
 
 const features = [
   { icon: 'i-lucide-zap', title: 'Fast batch processing', description: 'Send multiple images in a single API call. We handle compression in parallel and return results in seconds.' },
-  { icon: 'i-lucide-sliders-horizontal', title: 'Full control', description: 'Set quality, max width, and output format per request. JPEG, PNG, and WebP supported out of the box.' },
+  { icon: 'i-lucide-sliders-horizontal', title: 'Full control', description: 'Set quality, max dimensions, and output format per request — JPEG, PNG, or WebP.' },
   { icon: 'i-lucide-shield-check', title: 'Secure & private', description: 'Images are processed in-memory and never stored on our servers. Your files stay yours.' },
   { icon: 'i-lucide-code-2', title: 'Simple integration', description: 'One endpoint, one API key. Works with any language or framework — curl, Node, Python, you name it.' },
   { icon: 'i-lucide-bar-chart-2', title: 'Usage dashboard', description: 'See exactly how many images you\'ve processed this month. Upgrade or downgrade any time.' },
@@ -43,26 +43,26 @@ const plans = [
     name: 'Starter', price: '$9', period: '/mo',
     description: 'For small apps and side projects.',
     highlight: false, cta: 'Get started', ctaTo: '/login?signup=1',
-    features: ['2,000 images / month', 'Batch up to 50 images', 'JPEG · PNG · WebP', 'API key included', 'Email support']
+    features: ['2,000 images / month', 'Batch up to 100 images', 'JPEG · PNG · WebP', 'API key included', 'Email support']
   },
   {
     name: 'Pro', price: '$29', period: '/mo',
     description: 'For production apps with real traffic.',
     highlight: true, cta: 'Get Pro', ctaTo: '/login?signup=1',
-    features: ['20,000 images / month', 'Batch up to 100 images', 'JPEG · PNG · WebP', 'Priority processing', 'Priority support']
+    features: ['20,000 images / month', 'Batch up to 500 images', 'JPEG · PNG · WebP', 'Priority processing', 'Priority support']
   },
   {
     name: 'Business', price: '$99', period: '/mo',
     description: 'For high-volume workloads.',
     highlight: false, cta: 'Get Business', ctaTo: '/login?signup=1',
-    features: ['Unlimited images', 'Batch up to 100 images', 'JPEG · PNG · WebP', 'Priority processing', 'Dedicated support']
+    features: ['Unlimited images', 'Batch up to 1,000 images', 'JPEG · PNG · WebP', 'Priority processing', 'Dedicated support']
   }
 ]
 
 const codeExample = `curl -X POST ${PIXSQUEEZE_API}/compress/batch \\
   -H "Authorization: Bearer psx_your_key_here" \\
-  -F "files[]=@photo1.jpg" \\
-  -F "files[]=@photo2.heic" \\
+  -F "files=@photo1.jpg" \\
+  -F "files=@photo2.heic" \\
   -F "quality=0.7" \\
   -F "maxWidth=1280"`
 
@@ -75,7 +75,7 @@ const recipes = [
 
 // Forward an upload to PixSqueeze, then persist the compressed result.
 const form = new FormData()
-form.append('files[]', new Blob([buffer]), 'upload.jpg')
+form.append('files', new Blob([buffer]), 'upload.jpg')
 form.append('quality', '0.7')
 form.append('maxWidth', '1600')
 
@@ -87,7 +87,7 @@ const res = await fetch('${PIXSQUEEZE_API}/compress/batch', {
 
 const { results, usage } = await res.json()
 for (const img of results) {
-  await writeFile(img.originalName, Buffer.from(img.data, 'base64'))
+  await writeFile(img.name, Buffer.from(img.data, 'base64'))
 }
 console.log(usage.remaining + ' compressions left this month')`,
     why: 'The batch endpoint returns each compressed image as base64 plus a live usage counter in one round-trip, so you compress, persist and track quota without a second call or any image library in your own stack.',
@@ -95,11 +95,11 @@ console.log(usage.remaining + ' compressions left this month')`,
   },
   {
     title: 'Convert iPhone HEIC uploads to WebP on the fly',
-    problem: 'Phones upload HEIC and cameras upload RAW — formats browsers cannot display — and decoding them client-side is a non-starter.',
+    problem: 'Phones upload HEIC and scanners upload TIFF — formats browsers cannot display — and decoding them client-side is a non-starter.',
     code: `// Browsers can't decode HEIC — let PixSqueeze convert + compress server-side.
 const form = new FormData()
-form.append('files[]', heicFile)       // a .heic straight from an iPhone
-form.append('mimeType', 'image/webp')  // force WebP output
+form.append('files', heicFile)         // a .heic straight from an iPhone
+form.append('mimeType', 'image/webp')  // request WebP output
 form.append('quality', '0.8')
 
 const res = await fetch('${PIXSQUEEZE_API}/compress/batch', {
@@ -110,7 +110,7 @@ const res = await fetch('${PIXSQUEEZE_API}/compress/batch', {
 
 const { results } = await res.json()
 const src = 'data:image/webp;base64,' + results[0].data  // ready for <img src>`,
-    why: 'PixSqueeze decodes HEIC/RAW/TIFF server-side and re-encodes to a web format in the same request, so you accept whatever a device produces and hand the browser a WebP it can actually render — no client-side codec.',
+    why: 'PixSqueeze decodes HEIC and TIFF server-side and re-encodes to JPEG, PNG or WebP in the same request, so you accept whatever a device produces and hand the browser an image it can actually render — no client-side codec.',
     sandbox: 'https://stackblitz.com/github/avlisodraude/pixsqueeze/tree/main/examples/heic-to-webp'
   }
 ]
@@ -118,7 +118,7 @@ const src = 'data:image/webp;base64,' + results[0].data  // ready for <img src>`
 // Phase-2 trust matrix. Every row reflects the documented API behaviour.
 const trustRows = [
   { icon: 'i-lucide-lock', metric: 'Data isolation', target: 'In-memory, never stored', value: 'Uploads are processed in memory and discarded — your files never touch our disk.' },
-  { icon: 'i-lucide-images', metric: 'Input formats', target: 'JPEG · PNG · WebP · GIF · HEIC · TIFF · RAW', value: 'Accept whatever a phone or camera produces; decoding happens server-side.' },
+  { icon: 'i-lucide-images', metric: 'Formats', target: 'JPEG · PNG · WebP · GIF · HEIC · TIFF in', value: 'Accept whatever a phone, scanner or camera produces; output JPEG, PNG or WebP — decoding happens server-side.' },
   { icon: 'i-lucide-code-2', metric: 'Integration', target: 'One endpoint, Bearer key', value: 'Works from any language — curl, Node, Python, Go.' },
   { icon: 'i-lucide-gift', metric: 'Free tier', target: '100 images / mo, no card', value: 'Evaluate in production before you pay a cent.' },
   { icon: 'i-lucide-gauge', metric: 'Usage', target: 'Live quota in every response', value: 'Track spend inline — no separate metering call.' },
