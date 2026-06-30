@@ -98,9 +98,19 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://pixsqueeze.alosha.dev/demo</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://monitor.alosha.dev/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://monitor.alosha.dev/demo</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://stride.alosha.dev/</loc>
@@ -108,8 +118,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://stride.alosha.dev/demo</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://eu-validate.alosha.dev/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://eu-validate.alosha.dev/demo</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

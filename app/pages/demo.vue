@@ -5,31 +5,48 @@ definePageMeta({ layout: 'default' })
 // hub (alosha.dev) renders a landing that links out to all of them.
 const { isHub, isStride, isMonitor, isEuValidate } = useSite()
 
+// Titles/descriptions are written to match what someone actually types into a
+// search engine ("convert gpx to tcx", "validate iban online") rather than
+// leading with the brand name — these pages are the top-of-funnel SEO catch,
+// not the marketing landing page.
 const seo = computed(() => {
   if (isHub) return {
     title: 'Live demos — Alosha',
     description: 'Try every Alosha product in your browser — compress images with PixSqueeze, analyse runs with Stride, validate EU identifiers with eu-validate, and more.',
-    url: 'https://alosha.dev/demo'
+    url: 'https://alosha.dev/demo',
+    image: 'https://alosha.dev/og.png'
   }
   if (isStride) return {
-    title: 'Stride — Live demo',
-    description: 'Analyse a GPX, TCX or FIT run right in your browser — pace, splits, elevation and heart-rate zones. Powered by the open-source Stride library.',
-    url: 'https://stride.alosha.dev/demo'
+    title: 'Convert GPX, TCX & FIT to pace, splits & HR zones — free demo',
+    description: 'Drop in a GPX, TCX or FIT run file and get pace, splits, elevation and heart-rate zones instantly — parsed entirely in your browser, nothing uploaded. Powered by the open-source Stride library.',
+    url: 'https://stride.alosha.dev/demo',
+    image: 'https://stride.alosha.dev/og-stride.png',
+    name: 'Stride demo',
+    schemaDescription: 'Browser-based GPX, TCX and FIT analyzer — pace, splits, elevation and heart-rate zones from a running activity file.'
   }
   if (isMonitor) return {
-    title: 'Monitor — Live demo',
-    description: 'See what a Monitor run looks like: multi-step checks, assertions, alerts and HTML reports. Powered by the open-source Monitor library.',
-    url: 'https://monitor.alosha.dev/demo'
+    title: 'See a Playwright website-monitoring run — free live demo',
+    description: 'Watch a multi-step browser check run live: assertions, alerts and an HTML report. Powered by the open-source Monitor library.',
+    url: 'https://monitor.alosha.dev/demo',
+    image: 'https://monitor.alosha.dev/og-monitor.png',
+    name: 'Monitor demo',
+    schemaDescription: 'Live demo of a Playwright-based website monitoring run, including assertions, alerts and an HTML report.'
   }
   if (isEuValidate) return {
-    title: 'eu-validate — Live demo',
-    description: 'Validate EU VAT, IBAN, BSN, KvK and postal codes right in your browser — offline, checksum-accurate. Powered by the open-source eu-validate library.',
-    url: 'https://eu-validate.alosha.dev/demo'
+    title: 'Validate IBAN, VAT, BSN & KvK numbers — free offline checker',
+    description: 'Check EU VAT, IBAN, Dutch BSN and KvK numbers instantly, entirely offline in your browser — checksum-accurate. Powered by the open-source eu-validate library.',
+    url: 'https://eu-validate.alosha.dev/demo',
+    image: 'https://eu-validate.alosha.dev/og-eu-validate.png',
+    name: 'eu-validate demo',
+    schemaDescription: 'Browser-based, offline checksum validator for EU VAT, IBAN, Dutch BSN and KvK numbers.'
   }
   return {
-    title: 'PixSqueeze — Live demo',
-    description: 'Compress an image right in your browser. No upload, no signup. Powered by the open-source PixSqueeze library.',
-    url: 'https://pixsqueeze.alosha.dev/demo'
+    title: 'Compress an image online — free, no upload, in-browser',
+    description: 'Compress a JPEG, PNG or WebP image right in your browser. No upload, no signup, nothing leaves your device. Powered by the open-source PixSqueeze library.',
+    url: 'https://pixsqueeze.alosha.dev/demo',
+    image: 'https://pixsqueeze.alosha.dev/og-pixsqueeze.png',
+    name: 'PixSqueeze demo',
+    schemaDescription: 'Browser-based image compressor for JPEG, PNG and WebP — runs locally, nothing is uploaded.'
   }
 })
 
@@ -38,8 +55,33 @@ useSeoMeta({
   description: () => seo.value.description,
   ogTitle: () => seo.value.title,
   ogDescription: () => seo.value.description,
-  ogUrl: () => seo.value.url
+  ogUrl: () => seo.value.url,
+  ogImage: () => seo.value.image,
+  twitterCard: 'summary_large_image',
+  twitterImage: () => seo.value.image
 })
+
+// Self-referential canonical — without it, the hub's /demo and each
+// subdomain's /demo can read as duplicate content of one another.
+useCanonical()
+
+// The hub page is a directory of demos, not a tool itself, so it gets no
+// SoftwareApplication schema. Every product branch gets one so search
+// engines see a free, working tool — not just another marketing page.
+if (!isHub) {
+  useJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    'name': seo.value.name,
+    'applicationCategory': 'DeveloperApplication',
+    'operatingSystem': 'Any',
+    'description': seo.value.schemaDescription,
+    'url': seo.value.url,
+    'image': seo.value.image,
+    'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+    'publisher': { '@type': 'Organization', 'name': 'Alosha', 'url': 'https://alosha.dev' }
+  })
+}
 
 const infoKey = ref<string | null>(null)
 function openInfo(key: string) {

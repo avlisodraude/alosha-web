@@ -67,6 +67,7 @@ export default defineNuxtConfig({
         '/login',
         '/docs',
         '/demo',
+        '/generator',
         '/reset-password',
         '/products',
         '/products/**',

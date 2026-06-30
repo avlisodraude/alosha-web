@@ -1,0 +1,13 @@
+lsof +D .git 2>/dev/null
+rm -f .git/index.lock .git/HEAD.lock .git/refs/heads/*.lock
+git add -A
+git commit -m "Fix /generator redirect bug and KvK copy disclosure
+
+- nuxt.config.ts: add /generator to Supabase auth-guard exclude list.
+  Root cause of eu-validate.alosha.dev/generator redirecting to
+  pixsqueeze.alosha.dev/login: the route wasn't excluded from the
+  Supabase auth guard, so unauthenticated visits hit /login first,
+  which the site middleware then bounced to the product domain.
+- app/utils/landings.ts: KvK feature card now discloses validation
+  is format-only (no public checksum), matching the README."
+git push origin main

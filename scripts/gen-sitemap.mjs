@@ -22,12 +22,19 @@ const hubPages = [
 ]
 
 // Product subdomains: [absolute-url, changefreq, priority]
+// Each product's own /demo is the highest-intent SEO page in the portfolio —
+// it's the actual free tool, not a marketing page about the tool — so it
+// must be listed per subdomain, not just once via the hub's /demo.
 const subdomains = [
   ['https://pixsqueeze.alosha.dev/', 'weekly', '0.9'],
   ['https://pixsqueeze.alosha.dev/docs', 'weekly', '0.8'],
+  ['https://pixsqueeze.alosha.dev/demo', 'weekly', '0.8'],
   ['https://monitor.alosha.dev/', 'weekly', '0.8'],
+  ['https://monitor.alosha.dev/demo', 'weekly', '0.7'],
   ['https://stride.alosha.dev/', 'weekly', '0.8'],
-  ['https://eu-validate.alosha.dev/', 'weekly', '0.8']
+  ['https://stride.alosha.dev/demo', 'weekly', '0.7'],
+  ['https://eu-validate.alosha.dev/', 'weekly', '0.8'],
+  ['https://eu-validate.alosha.dev/demo', 'weekly', '0.7']
 ]
 
 const blogDir = fileURLToPath(new URL('../content/blog', import.meta.url))
