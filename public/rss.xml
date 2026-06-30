@@ -5,8 +5,16 @@
     <link>https://alosha.dev/blog</link>
     <description>Notes on building privacy-first developer tools, from the Alosha studio.</description>
     <language>en</language>
-    <lastBuildDate>Mon, 29 Jun 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 30 Jun 2026 00:00:00 GMT</lastBuildDate>
     <atom:link href="https://alosha.dev/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What it takes to parse a Garmin .FIT file</title>
+      <link>https://alosha.dev/blog/what-it-takes-to-parse-a-garmin-fit-file</link>
+      <guid isPermaLink="true">https://alosha.dev/blog/what-it-takes-to-parse-a-garmin-fit-file</guid>
+      <description>FIT is a binary protocol, not a text format. Semicircles, scaled fields, self-describing messages and half-counted cadence — here&apos;s what&apos;s actually inside a .fit, and what Stride absorbs so you don&apos;t have to.</description>
+      <dc:creator>Eduardo</dc:creator>
+      <pubDate>Tue, 30 Jun 2026 00:00:00 GMT</pubDate>
+    </item>
     <item>
       <title>The math behind offline validation: Modulo 97 and the 11-proef</title>
       <link>https://alosha.dev/blog/the-math-behind-offline-validation</link>

@@ -58,10 +58,10 @@ export interface UseCase {
   mitigation: string
 }
 
-/** One bar in a comparison chart (latency in ms, or monthly cost in USD). */
+/** One bar in a comparison chart (latency in ms, monthly cost in USD, or build effort in dev-days). */
 export interface CompareBar {
   label: string
-  /** Numeric value — milliseconds when unit is 'ms', US dollars when 'usd'. */
+  /** Numeric value — ms when unit is 'ms', US dollars when 'usd', dev-days when 'days'. */
   value: number
   /** Optional caption shown next to the value. */
   note?: string
@@ -72,8 +72,8 @@ export interface CompareBar {
 export interface CompareChart {
   title: string
   description: string
-  /** How bar values are formatted: 'ms' (latency) or 'usd' (monthly cost). */
-  unit: 'ms' | 'usd'
+  /** How bar values are formatted: 'ms' (latency), 'usd' (monthly cost), or 'days' (build effort). */
+  unit: 'ms' | 'usd' | 'days'
   bars: CompareBar[]
 }
 
@@ -554,6 +554,45 @@ new Chart(canvas, paceChartConfig(activity, stats))`,
     km  3  4:58/km  ↑5m   HR 159bpm
     ...`
     },
+    useCases: {
+      title: 'Should you parse it yourself?',
+      description: 'Reading an activity file looks like a weekend job — until you meet the formats. Here is what you would actually take on, and what Stride absorbs.',
+      mitigationBrand: 'Stride',
+      risksLabel: 'What you’d own building it yourself',
+      cases: [
+        {
+          icon: 'i-lucide-file-cog',
+          title: 'Binary FIT decoding is a project, not a parse()',
+          lead: 'FIT is Garmin’s binary format — the native export from most watches. There is no XML to read: you decode a typed message stream and convert every field by hand.',
+          risks: [
+            { icon: 'i-lucide-binary', label: 'Binary message stream', detail: 'FIT is a compact binary protocol of definition and data messages — you need the Garmin SDK or a full decoder, not a string parser.' },
+            { icon: 'i-lucide-compass', label: 'Semicircle coordinates', detail: 'Latitude and longitude are stored as int32 semicircles; miss the 180 / 2³¹ conversion and the GPS track lands in the ocean.' },
+            { icon: 'i-lucide-footprints', label: 'Cadence half-counts', detail: 'Running cadence is recorded per foot (RPM); double it to steps per minute or every cadence figure reads half what athletes expect.' }
+          ],
+          mitigation: 'parse() auto-detects FIT, decodes the message stream with the official Garmin SDK, applies the semicircle conversion and cadence doubling, and returns the same normalised Activity you get from GPX or TCX — no per-format branching in your code.'
+        },
+        {
+          icon: 'i-lucide-ruler',
+          title: 'The running metrics hide the real work',
+          lead: 'Distance and pace look trivial until pauses, GPS noise and zone boundaries turn each metric into a pile of edge cases.',
+          risks: [
+            { icon: 'i-lucide-pause', label: 'Moving vs elapsed', detail: 'Stop at a crossing and naive elapsed time wrecks your average pace — you need a speed threshold to separate moving time from pauses.' },
+            { icon: 'i-lucide-heart-pulse', label: 'HR zone boundaries', detail: 'Z1–Z5 time-in-zone means bucketing every sample against %-of-max-HR thresholds and summing seconds — fiddly and easy to off-by-one.' },
+            { icon: 'i-lucide-split', label: 'Per-km splits', detail: 'Splits don’t fall on sample boundaries; you accumulate distance and time across points and emit a split exactly at each kilometre.' }
+          ],
+          mitigation: 'analyze() returns distance, moving vs elapsed time, avg and best pace, per-km splits, elevation and Z1–Z5 HR zones in one call — the pause threshold, zone bucketing and split accounting are already handled and tested.'
+        }
+      ],
+      chart: {
+        title: 'Build vs adopt: the engineering you’d take on',
+        description: 'A rough estimate of the work to build and own equivalent parsing and metrics in-house — before the first bug report from a watch you never tested.',
+        unit: 'days',
+        bars: [
+          { label: 'Build & own it yourself', value: 12, note: 'GPX/TCX/FIT decoders + metrics engine + 5 chart configs + ongoing format upkeep — rough estimate' },
+          { label: '@alosha/stride', value: 0, note: 'npm install — parse(), analyze() and charts included', highlight: true }
+        ]
+      }
+    },
     recipesTitle: 'Production recipes',
     recipesDescription: 'Real things you’d build with run data — solved with the published API.',
     recipes: [
@@ -589,12 +628,40 @@ console.log(stats.hrZones)             // { z1, z2, z3, z4, z5 } | null
 new Chart(canvas, hrZonesChartConfig(stats))`,
         why: 'analyze() computes Z1–Z5 time-in-zone from the HR stream against the max HR you pass and returns a ready Chart.js config — you get a training-quality breakdown without ever touching the zone formula.',
         sandbox: 'https://stackblitz.com/github/avlisodraude/stride/tree/main/examples/hr-zones'
+      },
+      {
+        title: 'Flag a negative split (or a late-race fade) from any run',
+        problem: 'Coaching and race-recap features want to know whether the second half was faster than the first — but pacing lives in the raw GPS stream, not in a tidy field.',
+        code: `import { parse, analyze, formatPace } from '@alosha/stride'
+
+// Did the runner finish faster than they started? (a "negative split")
+function splitAnalysis(activity) {
+  const { splits } = analyze(activity)     // clean per-km splits
+  if (splits.length < 2) return null
+
+  const mid = Math.floor(splits.length / 2)
+  const avgPace = (arr) =>
+    arr.reduce((sum, s) => sum + s.paceSecPerKm, 0) / arr.length
+
+  const firstHalf = avgPace(splits.slice(0, mid))
+  const secondHalf = avgPace(splits.slice(mid))
+  const deltaSec = Math.round(firstHalf - secondHalf)  // > 0 => back half quicker
+
+  return {
+    negativeSplit: deltaSec > 0,
+    firstHalfPace: formatPace(firstHalf),    // "6:00/km"
+    secondHalfPace: formatPace(secondHalf),  // "5:00/km"
+    swingSecPerKm: Math.abs(deltaSec),
+  }
+}`,
+        why: 'analyze() already emits clean per-km splits, so classifying the run is a couple of array reductions over stats.splits and a formatPace() call — you never re-derive pace from raw GPS points or reinvent the split accounting.',
+        sandbox: 'https://stackblitz.com/github/avlisodraude/stride/tree/main/examples/negative-split'
       }
     ],
     trustRows: [
       { icon: 'i-lucide-file-stack', metric: 'Formats', target: 'GPX · TCX · FIT', value: 'One API across Garmin, Strava, Coros and Wahoo exports — auto-detected.' },
       { icon: 'i-lucide-wifi-off', metric: 'Data isolation', target: 'Parsed locally, never uploaded', value: 'Runs in the browser or Node — activity files are parsed in-process and never sent anywhere.' },
-      { icon: 'i-lucide-globe', metric: 'Runtime', target: 'Browser + Node', value: 'Ships a prebuilt browser bundle plus ESM/CJS — no build step required.' },
+      { icon: 'i-lucide-globe', metric: 'Runtime', target: 'Browser + Node', value: 'Ships ESM and CJS builds — drops into any bundler (Vite, webpack, Next) and runs server-side in Node too.' },
       { icon: 'i-lucide-bar-chart-2', metric: 'Charts', target: 'Side-effect-free configs', value: 'Returns plain Chart.js configs; you own the canvas and keep it tree-shakeable.' },
       { icon: 'i-lucide-package', metric: 'Dependencies', target: 'chart.js + 2 parsers', value: 'Built on chart.js and battle-tested parsers — nothing exotic in your tree.' },
       { icon: 'i-lucide-file-code-2', metric: 'Type safety', target: 'Ships .d.ts (ESM + CJS)', value: 'Fully typed Activity and stats — autocompletion out of the box.' },
