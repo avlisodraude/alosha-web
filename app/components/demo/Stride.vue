@@ -158,11 +158,16 @@ async function loadSample() {
 
 // ---- charts ---------------------------------------------------------------
 
-const paceCanvas = ref<HTMLCanvasElement | null>(null)
-const splitsCanvas = ref<HTMLCanvasElement | null>(null)
-const elevationCanvas = ref<HTMLCanvasElement | null>(null)
-const hrCanvas = ref<HTMLCanvasElement | null>(null)
-const zonesCanvas = ref<HTMLCanvasElement | null>(null)
+// shallowRef (not ref) for DOM template refs: a plain ref<HTMLCanvasElement>
+// runs the element type through Vue's UnwrapRef, which under TS 6.0.3's lib.dom
+// structurally expands HTMLCanvasElement so `.value` no longer matches the
+// nominal `HTMLCanvasElement | null` that mount() expects. shallowRef keeps the
+// value type intact and is the correct choice for element refs anyway.
+const paceCanvas = shallowRef<HTMLCanvasElement | null>(null)
+const splitsCanvas = shallowRef<HTMLCanvasElement | null>(null)
+const elevationCanvas = shallowRef<HTMLCanvasElement | null>(null)
+const hrCanvas = shallowRef<HTMLCanvasElement | null>(null)
+const zonesCanvas = shallowRef<HTMLCanvasElement | null>(null)
 
 let charts: ChartInstance[] = []
 

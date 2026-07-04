@@ -58,6 +58,10 @@ export default defineNuxtConfig({
   },
 
   supabase: {
+    // Typed database client: makes serverSupabaseServiceRole()/useSupabaseClient()
+    // return SupabaseClient<Database> so table inserts are type-checked.
+    // (~ = app/ srcDir; keep in sync with supabase/migrations/*.)
+    types: '~/types/database.types.ts',
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
