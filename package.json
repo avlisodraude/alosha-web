@@ -12,7 +12,9 @@
     "gen:eu-validate": "node scripts/gen-eu-validate-bundle.mjs",
     "gen:sitemap": "node scripts/gen-sitemap.mjs",
     "gen:rss": "node scripts/gen-rss.mjs",
-    "check:og": "node scripts/check-og-images.mjs"
+    "check:og": "node scripts/check-og-images.mjs",
+    "dev:vue-select": "NUXT_PUBLIC_FORCE_SITE=vue-select nuxt dev",
+    "dev:pixsqueeze": "NUXT_PUBLIC_FORCE_SITE=pixsqueeze nuxt dev"
   },
   "dependencies": {
     "@alosha/vue-select": "^4.0.3",
