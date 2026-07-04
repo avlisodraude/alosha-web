@@ -15,6 +15,7 @@
     "check:og": "node scripts/check-og-images.mjs"
   },
   "dependencies": {
+    "@alosha/vue-select": "^4.0.0",
     "@iconify-json/lucide": "^1.2.111",
     "@iconify-json/simple-icons": "^1.2.85",
     "@nuxt/content": "^3.14.0",
@@ -22,7 +23,8 @@
     "@nuxtjs/supabase": "^2.0.9",
     "better-sqlite3": "^12.10.0",
     "nuxt": "^4.4.8",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.0",
+    "vue": "^3.5.35"
   },
   "devDependencies": {
     "@alosha/eu-validate": "^0.1.0",

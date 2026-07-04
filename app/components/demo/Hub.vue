@@ -12,7 +12,8 @@ const demoCopy: Record<string, { tagline: string, cta: string }> = {
   'pixsqueeze': { tagline: 'Compress JPEG, PNG & WebP right in your browser — no upload, no signup.', cta: 'Compress an image' },
   'stride': { tagline: 'Drop a GPX, TCX or FIT file and see pace, splits, elevation and heart-rate zones.', cta: 'Analyse a run' },
   'monitor': { tagline: 'Watch a monitoring run: multi-step checks, assertions, alerts and HTML reports.', cta: 'See a run' },
-  'eu-validate': { tagline: 'Validate EU VAT, IBAN, BSN, KvK and postal codes — offline and instant.', cta: 'Validate an identifier' }
+  'eu-validate': { tagline: 'Validate EU VAT, IBAN, BSN, KvK and postal codes — offline and instant.', cta: 'Validate an identifier' },
+  'vue-select': { tagline: 'Search, tag, group and virtually scroll thousands of options in a real Vue 3 component.', cta: 'Try the component' }
 }
 
 const demos = computed(() =>

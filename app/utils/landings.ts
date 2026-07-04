@@ -793,6 +793,236 @@ function splitAnalysis(activity) {
       description: 'Parse GPX, TCX and FIT files, compute running metrics — pace, HR zones, splits, elevation — and render Chart.js dashboards. Free open-source npm package.'
     },
     os: 'Node.js'
+  },
+  'vue-select': {
+    headline: 'Open source · Free npm package',
+    titleLead: 'Vue 3 select, dropdown',
+    titleAccent: '& typeahead',
+    description: 'A maintained Vue 3 fork of the classic vue-select — grouped options, a full WAI-ARIA 1.2 combobox, and native TypeScript types.',
+    descriptionStrong: 'Zero runtime dependencies, 7.42 KiB gzip.',
+    badges: FULL_BADGES,
+    heroChips: ['single', 'multi', 'tags', 'async'],
+    heroChipsNote: 'one component, every select pattern',
+    codeTitle: 'Install, register, select',
+    codeDescription: 'Vue 3 removed the global Vue object, so registration happens once on the app instance — then it behaves like any other v-model input.',
+    code: `# Install
+npm install @alosha/vue-select
+
+// main.ts — register once
+import { createApp } from 'vue'
+import vSelect from '@alosha/vue-select'
+import '@alosha/vue-select/dist/vue-select.css'
+
+createApp(App).component('v-select', vSelect).mount('#app')
+
+<!-- anywhere in your templates -->
+<v-select v-model="selected" :options="['Canada', 'Mexico', 'United States']" />`,
+    featuresTitle: 'Everything the stalled beta line never finished',
+    featuresDescription: 'This fork ships the accessibility, typing and stability work the Vue 3 line needed to leave beta.',
+    features: [
+      { icon: 'i-lucide-list-tree', title: 'Grouped options', description: 'Pass { label, options } group objects alongside flat options in the same array — group headers render as non-selectable, non-highlightable rows, and search filters within each group.' },
+      { icon: 'i-lucide-accessibility', title: 'WAI-ARIA 1.2 combobox', description: 'combobox role and aria-expanded live on the search input, aria-activedescendant tracks the highlighted option, and focus stays put after selecting or pressing Escape — spec-correct, not an approximation.' },
+      { icon: 'i-lucide-sliders-horizontal', title: 'Clear, deselect & dropdown control', description: 'A clear slot and deselect slot customize the × controls, and openDropdown()/closeDropdown()/toggleDropdown() are exposed on the instance so a parent can drive the dropdown through a template ref.' },
+      { icon: 'i-lucide-file-code-2', title: 'Native TypeScript types', description: 'Hand-authored dist/vue-select.d.ts resolves automatically through the package\'s types/exports fields — no @types/vue-select needed, and installing it would only shadow the accurate bundled types.' },
+      { icon: 'i-lucide-move', title: 'Positioning without a required dependency', description: 'Default positioning is plain JS with zero dependencies; opt into appendToBody plus a calculatePosition built on @floating-ui/dom (replacing the old Popper.js docs example) for auto-flip, scroll-aware placement.' },
+      { icon: 'i-lucide-tags', title: 'Tagging & SSR out of the box', description: 'Turn on taggable to let users create new options from free text, and render the same component server-side — SSR support ships alongside the browser build.' },
+      { icon: 'i-lucide-feather', title: 'Zero deps, opt-in virtual scroll', description: '7.42 KiB gzip (ES) / 6.56 KiB (UMD) with no runtime dependencies; flip on virtual-scroll to window very large option lists so only visible rows hit the DOM (experimental, fixed row height).' }
+    ],
+    useCases: {
+      title: 'Should you build your own select component?',
+      description: 'Why Vue 3 teams reach for a maintained package instead of hand-rolling an accessible combobox for every form.',
+      mitigationBrand: 'vue-select',
+      risksLabel: 'What you would own building it yourself',
+      cases: [
+        {
+          icon: 'i-lucide-accessibility',
+          title: 'WAI-ARIA combobox compliance is its own project',
+          lead: 'A filterable dropdown looks like a weekend component — until a screen reader gets involved.',
+          risks: [
+            { icon: 'i-lucide-file-warning', label: 'ARIA roles & states', detail: 'combobox role, aria-expanded, aria-activedescendant and aria-selected all have to move in lockstep with keyboard and mouse interaction, or assistive tech reports the wrong state.' },
+            { icon: 'i-lucide-keyboard', label: 'Keyboard contract', detail: 'Arrow keys, Escape, Tab and typeahead all need spec-correct focus handling — get the blur behavior wrong and Escape silently steals focus from the input.' },
+            { icon: 'i-lucide-scale', label: 'Ongoing spec drift', detail: 'Browser behavior changes (like Chrome\'s keyboard-focusable scrollers) keep breaking ARIA-compliant comboboxes that were correct when they shipped.' }
+          ],
+          mitigation: 'vue-select implements the WAI-ARIA 1.2 combobox pattern out of the box — combobox role and aria-expanded on the input, aria-activedescendant for the highlighted option, and blur handling that keeps focus in the input after selection or Escape. You inherit a maintained implementation instead of re-deriving the spec.'
+        },
+        {
+          icon: 'i-lucide-move-3d',
+          title: 'Dropdown positioning breaks the moment it needs to escape overflow',
+          lead: 'A dropdown that renders inline collides with modals, tables and any container with overflow:hidden — so real apps need to append it to the body and calculate its position by hand.',
+          risks: [
+            { icon: 'i-lucide-square-stack', label: 'Overflow clipping', detail: 'A dropdown menu inside a scrollable card or modal gets clipped unless it is portaled out and repositioned relative to the viewport.' },
+            { icon: 'i-lucide-ruler', label: 'Position math', detail: 'Flipping the menu above the input when there is no room below, and keeping its width in sync with the input, is nontrivial layout math to hand-roll.' },
+            { icon: 'i-lucide-package-minus', label: 'A whole extra dependency', detail: 'Getting this right from scratch usually means reaching for a positioning library and a ResizeObserver, just to solve dropdown placement.' }
+          ],
+          mitigation: 'vue-select exposes appendToBody plus a calculatePosition hook, with a documented recipe wired to @floating-ui/dom — so the menu can escape overflow and reposition itself on scroll and resize without shipping a positioning library in the core bundle.'
+        }
+      ],
+      chart: {
+        title: 'Build vs adopt: the engineering you\'d take on',
+        description: 'A rough estimate of the work to build and own an equivalent accessible, positioned, groupable select component in-house.',
+        unit: 'days',
+        bars: [
+          { label: 'Build & own an accessible combobox yourself', value: 8, note: 'ARIA compliance + keyboard handling + positioning + grouping + tests — rough estimate' },
+          { label: '@alosha/vue-select', value: 0, note: 'npm install — accessibility, positioning and grouping included', highlight: true }
+        ]
+      }
+    },
+    recipesTitle: 'Production recipes',
+    recipesDescription: 'Real problems Vue 3 forms hit — solved with the published API.',
+    recipes: [
+      {
+        title: 'Bind a controlled multi-select to a form library without fighting v-model',
+        problem: 'A multi-select tags field needs to participate in form validation state (touched, errors, submit) instead of owning its own local ref.',
+        code: `<script setup lang="ts">
+import { useField } from 'vee-validate'
+
+const { value, errorMessage, handleBlur } = useField<string[]>('skills', undefined, {
+  initialValue: []
+})
+</script>
+
+<template>
+  <v-select
+    v-model="value"
+    multiple
+    :options="['vue', 'react', 'svelte', 'angular']"
+    @search:blur="handleBlur"
+  />
+  <span v-if="errorMessage" class="text-red-500 text-sm">{{ errorMessage }}</span>
+</template>`,
+        why: 'modelValue/update:modelValue is a real Vue 3 v-model pair, so VeeValidate\'s useField() ref binds directly with no adapter layer. Forwarding the component\'s own search:blur event into handleBlur fires the field\'s touched/validate-on-blur behavior on the same interaction a native <select> would.'
+      },
+      {
+        title: 'Build a country/region picker with grouped options',
+        problem: 'A signup form needs a country picker with regional sub-groups, and hand-rolling grouped `<optgroup>`-style rendering means reimplementing filtering and keyboard navigation per group.',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+
+const country = ref<string | null>(null)
+
+const options = [
+  { label: 'Canada', code: 'CA' },
+  { label: 'United States', code: 'US' },
+  {
+    label: 'Europe',
+    options: [
+      { label: 'France', code: 'FR' },
+      { label: 'Germany', code: 'DE' },
+      { label: 'Netherlands', code: 'NL' }
+    ]
+  }
+]
+</script>
+
+<template>
+  <v-select
+    v-model="country"
+    :options="options"
+    :reduce="(option) => option.code"
+    label="label"
+  />
+</template>`,
+        why: 'Group objects ({ label, options }) mix freely with flat options in the same array, and group headers render as non-selectable, non-highlightable rows automatically — so a regionally-grouped picker needs no custom grouping logic, just a shaped options array. reduce keeps the bound value a plain country code instead of the whole option object.'
+      },
+      {
+        title: 'Search a remote API with debounce instead of filtering a static list',
+        problem: 'An options list of thousands of records can\'t ship to the client up front — the dropdown needs to query an API as the user types, without firing a request on every keystroke.',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+
+const options = ref<{ id: number; name: string }[]>([])
+let debounceTimer: ReturnType<typeof setTimeout>
+
+function onSearch(search: string, loading: (state: boolean) => void) {
+  clearTimeout(debounceTimer)
+  if (!search) return
+
+  loading(true)
+  debounceTimer = setTimeout(async () => {
+    const res = await fetch(\`/api/repos?q=\${encodeURIComponent(search)}\`)
+    options.value = await res.json()
+    loading(false)
+  }, 300)
+}
+</script>
+
+<template>
+  <v-select
+    :options="options"
+    :filterable="false"
+    label="name"
+    @search="onSearch"
+  />
+</template>`,
+        why: 'The search event hands you the raw query string plus a loading toggle, so debouncing and fetching are just your own setTimeout and fetch — no separate async mode to configure. filterable="false" turns off client-side filtering so the server\'s results are trusted as-is instead of being re-filtered against a label the API already matched.'
+      },
+      {
+        title: 'Render a richer option row without losing keyboard accessibility',
+        problem: 'A staff picker needs to show a person\'s team next to their name, but replacing the default row risks breaking the keyboard-highlight and selection behavior that makes the dropdown accessible.',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+
+interface Person { id: number; name: string; team: string }
+
+const selected = ref<Person | null>(null)
+const people: Person[] = [
+  { id: 1, name: 'Amara Diallo', team: 'Platform' },
+  { id: 2, name: 'Kenji Watanabe', team: 'Design' }
+]
+</script>
+
+<template>
+  <v-select v-model="selected" :options="people" label="name">
+    <template #option="{ option }">
+      <div class="flex items-center justify-between gap-2">
+        <span>{{ option.name }}</span>
+        <span class="text-xs text-muted">{{ option.team }}</span>
+      </div>
+    </template>
+    <template #selected-option="{ option }">
+      {{ option.name }}
+    </template>
+  </v-select>
+</template>`,
+        why: 'The option and selected-option slots receive slotProps.option — the original object by reference, not a cloned plain object — so a person\'s team renders next to their name without losing object identity. Keyboard navigation, aria-activedescendant and selection state are untouched by the slot — only what\'s painted changes, not how the combobox behaves.'
+      },
+      {
+        title: 'Keep a 50,000-row dropdown fast with virtual scrolling',
+        problem: 'A product picker backed by a large catalog renders one DOM node per option by default — at tens of thousands of rows, opening the dropdown itself becomes the bottleneck.',
+        code: `<script setup lang="ts">
+const bigList = Array.from({ length: 50000 }, (_, i) => \`Product #\${i + 1}\`)
+</script>
+
+<template>
+  <v-select
+    :options="bigList"
+    virtual-scroll
+    :virtual-scroll-row-height="36"
+  />
+</template>`,
+        why: 'With virtual-scroll on, only the rows inside the visible viewport (plus a small buffer) are actually rendered, so 50,000 options never hit the DOM at once and opening the dropdown stays fast regardless of list size. It\'s foundation-only today (fixed row height, no grouped-option support yet), so keep virtualScrollRowHeight matched to your option row\'s real rendered height and verify it before shipping.'
+      }
+    ],
+    trustRows: [
+      { icon: 'i-lucide-feather', metric: 'Bundle size', target: '7.42 KiB gzip (ES) · 6.56 KiB (UMD)', value: 'Small enough to drop into any form without a bundle-size conversation — plus 1.82 KiB gzip CSS.' },
+      { icon: 'i-lucide-package-x', metric: 'Dependencies', target: '0 runtime deps', value: 'No Popper.js, no floating-ui in the core bundle — advanced positioning via calculatePosition is opt-in, not bundled.' },
+      { icon: 'i-lucide-accessibility', metric: 'Accessibility', target: 'WAI-ARIA 1.2 combobox', value: 'combobox role, aria-expanded, aria-activedescendant and focus handling all follow the spec out of the box.' },
+      { icon: 'i-lucide-file-code-2', metric: 'Type safety', target: 'Ships .d.ts, no @types package', value: 'Hand-authored native TypeScript types resolve automatically — remove the community @types/vue-select package if you have it installed.' },
+      { icon: 'i-lucide-flask-conical', metric: 'Test coverage', target: '246 passing tests · 24 files', value: 'Expanded from 176 tests in this release, closing gaps in scroll and appendToBody behavior.' },
+      { icon: 'i-lucide-git-branch', metric: 'Provenance', target: 'MIT fork, full attribution', value: 'Builds on sagalbot/vue-select with MIT attribution preserved — the Vue 3 line reaches a real 4.0.0 stable instead of a beta stuck since late 2022.' },
+      { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT', value: 'MIT-licensed and ships entirely in your bundle — clears legal review and never breaks if alosha.dev goes away.' }
+    ],
+    supportTitle: 'Add vue-select to your project',
+    supportPoints: [
+      'Custom slots, positioning or theming help for your design system',
+      'Migration help moving off the abandoned vue-select@beta line',
+      'Priority bug fixes and answers straight from the maintainer'
+    ],
+    seo: {
+      title: 'vue-select — Vue 3 select, dropdown & typeahead component',
+      description: 'A maintained Vue 3 fork of vue-select with grouped options, WAI-ARIA 1.2 accessibility and native TypeScript types. Free open-source npm package.'
+    },
+    os: 'Browser, Node.js (SSR)'
   }
 }
 

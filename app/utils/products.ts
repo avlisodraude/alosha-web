@@ -12,7 +12,7 @@
  */
 
 /** Which site a request resolves to. `hub` is the root domain. */
-export type Site = 'hub' | 'product' | 'monitor' | 'stride' | 'eu-validate'
+export type Site = 'hub' | 'product' | 'monitor' | 'stride' | 'eu-validate' | 'vue-select'
 
 export type ProductKind = 'package' | 'hosted-api'
 export type ProductStatus = 'live' | 'beta' | 'soon'
@@ -110,6 +110,19 @@ export const PRODUCTS: ProductDef[] = [
     kind: 'package',
     status: 'live',
     statsKey: 'euValidate'
+  },
+  {
+    site: 'vue-select',
+    slug: 'vue-select',
+    name: 'vue-select',
+    npmName: '@alosha/vue-select',
+    repo: 'https://github.com/avlisodraude/vue-select',
+    icon: 'i-lucide-list-filter',
+    blurb: 'A maintained Vue 3 fork of the classic select/dropdown/typeahead component — grouped options, full WAI-ARIA accessibility, and native TypeScript types.',
+    audience: 'For Vue 3 teams building forms and admin UIs',
+    kind: 'package',
+    status: 'live',
+    statsKey: 'vueSelect'
   }
 ]
 

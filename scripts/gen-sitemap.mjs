@@ -34,7 +34,9 @@ const subdomains = [
   ['https://stride.alosha.dev/', 'weekly', '0.8'],
   ['https://stride.alosha.dev/demo', 'weekly', '0.7'],
   ['https://eu-validate.alosha.dev/', 'weekly', '0.8'],
-  ['https://eu-validate.alosha.dev/demo', 'weekly', '0.7']
+  ['https://eu-validate.alosha.dev/demo', 'weekly', '0.7'],
+  ['https://vue-select.alosha.dev/', 'weekly', '0.8'],
+  ['https://vue-select.alosha.dev/demo', 'weekly', '0.7']
 ]
 
 const blogDir = fileURLToPath(new URL('../content/blog', import.meta.url))

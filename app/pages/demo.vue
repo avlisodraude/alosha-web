@@ -3,7 +3,7 @@ definePageMeta({ layout: 'default' })
 
 // /demo is a shared route: each product subdomain renders its own demo, and the
 // hub (alosha.dev) renders a landing that links out to all of them.
-const { isHub, isStride, isMonitor, isEuValidate } = useSite()
+const { isHub, isStride, isMonitor, isEuValidate, isVueSelect } = useSite()
 
 // Titles/descriptions are written to match what someone actually types into a
 // search engine ("convert gpx to tcx", "validate iban online") rather than
@@ -39,6 +39,14 @@ const seo = computed(() => {
     image: 'https://eu-validate.alosha.dev/og-eu-validate.png',
     name: 'eu-validate demo',
     schemaDescription: 'Browser-based, offline checksum validator for EU VAT, IBAN, Dutch BSN and KvK numbers.'
+  }
+  if (isVueSelect) return {
+    title: 'Vue 3 select, multiselect & dropdown — live component demo',
+    description: 'Try a searchable single select, a tagging multiselect, grouped options and virtual scrolling — real, interactive Vue 3 components, not screenshots. Powered by the open-source vue-select library.',
+    url: 'https://vue-select.alosha.dev/demo',
+    image: 'https://vue-select.alosha.dev/og-vue-select.png',
+    name: 'vue-select demo',
+    schemaDescription: 'Live, interactive Vue 3 select/dropdown component demo — searchable single select, tagging multiselect, grouped options and virtual scrolling.'
   }
   return {
     title: 'Compress an image online — free, no upload, in-browser',
@@ -442,6 +450,7 @@ function parseInline(text: string): { code: boolean, value: string }[] {
   <DemoStride v-else-if="isStride" />
   <DemoMonitor v-else-if="isMonitor" />
   <DemoEuValidate v-else-if="isEuValidate" />
+  <DemoVueSelect v-else-if="isVueSelect" />
   <div
     v-else
     class="max-w-4xl mx-auto px-4 py-10 space-y-8"

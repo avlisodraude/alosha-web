@@ -3,6 +3,7 @@ overrides:
   esbuild: '>=0.28.1'
 
 allowBuilds:
+  '@alosha/vue-select': false
   '@parcel/watcher': false
   '@tailwindcss/oxide': false
   better-sqlite3: true
@@ -12,3 +13,4 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - '@alosha/eu-validate@0.1.0'
+  - '@alosha/vue-select@4.0.0'

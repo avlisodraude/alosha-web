@@ -26,6 +26,7 @@ interface OssStats extends PackageStats {
   monitor: PackageStats
   stride: PackageStats
   euValidate: PackageStats
+  vueSelect: PackageStats
 }
 
 /** "https://github.com/owner/repo" -> "owner/repo" for the GitHub API. */
