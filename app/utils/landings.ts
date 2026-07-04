@@ -182,22 +182,26 @@ r.errors  // → ['CHECKSUM_FAILED']  (fails 11-proef)`,
         title: 'Reject bad VAT numbers before you ever call VIES',
         problem: 'A B2B checkout must apply reverse-charge VAT, but VIES is slow, rate-limited, and rejects malformed input anyway.',
         code: `import { validateVAT } from '@alosha/eu-validate'
+// Hosted VIES lookups (@alosha/eu-validate/cloud) ship in Phase 3 — coming soon.
+// The offline validateVAT() below works today; the createClient()/verifyVAT() calls
+// are forward-looking. See "Confirm VAT registration…" below for graceful fallback.
 import { createClient } from '@alosha/eu-validate/cloud'
 
 const eu = createClient({ apiKey: process.env.ALOSHA_KEY! })
 
 export async function resolveVat(input: string) {
-  // 1. Offline first — structure + checksum, zero network, instant.
+  // 1. Offline first — structure + checksum, zero network, instant. Works today.
   const offline = validateVAT(input)
   if (!offline.valid) {
     return { ok: false, reason: offline.errors[0] } // e.g. 'CHECKSUM_FAILED'
   }
 
   // 2. Spend a VIES round-trip only on numbers that already pass the checksum.
+  //    (Requires the hosted /cloud tier — coming soon.)
   const live = await eu.verifyVAT(offline.normalized!)
   return { ok: live.registered, company: live.name }
 }`,
-        why: 'The offline checksum filters out typos and fabricated numbers for free, so the slow, rate-limited VIES call only ever runs on structurally valid input. You cut checkout latency and stop burning your VIES quota on garbage.',
+        why: 'The offline checksum filters out typos and fabricated numbers for free, so the slow, rate-limited VIES call only ever runs on structurally valid input. You cut checkout latency and stop burning your VIES quota on garbage. (The hosted VIES step uses @alosha/eu-validate/cloud, which ships in Phase 3 — the offline validation works today.)',
         sandbox: 'https://stackblitz.com/github/avlisodraude/eu-validate/tree/main/examples/reject-bad-vat'
       },
       {
