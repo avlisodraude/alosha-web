@@ -5,7 +5,7 @@ const { products } = useSite()
 
 useSeoMeta({
   title: 'About — Alosha',
-  description: 'The Alosha philosophy: improve open source, distribute it, build sustainable products with AI-assisted development. The portfolio today: PixSqueeze, Monitor, Stride and eu-validate.'
+  description: 'The Alosha philosophy: improve open source, distribute it, build sustainable products with AI-assisted development. The portfolio today: PixSqueeze, Monitor, Stride, eu-validate and vue-select.'
 })
 
 useBreadcrumbs([
@@ -83,7 +83,7 @@ const portfolio = products
           The portfolio today
         </h2>
         <p class="text-muted text-center mt-1">
-          Four products, each built on an open-source core anyone can use freely.
+          Five products, each built on an open-source core anyone can use freely.
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
           <UPageCard

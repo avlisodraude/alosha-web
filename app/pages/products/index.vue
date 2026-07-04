@@ -5,9 +5,9 @@ const { productUrl, products } = useSite()
 
 useSeoMeta({
   title: 'Products — Alosha',
-  description: 'Developer products built and maintained by Alosha — PixSqueeze, Monitor, Stride and eu-validate. Each grown from an open-source foundation.',
+  description: 'Developer products built and maintained by Alosha — PixSqueeze, Monitor, Stride, eu-validate and vue-select. Each grown from an open-source foundation.',
   ogTitle: 'Products — Alosha',
-  ogDescription: 'Developer products built and maintained by Alosha — PixSqueeze, Monitor, Stride and eu-validate.',
+  ogDescription: 'Developer products built and maintained by Alosha — PixSqueeze, Monitor, Stride, eu-validate and vue-select.',
   ogImage: 'https://alosha.dev/og.png',
   ogUrl: 'https://alosha.dev/products',
   twitterCard: 'summary_large_image',

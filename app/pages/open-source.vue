@@ -3,9 +3,9 @@ definePageMeta({ layout: 'hub' })
 
 useSeoMeta({
   title: 'Open Source — Alosha',
-  description: 'Open-source projects maintained by Alosha — pixsqueeze, @alosha/monitor, @alosha/stride and @alosha/eu-validate. MIT licensed, free to use.',
+  description: 'Open-source projects maintained by Alosha — pixsqueeze, @alosha/monitor, @alosha/stride, @alosha/eu-validate and @alosha/vue-select. MIT licensed, free to use.',
   ogTitle: 'Open Source — Alosha',
-  ogDescription: 'MIT-licensed developer packages maintained by Alosha — pixsqueeze, monitor, stride and eu-validate.',
+  ogDescription: 'MIT-licensed developer packages maintained by Alosha — pixsqueeze, monitor, stride, eu-validate and vue-select.',
   ogImage: 'https://alosha.dev/og.png',
   ogUrl: 'https://alosha.dev/open-source',
   twitterCard: 'summary_large_image',
@@ -17,6 +17,8 @@ useBreadcrumbs([
   { name: 'Open Source' }
 ])
 
+const { products } = useSite()
+
 const { data: stats } = await useFetch('/api/oss-stats', {
   server: false,
   query: { _: Date.now() }
@@ -25,48 +27,23 @@ const { data: stats } = await useFetch('/api/oss-stats', {
 const nf = new Intl.NumberFormat('en-US')
 const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
 
-const packages = computed(() => [
-  {
-    name: '@alosha/pixsqueeze',
-    icon: 'i-lucide-image',
-    description: 'JavaScript image compressor with server-side HEIC, TIFF & camera-RAW conversion.',
-    stats: stats.value?.pixsqueeze,
-    github: 'https://github.com/avlisodraude/pixsqueeze',
-    npm: 'https://www.npmjs.com/package/@alosha/pixsqueeze',
-    product: 'https://pixsqueeze.alosha.dev',
-    productLabel: 'Hosted product'
-  },
-  {
-    name: '@alosha/monitor',
-    icon: 'i-lucide-activity',
-    description: 'Playwright-based website monitoring — checks, retries, screenshots on failure, and multi-channel alerts.',
-    stats: stats.value?.monitor,
-    github: 'https://github.com/avlisodraude/monitor',
-    npm: 'https://www.npmjs.com/package/@alosha/monitor',
-    product: 'https://monitor.alosha.dev',
-    productLabel: 'Product page'
-  },
-  {
-    name: '@alosha/stride',
-    icon: 'i-lucide-footprints',
-    description: 'Parse GPX, TCX and FIT files, compute running metrics (pace, HR zones, splits), and render Chart.js dashboards — zero config.',
-    stats: stats.value?.stride,
-    github: 'https://github.com/avlisodraude/stride',
-    npm: 'https://www.npmjs.com/package/@alosha/stride',
-    product: 'https://stride.alosha.dev',
-    productLabel: 'Product page'
-  },
-  {
-    name: '@alosha/eu-validate',
-    icon: 'i-lucide-badge-check',
-    description: 'Offline EU identifier validation — checksum-accurate VAT (14 countries), IBAN, BSN and KvK checks with zero dependencies.',
-    stats: stats.value?.euValidate,
-    github: 'https://github.com/avlisodraude/eu-validate',
-    npm: 'https://www.npmjs.com/package/@alosha/eu-validate',
-    product: 'https://eu-validate.alosha.dev',
-    productLabel: 'Product page'
-  }
-])
+// Registry-driven: cards derive from the product registry, so adding a package
+// to app/utils/products.ts makes it appear here automatically — no edit needed.
+type PkgStats = { weeklyDownloads?: number | null, stars?: number | null, version?: string | null }
+const statsMap = computed(() => (stats.value ?? {}) as unknown as Record<string, PkgStats>)
+
+const packages = computed(() =>
+  products.map(p => ({
+    name: p.npmName,
+    icon: p.icon,
+    description: p.blurb,
+    stats: statsMap.value[p.statsKey ?? p.slug],
+    github: p.repo,
+    npm: p.npm,
+    product: p.url,
+    productLabel: p.kind === 'hosted-api' ? 'Hosted product' : 'Product page'
+  }))
+)
 
 const totalWeekly = computed(() =>
   packages.value.reduce((sum, p) => sum + (p.stats?.weeklyDownloads ?? 0), 0)
