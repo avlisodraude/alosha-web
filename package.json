@@ -15,7 +15,7 @@
     "check:og": "node scripts/check-og-images.mjs"
   },
   "dependencies": {
-    "@alosha/vue-select": "^4.0.0",
+    "@alosha/vue-select": "^4.0.2",
     "@iconify-json/lucide": "^1.2.111",
     "@iconify-json/simple-icons": "^1.2.85",
     "@nuxt/content": "^3.14.0",

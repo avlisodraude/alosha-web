@@ -13,4 +13,4 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - '@alosha/eu-validate@0.1.0'
-  - '@alosha/vue-select@4.0.0'
+  - '@alosha/vue-select'

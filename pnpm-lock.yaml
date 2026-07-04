@@ -13,8 +13,8 @@ importers:
   .:
     dependencies:
       '@alosha/vue-select':
-        specifier: ^4.0.0
-        version: 4.0.0(vue@3.5.35(typescript@6.0.3))
+        specifier: ^4.0.2
+        version: 4.0.2(vue@3.5.35(typescript@6.0.3))
       '@iconify-json/lucide':
         specifier: ^1.2.111
         version: 1.2.111
@@ -71,8 +71,8 @@ packages:
   '@alosha/eu-validate@0.1.0':
     resolution: {integrity: sha512-xIcIjMko/66nXf1IA696voEP3g3H3kwt6t72jBKLfdGBRU7c5qpQF6uaOSFkv8HU9vllOljBLcIkz+MLgeVBfw==}
 
-  '@alosha/vue-select@4.0.0':
-    resolution: {integrity: sha512-VRKnTYJ+dHvuz5U+vLVRhgBNHusOrJHABOzZhIqQnQ6oqdqS3thQtrbiDMS5DO6mKBhqMF2aeu34PHEZlF1J9Q==}
+  '@alosha/vue-select@4.0.2':
+    resolution: {integrity: sha512-TI1I49R8A7zMzVegrTHOeGsVvJJTjDueUlBxsMh9qDhHPrHNpwQk8eKRXyFwD6ksqqY0YZ1XoK2fvz2PQVN/8Q==}
     peerDependencies:
       vue: 3.x
 
@@ -5852,7 +5852,7 @@ snapshots:
 
   '@alosha/eu-validate@0.1.0': {}
 
-  '@alosha/vue-select@4.0.0(vue@3.5.35(typescript@6.0.3))':
+  '@alosha/vue-select@4.0.2(vue@3.5.35(typescript@6.0.3))':
     dependencies:
       vue: 3.5.35(typescript@6.0.3)
 
