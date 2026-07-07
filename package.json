@@ -14,7 +14,8 @@
     "gen:rss": "node scripts/gen-rss.mjs",
     "check:og": "node scripts/check-og-images.mjs",
     "dev:vue-select": "NUXT_PUBLIC_FORCE_SITE=vue-select nuxt dev",
-    "dev:pixsqueeze": "NUXT_PUBLIC_FORCE_SITE=pixsqueeze nuxt dev"
+    "dev:pixsqueeze": "NUXT_PUBLIC_FORCE_SITE=pixsqueeze nuxt dev",
+    "dev:xlsx": "NUXT_PUBLIC_FORCE_SITE=xlsx nuxt dev"
   },
   "dependencies": {
     "@alosha/vue-select": "^4.0.3",

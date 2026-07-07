@@ -1027,6 +1027,197 @@ const bigList = Array.from({ length: 50000 }, (_, i) => \`Product #\${i + 1}\`)
       description: 'A maintained Vue 3 fork of vue-select with grouped options, WAI-ARIA 1.2 accessibility and native TypeScript types. Free open-source npm package.'
     },
     os: 'Browser, Node.js (SSR)'
+  },
+
+  'xlsx': {
+    headline: 'Open source · Free npm package',
+    titleLead: 'Modern TypeScript',
+    titleAccent: 'Excel reader & writer',
+    description: 'Read and write real .xlsx workbooks from a single ESM-first document model — an ExcelJS-shaped rewrite with a low-memory streaming writer for exports too big to buffer.',
+    descriptionStrong: 'One runtime dependency, full type declarations.',
+    badges: FULL_BADGES,
+    heroChips: ['styles', 'formulas', 'CF', 'data validation', 'comments', 'images', 'streaming'],
+    heroChipsNote: 'one package, the whole workbook',
+    codeTitle: 'Write, then read it back',
+    codeDescription: 'A Workbook instance, cells addressed by A1 or (row, col), and a Uint8Array out — no Node Buffer required.',
+    code: `# Install
+npm install @alosha/xlsx
+
+import { Workbook } from '@alosha/xlsx'
+
+const workbook = new Workbook()
+const sheet = workbook.addWorksheet('Report')
+
+sheet.getCell('A1').value = 'Item'
+sheet.getCell('B1').value = 'Qty'
+sheet.getCell('B2').value = 42
+sheet.getCell('B2').numFmt = '#,##0'
+sheet.mergeCells('A4:B4')
+
+// Browser-safe — never touches node:fs.
+const bytes: Uint8Array = await workbook.xlsx.writeBuffer()
+
+// Node convenience wrapper.
+await workbook.xlsx.writeFile('report.xlsx')
+
+// Read it back.
+const loaded = new Workbook()
+await loaded.xlsx.load(bytes)
+loaded.getWorksheet('Report')?.getCell('B2').value // → 42`,
+    featuresTitle: 'Everything a real workbook needs',
+    featuresDescription: 'Built to be the package you reach for instead of hand-rolling OOXML or fighting ExcelJS internals.',
+    features: [
+      { icon: 'i-lucide-file-diff', title: 'ExcelJS-shaped API', description: 'new Workbook(), addWorksheet, getCell, getRow and the workbook.xlsx.writeBuffer/writeFile/load/readFile accessor all behave the way ExcelJS code already expects.' },
+      { icon: 'i-lucide-replace', title: 'Drop-in @alosha/xlsx/compat', description: 'Swap the import — `import ExcelJS from "@alosha/xlsx/compat"` — and keep the rest of an ExcelJS codebase unchanged: same cell.type numbers, same style-setter precedence, same addRow/row.values behaviour.' },
+      { icon: 'i-lucide-paintbrush', title: 'Styles, number formats & merges', description: 'Fonts, fills, borders, alignment, protection and number formats round-trip on read and write, with mergeCells and a useStyles toggle for lean exports.' },
+      { icon: 'i-lucide-table-properties', title: 'Freeze panes & auto-filter', description: 'worksheet.views for frozen/split panes and worksheet.autoFilter for the header-row filter range both round-trip as data, not just on write.' },
+      { icon: 'i-lucide-palette', title: 'Conditional formatting', description: 'cellIs, expression, the text-contains family, top10, aboveAverage/belowAverage, duplicateValues/uniqueValues, plus self-visualising colorScale, dataBar and iconSet rules.' },
+      { icon: 'i-lucide-list-checks', title: 'Data validation', description: 'List dropdowns and whole/decimal/date/time/text-length/custom constraints, settable per cell or per range via worksheet.dataValidations.add(sqref, dv).' },
+      { icon: 'i-lucide-message-square', title: 'Cell comments', description: 'cell.note round-trips plain-string and rich-text notes with a multi-author table — real comments{n}.xml plus the legacy VML anchor Excel expects.' },
+      { icon: 'i-lucide-image', title: 'Embedded images', description: 'workbook.addImage + worksheet.addImage support two-cell range anchors and one-cell/pixel-extent anchors for logos, charts-as-images and photo grids.' },
+      { icon: 'i-lucide-gauge', title: 'Low-memory streaming writer', description: 'The stream.xlsx.WorkbookWriter-shaped API renders and deflates each row as you commit it — ~15.6× less peak memory than the buffered writer at ~1.9× the throughput on 500k-row exports.' }
+    ],
+    useCases: {
+      title: 'Why teams move off ExcelJS or a home-grown OOXML writer',
+      description: 'The engineering cost of hand-rolling spreadsheet export/import, or staying on a stalled dependency, compared to a maintained, typed alternative.',
+      mitigationBrand: '@alosha/xlsx',
+      risksLabel: 'What you take on building or maintaining it yourself',
+      cases: [
+        {
+          icon: 'i-lucide-memory-stick',
+          title: 'Large exports blow up memory on the buffered path',
+          lead: 'A finance or reporting export with hundreds of thousands of rows built as one in-memory workbook can push a Node process into GC thrash or an OOM kill, right when the report matters most.',
+          risks: [
+            { icon: 'i-lucide-server-crash', label: 'Peak memory', detail: 'Holding every row, style and shared string in memory before serializing means peak RSS scales linearly with row count.' },
+            { icon: 'i-lucide-hourglass', label: 'Time to first byte', detail: 'Nothing streams to the client until the entire workbook has been built and zipped, so large exports feel frozen.' },
+            { icon: 'i-lucide-cpu', label: 'Container limits', detail: 'A report that worked in dev OOMs in a memory-capped serverless function or container once real production data volume hits it.' }
+          ],
+          mitigation: 'The streaming WorkbookWriter renders and deflates each row into the output archive the moment you call row.commit(), keeping peak memory roughly flat regardless of row count — with the same styles, merges, panes, data validation, conditional formatting, comments and images as the buffered writer.'
+        },
+        {
+          icon: 'i-lucide-git-pull-request-arrow',
+          title: 'Porting off ExcelJS usually means a rewrite, not a swap',
+          lead: 'Most alternatives to ExcelJS have a different API shape, so migrating existing spreadsheet code means touching every call site — a project few teams have time to start.',
+          risks: [
+            { icon: 'i-lucide-file-code-2', label: 'API drift', detail: 'Different constructor, cell-access and serialization surfaces mean every getCell/addRow/style call needs to be rewritten and re-tested.' },
+            { icon: 'i-lucide-bug', label: 'Silent behaviour changes', detail: 'Subtle differences — style-setter merge vs replace semantics, cell.type numbering — can pass a smoke test and still corrupt output in production.' },
+            { icon: 'i-lucide-clock-4', label: 'Migration cost', detail: 'A full rewrite of the spreadsheet layer competes with every other roadmap item, so teams stay on an unmaintained dependency instead.' }
+          ],
+          mitigation: '@alosha/xlsx/compat is built to be a same-behaviour drop-in — matching cell.type numbers, ExcelJS\'s whole-category style-setter precedence, and the addRow/row.values/worksheet.columns contract — so most codebases port with a single import-line change, not a rewrite.'
+        }
+      ],
+      chart: {
+        title: 'Peak memory: buffered vs streaming writer',
+        description: 'Representative peak memory writing 500,000 rows × 5 columns. Streaming keeps memory roughly flat regardless of row count; buffered scales with it.',
+        unit: 'usd',
+        bars: [
+          { label: 'Buffered writer — full workbook in memory', value: 100, note: 'peak memory, indexed to 100' },
+          { label: 'Streaming WorkbookWriter', value: 6, note: '~15.6× less peak memory, ~1.9× the throughput', highlight: true }
+        ]
+      }
+    },
+    recipesTitle: 'Production recipes',
+    recipesDescription: 'Real spreadsheet problems, solved with the published API.',
+    recipes: [
+      {
+        title: 'Swap ExcelJS for @alosha/xlsx without touching the rest of the file',
+        problem: 'An existing report generator is built on ExcelJS, but the dependency has gone quiet and a full rewrite of every getCell/style call isn\'t on the roadmap.',
+        code: `- import ExcelJS from "exceljs"
++ import ExcelJS from "@alosha/xlsx/compat"
+
+const workbook = new ExcelJS.Workbook()
+const sheet = workbook.addWorksheet('Report')
+
+sheet.getCell('A1').value = 'Item'
+sheet.getColumn(2).width = 12
+sheet.getCell('B1').font = { bold: true }
+
+await workbook.xlsx.writeFile('report.xlsx')`,
+        why: '@alosha/xlsx/compat backs the same new Workbook()/addWorksheet/getCell surface with @alosha/xlsx\'s model and writer, matching ExcelJS\'s cell.type numbers and whole-category style-setter precedence — so everything below the import line keeps working unchanged.'
+      },
+      {
+        title: 'Export 500,000 rows without holding the workbook in memory',
+        problem: 'A nightly export job builds a report so large that the buffered writer\'s in-memory workbook risks OOM-killing the container it runs in.',
+        code: `import { WorkbookWriter } from '@alosha/xlsx'
+
+const wb = new WorkbookWriter({ filename: 'big-report.xlsx' })
+const ws = wb.addWorksheet('Data')
+
+for (const record of hugeDataset) {
+  ws.addRow([record.id, record.name, record.amount]).commit() // flushed now
+}
+ws.commit()
+await wb.commit()`,
+        why: 'row.commit() renders and deflates that row into the output archive immediately instead of retaining it, so peak memory stays roughly flat regardless of row count — about 15.6× less peak memory than the buffered writer at 1.9× the throughput on a 500k-row benchmark. Pass a Writable instead of a filename to stream straight to an HTTP response, or omit both to consume the writer as an AsyncIterable<Uint8Array>.'
+      },
+      {
+        title: 'Highlight out-of-range values with conditional formatting',
+        problem: 'A QA dashboard needs failing measurements to visually stand out, without a client-side pass recomputing which cells are out of spec on every render.',
+        code: `const ws = workbook.addWorksheet('Measurements')
+
+ws.addConditionalFormatting({
+  ref: 'B2:B500',
+  rules: [
+    { type: 'cellIs', operator: 'greaterThan', formulae: [100], style: { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFC7CE' } } } },
+    { type: 'colorScale', cfvo: [{ type: 'min' }, { type: 'max' }], color: ['FFF8696B', 'FF63BE7B'] }
+  ]
+})`,
+        why: 'Conditional formatting rules are written straight into the sheet\'s <conditionalFormatting> blocks with differential styles deduped into a shared <dxfs> pool, so Excel and LibreOffice recompute the highlighting themselves from the live cell values — no client-side re-derivation, and the rules survive a round-trip through readWorkbookBuffer.'
+      },
+      {
+        title: 'Constrain input to a dropdown list with a same-sheet data validation',
+        problem: 'A generated order-entry template needs a status column restricted to a fixed set of values, enforced by Excel itself, not just documented in a comment.',
+        code: `const ws = workbook.addWorksheet('Orders')
+
+ws.dataValidations.add('C2:C200', {
+  type: 'list',
+  allowBlank: true,
+  showInputMessage: true,
+  showErrorMessage: true,
+  formulae: ['"Pending,Shipped,Cancelled"']
+})`,
+        why: 'The <dataValidations> block is emitted in the correct CT_Worksheet position, so Excel renders a real in-cell dropdown and rejects free-text input on that range — enforcement lives in the file itself, so it holds even if the workbook is edited outside your app.'
+      },
+      {
+        title: 'Freeze the header row and add an auto-filter in one pass',
+        problem: 'A generated report is unreadable once scrolled — the header row disappears and there\'s no way to filter columns without manually re-adding both in Excel after every export.',
+        code: `const ws = workbook.addWorksheet('Report')
+
+ws.views = [{ state: 'frozen', xSplit: 0, ySplit: 1, topLeftCell: 'A2' }]
+ws.autoFilter = 'A1:F1'`,
+        why: 'views and autoFilter are real worksheet state, not writer-only options — they round-trip on read the same way ExcelJS\'s do, so a workbook you generate and then re-open programmatically still reports the frozen pane and filter range exactly as written.'
+      },
+      {
+        title: 'Attach a reviewer note to a cell without a full comments library',
+        problem: 'A generated audit spreadsheet needs to flag specific cells with a reviewer\'s explanation, in a form Excel\'s native comment popup understands — not a sidecar column.',
+        code: `const ws = workbook.addWorksheet('Audit')
+
+ws.getCell('D12').note = {
+  texts: { richText: [{ text: 'Flagged: ', font: { bold: true } }, { text: 'exceeds threshold by 12%' }] },
+  author: 'Compliance'
+}`,
+        why: 'cell.note writes a real comments{n}.xml note/author table plus the legacy VML anchor Excel\'s comment UI expects, so the note shows up as a native comment bubble with the author attributed — no sidecar sheet or custom popover to build and keep in sync.'
+      }
+    ],
+    trustRows: [
+      { icon: 'i-lucide-feather', metric: 'Dependencies', target: '1 runtime dep (fflate)', value: 'A single deflate dependency — no ExcelJS-style dependency sprawl to audit.' },
+      { icon: 'i-lucide-file-code-2', metric: 'Type safety', target: 'Full .d.ts, ESM + CJS', value: 'Ships both module formats with complete type declarations — no separate @types package.' },
+      { icon: 'i-lucide-gauge', metric: 'Streaming writer', target: '~15.6× less peak memory', value: 'At ~1.9× the throughput of the buffered writer on a 500k-row × 5-col benchmark.' },
+      { icon: 'i-lucide-replace', metric: 'ExcelJS parity', target: '@alosha/xlsx/compat drop-in', value: 'Same cell.type numbers, same style-setter precedence, same addRow/row.values contract.' },
+      { icon: 'i-lucide-table', metric: 'Feature coverage', target: 'Styles, CF, validation, comments, images', value: 'Read and write for the workbook features real reports and templates actually use.' },
+      { icon: 'i-lucide-server', metric: 'Runtime targets', target: 'Node ≥ 20, browser, edge', value: 'writeBuffer()/readWorkbookBuffer() never touch node:fs, so the same code runs in a worker or edge function.' },
+      { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT', value: 'MIT-licensed and ships entirely in your bundle — clears legal review and never breaks if alosha.dev goes away.' }
+    ],
+    supportPoints: [
+      'Migration help porting a large ExcelJS codebase onto @alosha/xlsx/compat',
+      'Guidance wiring the streaming writer into an existing export pipeline',
+      'Priority bug fixes and answers straight from the maintainer'
+    ],
+    seo: {
+      title: '@alosha/xlsx — modern TypeScript Excel (.xlsx) reader & writer',
+      description: 'ESM-first, ExcelJS-compatible Excel (.xlsx) reader and writer for TypeScript — styles, conditional formatting, data validation, comments, images and a low-memory streaming writer. Free open-source npm package.'
+    },
+    os: 'Node.js, Browser'
   }
 }
 

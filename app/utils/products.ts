@@ -12,7 +12,7 @@
  */
 
 /** Which site a request resolves to. `hub` is the root domain. */
-export type Site = 'hub' | 'product' | 'monitor' | 'stride' | 'eu-validate' | 'vue-select'
+export type Site = 'hub' | 'product' | 'monitor' | 'stride' | 'eu-validate' | 'vue-select' | 'xlsx'
 
 export type ProductKind = 'package' | 'hosted-api'
 export type ProductStatus = 'live' | 'beta' | 'soon'
@@ -123,6 +123,19 @@ export const PRODUCTS: ProductDef[] = [
     kind: 'package',
     status: 'live',
     statsKey: 'vueSelect'
+  },
+  {
+    site: 'xlsx',
+    slug: 'xlsx',
+    name: 'Alosha XLSX',
+    npmName: '@alosha/xlsx',
+    repo: 'https://github.com/avlisodraude/alosha-xlsx',
+    icon: 'i-lucide-table',
+    blurb: 'Modern TypeScript Excel (.xlsx) reader & writer — ESM-first, ExcelJS-compatible, with a low-memory streaming writer.',
+    audience: 'For apps that read & write spreadsheets',
+    kind: 'package',
+    status: 'live',
+    statsKey: 'xlsx'
   }
 ]
 
