@@ -3,7 +3,7 @@ definePageMeta({ layout: 'default' })
 
 // /demo is a shared route: each product subdomain renders its own demo, and the
 // hub (alosha.dev) renders a landing that links out to all of them.
-const { isHub, isStride, isMonitor, isEuValidate, isVueSelect } = useSite()
+const { isHub, isStride, isMonitor, isEuValidate, isVueSelect, isXlsx } = useSite()
 
 // Titles/descriptions are written to match what someone actually types into a
 // search engine ("convert gpx to tcx", "validate iban online") rather than
@@ -47,6 +47,14 @@ const seo = computed(() => {
     image: 'https://vue-select.alosha.dev/og-vue-select.png',
     name: 'vue-select demo',
     schemaDescription: 'Live, interactive Vue 3 select/dropdown component demo — searchable single select, tagging multiselect, grouped options and virtual scrolling.'
+  }
+  if (isXlsx) return {
+    title: 'Read & write Excel .xlsx in JavaScript — free in-browser demo',
+    description: 'Build a real .xlsx workbook — styles, formulas, conditional formatting, comments, images — then read one back, entirely in your browser. Powered by the open-source @alosha/xlsx library, a modern ExcelJS-compatible rewrite.',
+    url: 'https://xlsx.alosha.dev/demo',
+    image: 'https://xlsx.alosha.dev/og-xlsx.png',
+    name: '@alosha/xlsx demo',
+    schemaDescription: 'Browser-based Excel .xlsx reader and writer — styles, formulas, conditional formatting, data validation, comments and embedded images, generated and parsed locally.'
   }
   return {
     title: 'Compress an image online — free, no upload, in-browser',
@@ -451,6 +459,7 @@ function parseInline(text: string): { code: boolean, value: string }[] {
   <DemoMonitor v-else-if="isMonitor" />
   <DemoEuValidate v-else-if="isEuValidate" />
   <DemoVueSelect v-else-if="isVueSelect" />
+  <DemoXlsx v-else-if="isXlsx" />
   <div
     v-else
     class="max-w-4xl mx-auto px-4 py-10 space-y-8"
