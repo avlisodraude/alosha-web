@@ -9,12 +9,13 @@ import { PRODUCTS, resolveProduct, resolvedProducts, productForSite, type Site }
  *   stride.alosha.dev       → 'stride'       (Stride app)
  *   eu-validate.alosha.dev  → 'eu-validate'  (eu-validate package landing)
  *   vue-select.alosha.dev   → 'vue-select'   (vue-select package landing)
+ *   xlsx.alosha.dev         → 'xlsx'         (xlsx package landing)
  *
  * Subdomain → site matching is driven by the product registry
  * (`app/utils/products.ts`), so adding a package is a one-line registry change.
  *
  * SSR-safe: host comes from useRequestURL(), which is populated on both the
- * server and the client. For local dev, set NUXT_PUBLIC_FORCE_SITE=hub|product|monitor|stride|eu-validate|vue-select.
+ * server and the client. For local dev, set NUXT_PUBLIC_FORCE_SITE=hub|product|monitor|stride|eu-validate|vue-select|xlsx.
  */
 export function useSite() {
   const config = useRuntimeConfig()
@@ -43,6 +44,7 @@ export function useSite() {
     isStride: site === 'stride',
     isEuValidate: site === 'eu-validate',
     isVueSelect: site === 'vue-select',
+    isXlsx: site === 'xlsx',
     host,
     isProdHost: host.endsWith('alosha.dev'),
     /** The active product (registry entry with resolved links), or null on the hub. */
@@ -55,6 +57,7 @@ export function useSite() {
     monitorUrl: resolveProduct(PRODUCTS.find(p => p.site === 'monitor')!).url,
     strideUrl: resolveProduct(PRODUCTS.find(p => p.site === 'stride')!).url,
     euValidateUrl: resolveProduct(PRODUCTS.find(p => p.site === 'eu-validate')!).url,
-    vueSelectUrl: resolveProduct(PRODUCTS.find(p => p.site === 'vue-select')!).url
+    vueSelectUrl: resolveProduct(PRODUCTS.find(p => p.site === 'vue-select')!).url,
+    xlsxUrl: resolveProduct(PRODUCTS.find(p => p.site === 'xlsx')!).url
   }
 }
