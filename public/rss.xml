@@ -5,8 +5,16 @@
     <link>https://alosha.dev/blog</link>
     <description>Notes on building privacy-first developer tools, from the Alosha studio.</description>
     <language>en</language>
-    <lastBuildDate>Tue, 30 Jun 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 08 Jul 2026 00:00:00 GMT</lastBuildDate>
     <atom:link href="https://alosha.dev/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Introducing @alosha/xlsx: a modern Excel library for TypeScript</title>
+      <link>https://alosha.dev/blog/introducing-alosha-xlsx</link>
+      <guid isPermaLink="true">https://alosha.dev/blog/introducing-alosha-xlsx</guid>
+      <description>The npm spreadsheet shelf went stale. @alosha/xlsx is an ESM-first, dependency-light .xlsx reader and writer with an ExcelJS-compatible shim and a low-memory streaming writer.</description>
+      <dc:creator>Eduardo</dc:creator>
+      <pubDate>Wed, 08 Jul 2026 00:00:00 GMT</pubDate>
+    </item>
     <item>
       <title>What it takes to parse a Garmin .FIT file</title>
       <link>https://alosha.dev/blog/what-it-takes-to-parse-a-garmin-fit-file</link>
