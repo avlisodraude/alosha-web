@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@alosha/vue-select": "^4.0.3",
+    "@alosha/xlsx": "^0.11.0",
     "@iconify-json/lucide": "^1.2.111",
     "@iconify-json/simple-icons": "^1.2.85",
     "@nuxt/content": "^3.14.0",
