@@ -1298,7 +1298,7 @@ ws.getCell('D12').note = {
       { icon: 'i-lucide-gauge', metric: 'Streaming writer', target: '~15.6× less peak memory', value: 'At ~1.9× the throughput of the buffered writer on a 500k-row × 5-col benchmark.' },
       { icon: 'i-lucide-replace', metric: 'ExcelJS parity', target: '@alosha/xlsx/compat drop-in', value: 'Same cell.type numbers, same style-setter precedence, same addRow/row.values contract.' },
       { icon: 'i-lucide-table', metric: 'Feature coverage', target: 'Styles, CF, validation, comments, images', value: 'Read and write for the workbook features real reports and templates actually use.' },
-      { icon: 'i-lucide-server', metric: 'Runtime targets', target: 'Node ≥ 20, browser, edge', value: 'writeBuffer()/readWorkbookBuffer() never touch node:fs, so the same code runs in a worker or edge function.' },
+      { icon: 'i-lucide-server', metric: 'Runtime targets', target: 'Node ≥ 22, browser, edge', value: 'writeBuffer()/readWorkbookBuffer() never touch node:fs, so the same code runs in a worker or edge function.' },
       { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT', value: 'MIT-licensed and ships entirely in your bundle — clears legal review and never breaks if alosha.dev goes away.' }
     ],
     supportPoints: [
