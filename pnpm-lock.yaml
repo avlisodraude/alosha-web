@@ -16,8 +16,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.3(vue@3.5.35(typescript@6.0.3))
       '@alosha/xlsx':
-        specifier: ^0.11.0
-        version: 0.11.0
+        specifier: ^0.12.0
+        version: 0.12.0
       '@iconify-json/lucide':
         specifier: ^1.2.111
         version: 1.2.111
@@ -79,8 +79,8 @@ packages:
     peerDependencies:
       vue: 3.x
 
-  '@alosha/xlsx@0.11.0':
-    resolution: {integrity: sha512-ER24FREO2M5nYQe31x6P0YoyJ2Tuzg2hZ3pdj3ipzxkbHoDMTZu0OcUNoXMKBt2RoaOZkBJl3AJZyA6wGAxFpA==}
+  '@alosha/xlsx@0.12.0':
+    resolution: {integrity: sha512-bjP2B2CRdozqDsaoIZQj8Ese6AgAd/hIkx03QIlvqz/vNAFy2l1lG0wN1pgANsVUTb7Q8VxsiBZVXWHuwPjxbQ==}
     engines: {node: '>=22'}
 
   '@antfu/install-pkg@1.1.0':
@@ -5866,7 +5866,7 @@ snapshots:
     dependencies:
       vue: 3.5.35(typescript@6.0.3)
 
-  '@alosha/xlsx@0.11.0':
+  '@alosha/xlsx@0.12.0':
     dependencies:
       fflate: 0.8.3
 

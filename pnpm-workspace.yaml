@@ -14,4 +14,4 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - '@alosha/eu-validate@0.1.0'
   - '@alosha/vue-select'
-  - '@alosha/xlsx@0.11.0'
+  - '@alosha/xlsx'
