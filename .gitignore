@@ -25,3 +25,10 @@ logs
 
 # Internal infra docs — keep private, never commit
 INFRASTRUCTURE.md
+
+# Claude / AI tooling — local only
+.claude/
+.claudeignore
+CLAUDE.md
+CLAUDE_SKILLS.md
+repomix.config.json
