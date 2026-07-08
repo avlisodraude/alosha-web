@@ -1151,6 +1151,99 @@ await wb.commit()`,
         why: 'row.commit() renders and deflates that row into the output archive immediately instead of retaining it, so peak memory stays roughly flat regardless of row count — about 15.6× less peak memory than the buffered writer at 1.9× the throughput on a 500k-row benchmark. Pass a Writable instead of a filename to stream straight to an HTTP response, or omit both to consume the writer as an AsyncIterable<Uint8Array>.'
       },
       {
+        title: 'Write a formula, rich text, a hyperlink and an error code — all as plain cell values',
+        problem: 'A dashboard row needs a cached formula result, mixed-format text in one cell, a clickable link and a native #DIV/0! — without reaching for a different API per cell type.',
+        code: `const ws = workbook.addWorksheet('Dashboard')
+const row = ws.addRow([])
+
+// Formula with a cached result
+row.getCell('A').value = { formula: 'SUM(B2:B10)', result: 420 }
+
+// Inline rich text within a single cell
+row.getCell('B').value = {
+  richText: [
+    { text: 'Status: ', font: { bold: true } },
+    { text: 'Critical Failure', font: { color: { argb: 'FFFF0000' } } }
+  ]
+}
+
+// Hyperlink with a tooltip
+row.getCell('C').value = {
+  text: 'Open Issue',
+  hyperlink: 'https://github.com/avlisodraude/alosha-xlsx/issues/1',
+  tooltip: 'Click to view issue tracker'
+}
+
+// Native Excel error code
+row.getCell('D').value = { error: '#DIV/0!' }`,
+        why: 'cell.value is a TypeScript discriminated union, so every advanced shape — formula, richText, hyperlink, error — is just an object you assign, with autocomplete narrowing the fields for each. There is no per-type setter to memorise, and each shape round-trips through readWorkbookBuffer as the same object you wrote.'
+      },
+      {
+        title: 'Append hundreds of rows that inherit the header\'s fonts and borders',
+        problem: 'A ledger export re-declares the same font and border on every row of the loop, because porting ExcelJS\'s cryptic i / o / i+ inheritance flags never felt worth it.',
+        code: `const ws = workbook.addWorksheet('Ledger')
+
+// Style a baseline row once
+const header = ws.addRow(['Date', 'Account', 'Amount'])
+header.font = { bold: true, size: 12 }
+header.border = { bottom: { style: 'medium' } }
+
+// New rows inherit the row above's structure — no re-styling per iteration
+ws.addRow(['2026-07-08', 'Operating Costs', 1250.0], { inheritFrom: 'above' })
+ws.addRow(['2026-07-09', 'SaaS Licensing', 450.0], { inheritFrom: 'above' })`,
+        why: 'inheritFrom takes a readable { inheritFrom: "above" | "below", includeEmpty? } object instead of ExcelJS\'s i / o / i+ / o+ DSL, and copies the source row\'s style (and, with includeEmpty, its per-cell styles) — so a long write loop stays declarative without re-setting fonts and borders each pass.'
+      },
+      {
+        title: 'Generate a workbook synchronously, with a tree-shakeable import',
+        problem: 'An edge function or a bundle-size-sensitive frontend needs to emit a spreadsheet without the overhead of an async accessor or pulling the whole library into the bundle.',
+        code: `import { Workbook, writeWorkbookBuffer, readWorkbookBuffer } from '@alosha/xlsx'
+
+const wb = new Workbook()
+wb.addWorksheet('SyncReport').getCell('A1').value = 'Instant Export'
+
+// Pure, synchronous serialization — returns a Uint8Array
+const bytes: Uint8Array = writeWorkbookBuffer(wb)
+
+// Read it back, also synchronously
+const roundTripped = readWorkbookBuffer(bytes)`,
+        why: 'writeWorkbookBuffer/readWorkbookBuffer are the environment-agnostic core the workbook.xlsx.* accessor wraps — fully synchronous (no promise/microtask overhead) and tree-shakeable, so a bundler drops the reader when you only write. Neither touches node:fs, so the same call runs in a browser, worker or edge runtime.'
+      },
+      {
+        title: 'Drop a logo or chart image into a report',
+        problem: 'An invoice or branded report needs an embedded image placed precisely — either spanning a block of cells or pinned at an exact pixel size.',
+        code: `// Intern the raw bytes once on the workbook
+const imageId = workbook.addImage({ buffer: companyLogoBytes, extension: 'png' })
+
+const ws = workbook.addWorksheet('Invoice')
+
+// Option A: span a two-cell range
+ws.addImage(imageId, 'A1:C3')
+
+// Option B: pin a top-left cell with an explicit pixel size
+ws.addImage(imageId, { tl: { col: 5, row: 1 }, ext: { width: 180, height: 60 } })`,
+        why: 'workbook.addImage interns the bytes once and returns a numeric id, so the same image placed on several sheets is stored only once. worksheet.addImage accepts either a two-cell range string or a one-cell pixel-extent anchor — the two placement forms ExcelJS reports covering in day-to-day use.'
+      },
+      {
+        title: 'Convert between A1 strings and row/column indexes without hand-rolling the math',
+        problem: 'A dynamic sheet builder keeps re-implementing "turn (row, col) into C10" and "how many rows does B2:G15 span" — fiddly code that\'s easy to get subtly wrong.',
+        code: `import { colLetterToNumber, colNumberToLetter, encodeAddress, decodeAddress, Range } from '@alosha/xlsx'
+
+colLetterToNumber('AA')  // 27
+colNumberToLetter(5)     // 'E'
+encodeAddress(10, 3)     // 'C10'  (args are row, col)
+decodeAddress('C10')     // { row: 10, col: 3, address: 'C10' }
+
+const range = new Range('B2:G15')
+range.range                   // 'B2:G15'
+range.tl                      // 'B2'  top-left address
+range.br                      // 'G15' bottom-right address
+range.top                     // 2   first row
+range.left                    // 2   first column (B)
+range.count                   // 84  total cells
+range.bottom - range.top + 1  // 14  row count`,
+        why: 'The same cached A1 codecs the library uses internally are exported, so an index-to-address conversion is one call instead of a bespoke helper. Range normalises any A1 range into 1-based top/left/bottom/right bounds with tl/br/range/count accessors — construct it with new Range(\'B2:G15\') or new Range(top, left, bottom, right).'
+      },
+      {
         title: 'Highlight out-of-range values with conditional formatting',
         problem: 'A QA dashboard needs failing measurements to visually stand out, without a client-side pass recomputing which cells are out of spec on every render.',
         code: `const ws = workbook.addWorksheet('Measurements')
