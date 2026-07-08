@@ -26,6 +26,9 @@ function fmtValue(value: number): string {
   if (props.config.chart.unit === 'usd') {
     return `$${Math.round(value).toLocaleString('en-US')}/mo`
   }
+  if (props.config.chart.unit === 'mib') {
+    return `${Math.round(value).toLocaleString('en-US')} MiB`
+  }
   if (props.config.chart.unit === 'days') {
     return value < 1 ? '~0 days' : `~${Math.round(value).toLocaleString('en-US')} dev-days`
   }

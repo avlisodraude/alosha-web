@@ -58,10 +58,10 @@ export interface UseCase {
   mitigation: string
 }
 
-/** One bar in a comparison chart (latency in ms, monthly cost in USD, or build effort in dev-days). */
+/** One bar in a comparison chart (latency in ms, monthly cost in USD, build effort in dev-days, or peak memory in MiB). */
 export interface CompareBar {
   label: string
-  /** Numeric value — ms when unit is 'ms', US dollars when 'usd', dev-days when 'days'. */
+  /** Numeric value — ms when unit is 'ms', US dollars when 'usd', dev-days when 'days', MiB when 'mib'. */
   value: number
   /** Optional caption shown next to the value. */
   note?: string
@@ -72,8 +72,8 @@ export interface CompareBar {
 export interface CompareChart {
   title: string
   description: string
-  /** How bar values are formatted: 'ms' (latency), 'usd' (monthly cost), or 'days' (build effort). */
-  unit: 'ms' | 'usd' | 'days'
+  /** How bar values are formatted: 'ms' (latency), 'usd' (monthly cost), 'days' (build effort), or 'mib' (peak memory). */
+  unit: 'ms' | 'usd' | 'days' | 'mib'
   bars: CompareBar[]
 }
 
@@ -1036,7 +1036,7 @@ const bigList = Array.from({ length: 50000 }, (_, i) => \`Product #\${i + 1}\`)
     description: 'Read and write real .xlsx workbooks from a single ESM-first document model — an ExcelJS-shaped rewrite with a low-memory streaming writer for exports too big to buffer.',
     descriptionStrong: 'One runtime dependency, full type declarations.',
     badges: FULL_BADGES,
-    heroChips: ['styles', 'formulas', 'CF', 'data validation', 'comments', 'images', 'streaming'],
+    heroChips: ['styles', 'formulas', 'conditional formatting', 'data validation', 'comments', 'images', 'streaming'],
     heroChipsNote: 'one package, the whole workbook',
     codeTitle: 'Write, then read it back',
     codeDescription: 'A Workbook instance, cells addressed by A1 or (row, col), and a Uint8Array out — no Node Buffer required.',
@@ -1068,7 +1068,7 @@ loaded.getWorksheet('Report')?.getCell('B2').value // → 42`,
     featuresDescription: 'Built to be the package you reach for instead of hand-rolling OOXML or fighting ExcelJS internals.',
     features: [
       { icon: 'i-lucide-file-diff', title: 'ExcelJS-shaped API', description: 'new Workbook(), addWorksheet, getCell, getRow and the workbook.xlsx.writeBuffer/writeFile/load/readFile accessor all behave the way ExcelJS code already expects.' },
-      { icon: 'i-lucide-replace', title: 'Drop-in @alosha/xlsx/compat', description: 'Swap the import — `import ExcelJS from "@alosha/xlsx/compat"` — and keep the rest of an ExcelJS codebase unchanged: same cell.type numbers, same style-setter precedence, same addRow/row.values behaviour.' },
+      { icon: 'i-lucide-replace', title: 'Drop-in @alosha/xlsx/compat', description: 'Swap the import — `import ExcelJS from "@alosha/xlsx/compat"` — and most of an ExcelJS codebase keeps working unchanged: same cell.type numbers, same style-setter precedence, same addRow/row.values behaviour. A few behaviours differ (a Uint8Array instead of a Node Buffer, a 0-based worksheets array, a couple of deferred features) — the migration guide lists them.' },
       { icon: 'i-lucide-paintbrush', title: 'Styles, number formats & merges', description: 'Fonts, fills, borders, alignment, protection and number formats round-trip on read and write, with mergeCells and a useStyles toggle for lean exports.' },
       { icon: 'i-lucide-table-properties', title: 'Freeze panes & auto-filter', description: 'worksheet.views for frozen/split panes and worksheet.autoFilter for the header-row filter range both round-trip as data, not just on write.' },
       { icon: 'i-lucide-palette', title: 'Conditional formatting', description: 'cellIs, expression, the text-contains family, top10, aboveAverage/belowAverage, duplicateValues/uniqueValues, plus self-visualising colorScale, dataBar and iconSet rules.' },
@@ -1109,10 +1109,10 @@ loaded.getWorksheet('Report')?.getCell('B2').value // → 42`,
       chart: {
         title: 'Peak memory: buffered vs streaming writer',
         description: 'Representative peak memory writing 500,000 rows × 5 columns. Streaming keeps memory roughly flat regardless of row count; buffered scales with it.',
-        unit: 'usd',
+        unit: 'mib',
         bars: [
-          { label: 'Buffered writer — full workbook in memory', value: 100, note: 'peak memory, indexed to 100' },
-          { label: 'Streaming WorkbookWriter', value: 6, note: '~15.6× less peak memory, ~1.9× the throughput', highlight: true }
+          { label: 'Buffered writer — full workbook in memory', value: 2900, note: '≈2.9 GiB peak — scales with row count' },
+          { label: 'Streaming WorkbookWriter', value: 188, note: '≈15.6× less peak memory, ~1.9× the throughput', highlight: true }
         ]
       }
     },
