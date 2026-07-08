@@ -23,10 +23,11 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   // Multi-domain: alosha.dev = hub, pixsqueeze.alosha.dev = PixSqueeze, monitor.alosha.dev = Monitor,
-  // stride.alosha.dev = Stride, eu-validate.alosha.dev = eu-validate.
-  // Override per environment with NUXT_PUBLIC_HUB_URL / NUXT_PUBLIC_PRODUCT_URL /
-  // NUXT_PUBLIC_MONITOR_URL / NUXT_PUBLIC_STRIDE_URL / NUXT_PUBLIC_EU_VALIDATE_URL /
-  // NUXT_PUBLIC_FORCE_SITE (hub|product|monitor|stride|eu-validate for local dev).
+  // stride.alosha.dev = Stride, eu-validate.alosha.dev = eu-validate, vue-select.alosha.dev = vue-select,
+  // xlsx.alosha.dev = xlsx. The legacy entries below override per environment with
+  // NUXT_PUBLIC_HUB_URL / NUXT_PUBLIC_PRODUCT_URL / NUXT_PUBLIC_MONITOR_URL / NUXT_PUBLIC_STRIDE_URL /
+  // NUXT_PUBLIC_EU_VALIDATE_URL; newer products (vue-select, xlsx) use the registry in app/utils/products.ts.
+  // Override app domain detection for local dev with NUXT_PUBLIC_FORCE_SITE (hub|product|monitor|stride|eu-validate|vue-select|xlsx).
   runtimeConfig: {
     // Server-only. Override in prod via env: RESEND_API_KEY / NUXT_CONTACT_TO / NUXT_CONTACT_FROM
     resendApiKey: '',

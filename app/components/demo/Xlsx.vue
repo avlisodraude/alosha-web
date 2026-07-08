@@ -9,7 +9,7 @@
  *   5. Install + links.
  *
  * The library is imported lazily inside the client-only handlers (`await
- * import('@alosha/xlsx')`) so it never touches the SSR bundle — its single
+ * import('@alosha/xlsx/compat')`) so it never touches the SSR bundle — its single
  * transitive dep is fflate, and everything here runs in the browser.
  */
 
@@ -85,7 +85,7 @@ async function generate() {
   buildError.value = ''
   building.value = true
   try {
-    const { Workbook } = await import('@alosha/xlsx')
+    const { Workbook } = await import('@alosha/xlsx/compat')
     const wb = new Workbook()
     wb.creator = '@alosha/xlsx demo'
     wb.created = new Date()
@@ -165,7 +165,7 @@ async function generate() {
             type: 'colorScale',
             priority: 1,
             cfvo: [{ type: 'min' }, { type: 'max' }],
-            color: [{ argb: 'FFF8696B' }, { argb: 'FF63BE7B' }]
+            color: ['FFF8696B', 'FF63BE7B']
           }
         ]
       })
@@ -219,8 +219,8 @@ async function generate() {
       about.getCell('A4').value = `Created ${new Date().toISOString().slice(0, 10)}`
     }
 
-    const bytes = await wb.xlsx.writeBuffer()
-    const blob = new Blob([bytes], {
+    const bytes = await (wb as unknown as { xlsx: { writeBuffer(): Promise<Uint8Array> } }).xlsx.writeBuffer()
+    const blob = new Blob([bytes as unknown as BlobPart], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     })
     const url = URL.createObjectURL(blob)
@@ -274,10 +274,10 @@ async function readWorkbook(file: File) {
   grids.value = []
   readFileName.value = file.name
   try {
-    const { Workbook } = await import('@alosha/xlsx')
+    const { Workbook } = await import('@alosha/xlsx/compat')
     const wb = new Workbook()
     const buf = new Uint8Array(await file.arrayBuffer())
-    await wb.xlsx.load(buf)
+    await (wb as unknown as { xlsx: { load(buffer: Uint8Array): Promise<void> } }).xlsx.load(buf)
 
     const out: SheetGrid[] = []
     for (const ws of wb.worksheets) {
