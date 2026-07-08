@@ -37,8 +37,8 @@ const subdomains = [
   ['https://eu-validate.alosha.dev/demo', 'weekly', '0.7'],
   ['https://vue-select.alosha.dev/', 'weekly', '0.8'],
   ['https://vue-select.alosha.dev/demo', 'weekly', '0.7'],
-  // xlsx has no /demo yet (no interactive browser demo built for it).
-  ['https://xlsx.alosha.dev/', 'weekly', '0.8']
+  ['https://xlsx.alosha.dev/', 'weekly', '0.8'],
+  ['https://xlsx.alosha.dev/demo', 'weekly', '0.8']
 ]
 
 const blogDir = fileURLToPath(new URL('../content/blog', import.meta.url))
