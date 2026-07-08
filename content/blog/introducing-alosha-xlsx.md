@@ -47,7 +47,7 @@ ws.commit()
 await wb.commit()
 ```
 
-On a representative 500,000-row × 5-column benchmark, that's roughly **15.6× less peak memory** than the buffered writer, at about **1.9× the throughput** — and it keeps the same styles, merges, panes, data validation, conditional formatting, comments and images the buffered writer supports. Pass a `Writable` instead of a filename to stream straight to an HTTP response, or omit both to consume the writer as an `AsyncIterable<Uint8Array>`.
+On a representative 500,000-row × 5-column benchmark, that's roughly **14.2× less peak memory** than the buffered writer, at about **1.9× the throughput** — and it keeps the same styles, merges, panes, data validation, conditional formatting, comments and images the buffered writer supports. Pass a `Writable` instead of a filename to stream straight to an HTTP response, or omit both to consume the writer as an `AsyncIterable<Uint8Array>`.
 
 ## Change one import
 

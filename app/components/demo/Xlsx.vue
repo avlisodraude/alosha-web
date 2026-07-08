@@ -333,7 +333,7 @@ const comparison = [
   { label: 'TypeScript', xlsx: 'Strict, first-class types', note: 'A discriminated-union value model, not `any`.' },
   { label: 'Dependencies', xlsx: 'One (fflate)', note: 'A single tiny zip dep — no transitive baggage.' },
   { label: 'Distribution', xlsx: 'npm-native, maintained', note: 'Published to npm and actively maintained.' },
-  { label: 'Peak memory @ 500k rows', xlsx: '188 MiB (streaming)', note: '≈15.6× lower than a buffered write (2.9 GiB), from BENCHMARKS.md.' }
+  { label: 'Peak memory @ 500k rows', xlsx: '191 MiB (streaming)', note: '≈14.2× lower than a buffered write (2.7 GiB), from BENCHMARKS.md.' }
 ]
 </script>
 
@@ -647,7 +647,7 @@ const comparison = [
           target="_blank"
           class="text-primary hover:underline"
         >BENCHMARKS.md</a>
-        (500,000 rows × 5 cols): the streaming writer holds ≈15.6× less peak memory than a buffered
+        (500,000 rows × 5 cols): the streaming writer holds ≈14.2× less peak memory than a buffered
         write while sustaining ≈1.9× the throughput.
       </p>
     </section>

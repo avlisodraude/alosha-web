@@ -1075,7 +1075,7 @@ loaded.getWorksheet('Report')?.getCell('B2').value // → 42`,
       { icon: 'i-lucide-list-checks', title: 'Data validation', description: 'List dropdowns and whole/decimal/date/time/text-length/custom constraints, settable per cell or per range via worksheet.dataValidations.add(sqref, dv).' },
       { icon: 'i-lucide-message-square', title: 'Cell comments', description: 'cell.note round-trips plain-string and rich-text notes with a multi-author table — real comments{n}.xml plus the legacy VML anchor Excel expects.' },
       { icon: 'i-lucide-image', title: 'Embedded images', description: 'workbook.addImage + worksheet.addImage support two-cell range anchors and one-cell/pixel-extent anchors for logos, charts-as-images and photo grids.' },
-      { icon: 'i-lucide-gauge', title: 'Low-memory streaming writer', description: 'The stream.xlsx.WorkbookWriter-shaped API renders and deflates each row as you commit it — ~15.6× less peak memory than the buffered writer at ~1.9× the throughput on 500k-row exports.' }
+      { icon: 'i-lucide-gauge', title: 'Low-memory streaming writer', description: 'The stream.xlsx.WorkbookWriter-shaped API renders and deflates each row as you commit it — ~14.2× less peak memory than the buffered writer at ~1.9× the throughput on 500k-row exports.' }
     ],
     useCases: {
       title: 'Why teams move off ExcelJS or a home-grown OOXML writer',
@@ -1111,8 +1111,8 @@ loaded.getWorksheet('Report')?.getCell('B2').value // → 42`,
         description: 'Representative peak memory writing 500,000 rows × 5 columns. Streaming keeps memory roughly flat regardless of row count; buffered scales with it.',
         unit: 'mib',
         bars: [
-          { label: 'Buffered writer — full workbook in memory', value: 2900, note: '≈2.9 GiB peak — scales with row count' },
-          { label: 'Streaming WorkbookWriter', value: 188, note: '≈15.6× less peak memory, ~1.9× the throughput', highlight: true }
+          { label: 'Buffered writer — full workbook in memory', value: 2718, note: '≈2.7 GiB peak — scales with row count' },
+          { label: 'Streaming WorkbookWriter', value: 191, note: '≈14.2× less peak memory, ~1.9× the throughput', highlight: true }
         ]
       }
     },
@@ -1148,7 +1148,7 @@ for (const record of hugeDataset) {
 }
 ws.commit()
 await wb.commit()`,
-        why: 'row.commit() renders and deflates that row into the output archive immediately instead of retaining it, so peak memory stays roughly flat regardless of row count — about 15.6× less peak memory than the buffered writer at 1.9× the throughput on a 500k-row benchmark. Pass a Writable instead of a filename to stream straight to an HTTP response, or omit both to consume the writer as an AsyncIterable<Uint8Array>.'
+        why: 'row.commit() renders and deflates that row into the output archive immediately instead of retaining it, so peak memory stays roughly flat regardless of row count — about 14.2× less peak memory than the buffered writer at 1.9× the throughput on a 500k-row benchmark. Pass a Writable instead of a filename to stream straight to an HTTP response, or omit both to consume the writer as an AsyncIterable<Uint8Array>.'
       },
       {
         title: 'Write a formula, rich text, a hyperlink and an error code — all as plain cell values',
@@ -1295,7 +1295,7 @@ ws.getCell('D12').note = {
     trustRows: [
       { icon: 'i-lucide-feather', metric: 'Dependencies', target: '1 runtime dep (fflate)', value: 'A single deflate dependency — no ExcelJS-style dependency sprawl to audit.' },
       { icon: 'i-lucide-file-code-2', metric: 'Type safety', target: 'Full .d.ts, ESM + CJS', value: 'Ships both module formats with complete type declarations — no separate @types package.' },
-      { icon: 'i-lucide-gauge', metric: 'Streaming writer', target: '~15.6× less peak memory', value: 'At ~1.9× the throughput of the buffered writer on a 500k-row × 5-col benchmark.' },
+      { icon: 'i-lucide-gauge', metric: 'Streaming writer', target: '~14.2× less peak memory', value: 'At ~1.9× the throughput of the buffered writer on a 500k-row × 5-col benchmark.' },
       { icon: 'i-lucide-replace', metric: 'ExcelJS parity', target: '@alosha/xlsx/compat drop-in', value: 'Same cell.type numbers, same style-setter precedence, same addRow/row.values contract.' },
       { icon: 'i-lucide-table', metric: 'Feature coverage', target: 'Styles, CF, validation, comments, images', value: 'Read and write for the workbook features real reports and templates actually use.' },
       { icon: 'i-lucide-server', metric: 'Runtime targets', target: 'Node ≥ 22, browser, edge', value: 'writeBuffer()/readWorkbookBuffer() never touch node:fs, so the same code runs in a worker or edge function.' },
