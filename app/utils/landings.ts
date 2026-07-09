@@ -169,7 +169,7 @@ r.errors  // → ['CHECKSUM_FAILED']  (fails 11-proef)`,
     featuresDescription: 'Built for products that handle European business and personal identifiers.',
     features: [
       { icon: 'i-lucide-wifi-off', title: 'Fully offline', description: 'Every check runs locally with no network calls — no VIES round-trips, no rate limits, no data leaving your server.' },
-      { icon: 'i-lucide-badge-check', title: 'VAT for 14 countries', description: 'Country-specific VAT checksum validation for 14 EU member states — structure and check digits, not just a regex.' },
+      { icon: 'i-lucide-badge-check', title: 'VAT for 22 countries', description: 'Country-specific VAT checksum validation for 22 EU member states — structure and check digits, not just a regex. The remaining five are format-checked.' },
       { icon: 'i-lucide-landmark', title: 'IBAN validation', description: 'ISO 13616 IBAN checks with mod-97 verification and per-country length rules.' },
       { icon: 'i-lucide-id-card', title: 'BSN & KvK', description: 'Dutch BSN checksum validation (11-proef) plus KvK format validation (8 digits) — handy for NL-focused products. KvK has no public checksum, so it\'s format-only; use the Cloud client to confirm a number is registered.' },
       { icon: 'i-lucide-feather', title: 'Zero dependencies', description: 'Tiny, tree-shakeable, and dependency-free. Ships ESM + types, works in Node and the browser.' },
@@ -406,7 +406,7 @@ console.log(\`\${clean.length - 1} clean, \${rejected.length - 1} rejected — o
     supportPrimary: { label: 'Talk about commercial use', to: 'mailto:hello@alosha.dev' },
     seo: {
       title: 'eu-validate — offline EU identifier validation',
-      description: 'Validate EU VAT numbers, IBANs, BSN and KvK numbers entirely offline — checksum-accurate, zero network calls. Free open-source npm package.'
+      description: 'Validate EU VAT numbers, IBANs, BSN and KvK numbers entirely offline — checksum-accurate VAT, IBAN & BSN, zero network calls. Free open-source npm package.'
     },
     os: 'Node.js, Browser'
   },

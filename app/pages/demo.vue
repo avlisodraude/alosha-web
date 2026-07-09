@@ -34,7 +34,7 @@ const seo = computed(() => {
   }
   if (isEuValidate) return {
     title: 'Validate IBAN, VAT, BSN & KvK numbers — free offline checker',
-    description: 'Check EU VAT, IBAN, Dutch BSN and KvK numbers instantly, entirely offline in your browser — checksum-accurate. Powered by the open-source eu-validate library.',
+    description: 'Check EU VAT, IBAN, Dutch BSN and KvK numbers instantly, entirely offline in your browser — checksum-accurate VAT, IBAN & BSN. Powered by the open-source eu-validate library.',
     url: 'https://eu-validate.alosha.dev/demo',
     image: 'https://eu-validate.alosha.dev/og-eu-validate.png',
     name: 'eu-validate demo',

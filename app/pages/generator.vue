@@ -10,9 +10,9 @@ const generatorUrl = `${euValidateUrl}/generator`
 
 useSeoMeta({
   title: 'eu-validate — EU mock-data generator (VAT · IBAN · BSN · KvK)',
-  description: 'Generate valid and invalid EU test identifiers — VAT numbers, IBANs, Dutch BSN and KvK — for your integration and unit tests. Checksum-accurate, in your browser, free.',
+  description: 'Generate valid and invalid EU test identifiers — VAT numbers, IBANs, Dutch BSN and KvK — for your integration and unit tests. Checksum-accurate VAT, IBAN & BSN, in your browser, free.',
   ogTitle: 'eu-validate — EU mock-data generator',
-  ogDescription: 'Generate checksum-accurate valid and invalid VAT, IBAN, BSN and KvK test data for your test suites — entirely in the browser.',
+  ogDescription: 'Generate valid and invalid VAT, IBAN, BSN and KvK test data for your test suites — checksum-accurate where a checksum exists, entirely in the browser.',
   ogUrl: generatorUrl,
   robots: isEuValidate ? 'index,follow' : 'noindex,follow'
 })
