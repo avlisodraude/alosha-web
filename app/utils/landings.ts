@@ -169,7 +169,7 @@ r.errors  // → ['CHECKSUM_FAILED']  (fails 11-proef)`,
     featuresDescription: 'Built for products that handle European business and personal identifiers.',
     features: [
       { icon: 'i-lucide-wifi-off', title: 'Fully offline', description: 'Every check runs locally with no network calls — no VIES round-trips, no rate limits, no data leaving your server.' },
-      { icon: 'i-lucide-badge-check', title: 'VAT for 22 countries', description: 'Country-specific VAT checksum validation for 22 EU member states — structure and check digits, not just a regex. The remaining five are format-checked.' },
+      { icon: 'i-lucide-badge-check', title: 'VAT for all 27 EU countries', description: 'Country-specific VAT checksum validation for every EU member state — structure and check digits, not just a regex.' },
       { icon: 'i-lucide-landmark', title: 'IBAN validation', description: 'ISO 13616 IBAN checks with mod-97 verification and per-country length rules.' },
       { icon: 'i-lucide-id-card', title: 'BSN & KvK', description: 'Dutch BSN checksum validation (11-proef) plus KvK format validation (8 digits) — handy for NL-focused products. KvK has no public checksum, so it\'s format-only; use the Cloud client to confirm a number is registered.' },
       { icon: 'i-lucide-feather', title: 'Zero dependencies', description: 'Tiny, tree-shakeable, and dependency-free. Ships ESM + types, works in Node and the browser.' },

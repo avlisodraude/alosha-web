@@ -502,7 +502,6 @@ function checkLabel(c: boolean | null) {
     >
       Full VAT checksum validation for {{ supported.length }} countries:
       <span class="font-mono text-default">{{ supported.join(' · ') }}</span>.
-      Other EU countries are format-checked.
     </div>
   </div>
 </template>
