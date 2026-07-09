@@ -19,10 +19,7 @@ useBreadcrumbs([
 
 const { products } = useSite()
 
-const { data: stats } = await useFetch('/api/oss-stats', {
-  server: false,
-  query: { _: Date.now() }
-})
+const { data: stats } = await useFetch('/api/oss-stats')
 
 const nf = new Intl.NumberFormat('en-US')
 const fmt = (n?: number | null) => (n == null ? '—' : nf.format(n))
