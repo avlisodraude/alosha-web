@@ -14,7 +14,8 @@ If you want to do anything with your own running data, you hit the same wall alm
 The goal was to make the common case trivial. You point Stride at a file and get an activity; you pass that activity to `analyze` and get everything a running app actually shows — distance, moving and elapsed time, average and best-kilometre pace, elevation gain and loss, heart-rate zones, cadence, and per-kilometre splits — in a single object.
 
 ```js
-import { parse, analyze, paceChartConfig } from '@alosha/stride'
+import { parse, analyze } from '@alosha/stride'
+import { paceChartConfig } from '@alosha/stride/charts'   // charts are opt-in
 import { Chart } from 'chart.js/auto'
 
 const activity = parse('./morning-run.fit')   // format auto-detected

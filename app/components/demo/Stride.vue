@@ -273,7 +273,8 @@ const codeSnippet = computed(() => {
     ? `\nnew Chart(zonesCanvas, hrZonesChartConfig(stats))`
     : ''
   const extraImport = hasHr.value ? ', hrZonesChartConfig' : ''
-  return `import { parse, analyze, paceChartConfig${extraImport} } from '@alosha/stride'
+  return `import { parse, analyze } from '@alosha/stride'
+import { paceChartConfig${extraImport} } from '@alosha/stride/charts'
 import { Chart } from 'chart.js/auto'
 
 // ${fileName.value || `your-run.${fmt}`} — format auto-detected (GPX · TCX · FIT)

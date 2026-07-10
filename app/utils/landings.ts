@@ -627,14 +627,16 @@ if (report.failed > 0) process.exit(1)`,
     heroChips: ['gpx', 'tcx', 'fit'],
     heroChipsNote: 'one API, auto-detected',
     codeTitle: 'Parse, analyse, chart',
-    codeDescription: 'Three imports and a file path. You own the canvas; Stride does the maths.',
-    code: `import { parse, analyze, paceChartConfig } from '@alosha/stride'
+    codeDescription: 'A file path and one call for the metrics. Charts live behind a subpath, so parsing stays dependency-free.',
+    code: `import { parse, analyze } from '@alosha/stride'
+// Charts are optional — install chart.js only if you render:
+import { paceChartConfig } from '@alosha/stride/charts'
 import { Chart } from 'chart.js/auto'
 
 // Parse a GPX, TCX or FIT file from Garmin / Strava / Coros — format auto-detected
 const activity = parse('./morning-run.fit')
 
-// Compute all metrics in one call
+// Compute every metric in one call
 const stats = analyze(activity)
 console.log(stats.distanceM, stats.avgPaceSecPerKm, stats.hrZones)
 
@@ -645,8 +647,9 @@ new Chart(canvas, paceChartConfig(activity, stats))`,
     features: [
       { icon: 'i-lucide-file-text', title: 'GPX, TCX & FIT parser', description: 'Parse GPX, TCX or FIT files — Garmin, Strava, Coros, Wahoo and more — auto-detected, with full HR, cadence, and elevation support.' },
       { icon: 'i-lucide-ruler', title: 'Running metrics', description: 'Distance, moving time, avg/best pace, elevation gain/loss, HR zones, cadence, and per-km splits — all in one call.' },
-      { icon: 'i-lucide-bar-chart-2', title: 'Chart.js configs', description: 'Five ready-made chart configs (pace, elevation, HR, HR zones, splits) that work in any environment — browser or Node canvas.' },
-      { icon: 'i-lucide-heart-pulse', title: 'Heart rate zones', description: 'Automatic Z1–Z5 zone breakdown based on configurable max HR. Seconds in each zone, ready for a doughnut chart.' },
+      { icon: 'i-lucide-target', title: 'Device-accurate numbers', description: 'Uses the watch’s own distance and barometric elevation when the file carries them, and denoises GPS altitude when it doesn’t — instead of integrating GPS jitter into inflated totals. A true rolling best-km, and time-weighted HR zones, not sample counts.' },
+      { icon: 'i-lucide-bar-chart-2', title: 'Chart.js configs', description: 'Five ready-made chart configs (pace, elevation, HR, HR zones, splits) behind an optional subpath — chart.js stays out of your install unless you render. Browser or Node canvas.' },
+      { icon: 'i-lucide-heart-pulse', title: 'Heart rate zones', description: 'Automatic Z1–Z5 breakdown by %HRmax or heart-rate reserve (Karvonen). Time-weighted seconds in each zone, ready for a doughnut chart.' },
       { icon: 'i-lucide-globe', title: 'Metric & imperial', description: 'All formatters and chart labels switch between km/min·km and mi/min·mi via a single units option.' },
       { icon: 'i-lucide-terminal', title: 'CLI included', description: 'Run `stride analyze run.gpx` to get a full activity summary in your terminal. No config needed.' }
     ],
@@ -718,7 +721,8 @@ new Chart(canvas, paceChartConfig(activity, stats))`,
       {
         title: 'Turn a Garmin .FIT upload into a pace chart in the browser',
         problem: 'Users export runs from Garmin, Strava, Coros and Wahoo in different formats — and FIT is binary, not text.',
-        code: `import { parse, analyze, paceChartConfig } from '@alosha/stride'
+        code: `import { parse, analyze } from '@alosha/stride'
+import { paceChartConfig } from '@alosha/stride/charts'
 import { Chart } from 'chart.js/auto'
 
 // A user drops a .fit / .gpx / .tcx export onto your page.
@@ -736,16 +740,17 @@ async function renderUpload(file: File, canvas: HTMLCanvasElement) {
       {
         title: 'Build a heart-rate zone breakdown without writing the maths',
         problem: 'Time-in-zone is a core training metric, but computing Z1–Z5 from a raw HR stream by hand is fiddly and error-prone.',
-        code: `import { parse, analyze, hrZonesChartConfig } from '@alosha/stride'
+        code: `import { parse, analyze } from '@alosha/stride'
+import { hrZonesChartConfig } from '@alosha/stride/charts'
 import { Chart } from 'chart.js/auto'
 
 const activity = parse('./tempo-run.tcx')
-const stats = analyze(activity, 188)   // pass the athlete's max HR
+const stats = analyze(activity, { maxHR: 188 })   // %HRmax, or use a reserve model
 
-// Seconds spent in each zone, ready for a doughnut chart.
+// Time-weighted seconds in each zone, ready for a doughnut chart.
 console.log(stats.hrZones)             // { z1, z2, z3, z4, z5 } | null
 new Chart(canvas, hrZonesChartConfig(stats))`,
-        why: 'analyze() computes Z1–Z5 time-in-zone from the HR stream against the max HR you pass and returns a ready Chart.js config — you get a training-quality breakdown without ever touching the zone formula.',
+        why: 'analyze() computes Z1–Z5 time-in-zone from the HR stream — weighted by each sample’s duration, not counted — against the max HR you pass, and returns a ready Chart.js config. You get a training-quality breakdown without ever touching the zone formula.',
         sandbox: 'https://stackblitz.com/github/avlisodraude/stride/tree/main/examples/hr-zones'
       },
       {
