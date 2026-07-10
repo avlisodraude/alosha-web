@@ -84,3 +84,33 @@ body {
     radial-gradient(30% 45% at 52% 65%, rgba(34, 197, 94, 0.10), transparent 70%);
   pointer-events: none;
 }
+
+/* ── Mobile nav: enlarge menu text + icons +20% (below lg / 1024px) ──
+   Scoped to the mobile breakpoint where the hamburger menu appears;
+   desktop layout is unchanged. */
+@media (max-width: 1023px) {
+  header a[data-slot="link"],
+  header button,
+  [role="dialog"] a[data-slot="link"],
+  [role="dialog"] button {
+    font-size: 1.05rem !important; /* 14px -> 16.8px */
+  }
+  header a.text-lg {
+    font-size: 1.35rem !important; /* logo 18px -> 21.6px */
+  }
+  header .iconify.size-4,
+  [role="dialog"] .iconify.size-4 {
+    width: 1.2rem !important;   /* 16px -> 19.2px */
+    height: 1.2rem !important;
+  }
+  header .iconify.size-5,
+  [role="dialog"] .iconify.size-5 {
+    width: 1.5rem !important;   /* 20px -> 24px */
+    height: 1.5rem !important;
+  }
+  header .iconify.size-6,
+  [role="dialog"] .iconify.size-6 {
+    width: 1.8rem !important;   /* 24px -> 28.8px */
+    height: 1.8rem !important;
+  }
+}
