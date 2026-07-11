@@ -25,12 +25,6 @@ const totalDownloads = computed(() => {
   const ev = stats.value?.euValidate?.downloads ?? 0
   return px + mo + st + ev || null
 })
-
-const steps = [
-  { icon: 'i-lucide-git-branch', title: 'Open source', description: 'We find a useful but underserved open-source project, improve it, and ship it in the open under a permissive license.' },
-  { icon: 'i-lucide-heart-handshake', title: 'Trust', description: 'Developers adopt it, file issues, and star it. Credibility compounds in public — no marketing required.' },
-  { icon: 'i-lucide-rocket', title: 'Product', description: 'A hosted service or premium tier turns that trust into a sustainable product, while the core stays free.' }
-]
 </script>
 
 <template>
@@ -118,33 +112,8 @@ const steps = [
       </div>
     </UPageSection>
 
-    <!-- How Alosha works -->
-    <UPageSection
-      title="How we build"
-      description="One repeatable loop, run with AI as the execution layer so a small team can sustain a portfolio."
-    >
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div
-          v-for="(step, i) in steps"
-          :key="step.title"
-          class="relative rounded-xl border border-default p-6"
-        >
-          <span class="absolute -top-3 left-6 text-xs font-mono text-muted bg-default px-2">
-            0{{ i + 1 }}
-          </span>
-          <UIcon
-            :name="step.icon"
-            class="size-6 text-primary"
-          />
-          <h3 class="font-semibold mt-3">
-            {{ step.title }}
-          </h3>
-          <p class="text-sm text-muted mt-1">
-            {{ step.description }}
-          </p>
-        </div>
-      </div>
-    </UPageSection>
+    <!-- How Alosha works — split image/text panels (design handoff) -->
+    <HubHowWeBuild />
 
     <UPageSection>
       <UPageCTA

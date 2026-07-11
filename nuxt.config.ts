@@ -58,6 +58,19 @@ export default defineNuxtConfig({
     }
   },
 
+  // Self-hosted Google Fonts (@nuxt/fonts, bundled with @nuxt/ui). 'Public Sans'
+  // is auto-detected from main.css; the families below back the "How we build"
+  // editorial section — declared explicitly so its weights + the Instrument
+  // Serif italic are all fetched.
+  fonts: {
+    families: [
+      { name: 'Instrument Serif', provider: 'google', weights: [400], styles: ['normal', 'italic'] },
+      { name: 'Archivo', provider: 'google', weights: [400, 500, 600, 700, 800] },
+      { name: 'Space Grotesk', provider: 'google', weights: [400, 500, 600, 700] },
+      { name: 'JetBrains Mono', provider: 'google', weights: [400, 500, 700] }
+    ]
+  },
+
   supabase: {
     // Typed database client: makes serverSupabaseServiceRole()/useSupabaseClient()
     // return SupabaseClient<Database> so table inserts are type-checked.
