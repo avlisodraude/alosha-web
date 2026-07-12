@@ -75,29 +75,35 @@ const totalDownloads = computed(() => {
       description="One toolkit, many single-purpose packages — each free and open-source at its core, each with its own home. Mix and match the ones your stack needs."
     >
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        <UPageCard
-          v-for="p in products"
+        <RevealOnScroll
+          v-for="(p, i) in products"
           :key="p.slug"
-          :icon="p.icon"
-          :title="p.name"
-          :description="p.blurb"
-          :to="p.url"
-          target="_blank"
-          spotlight
+          :index="i"
+          class="h-full"
         >
-          <template #footer>
-            <div class="flex items-center justify-between w-full gap-2">
-              <span class="text-xs text-muted">{{ p.audience }}</span>
-              <UBadge
-                :color="statusColor(p.status)"
-                variant="subtle"
-                size="sm"
-              >
-                {{ statusLabel(p.status) }}
-              </UBadge>
-            </div>
-          </template>
-        </UPageCard>
+          <UPageCard
+            :icon="p.icon"
+            :title="p.name"
+            :description="p.blurb"
+            :to="p.url"
+            target="_blank"
+            class="h-full"
+            spotlight
+          >
+            <template #footer>
+              <div class="flex items-center justify-between w-full gap-2">
+                <span class="text-xs text-muted">{{ p.audience }}</span>
+                <UBadge
+                  :color="statusColor(p.status)"
+                  variant="subtle"
+                  size="sm"
+                >
+                  {{ statusLabel(p.status) }}
+                </UBadge>
+              </div>
+            </template>
+          </UPageCard>
+        </RevealOnScroll>
       </div>
 
       <div class="flex justify-center mt-8">
