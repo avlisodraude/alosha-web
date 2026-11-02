@@ -141,9 +141,27 @@ interface PixSqueezeOptions {
   success?: (result: PixSqueezeResult) => void
   error?: (err: Error) => void
 }
-interface PixSqueezeCtor { new (file: File, options: PixSqueezeOptions): unknown }
+interface PixSqueezeAsyncResult {
+  file: PixSqueezeResult
+  width: number
+  height: number
+  targetMet: boolean | null
+  attempts: number
+}
+interface PixSqueezeCtor {
+  compress(file: File, options: PixSqueezeOptions & {
+    targetSize?: number
+    allowResize?: boolean
+    signal?: AbortSignal
+  }): Promise<PixSqueezeAsyncResult>
+}
 
 const quality = ref(0.6)
+const targetSizeKb = ref('')
+const allowResize = ref(false)
+const targetMet = ref<boolean | null>(null)
+const attempts = ref(0)
+const status = ref('')
 const showAdvanced = ref(false)
 const dragging = ref(false)
 const loading = ref(false)
@@ -185,7 +203,8 @@ const original = ref<ImageInfo | null>(null)
 const compressed = ref<ImageInfo | null>(null)
 const originalDims = ref('')
 const compressedDims = ref('')
-const job = ref<unknown>(null)
+const job = shallowRef<AbortController | null>(null)
+let generation = 0
 
 const savings = computed(() => {
   if (!original.value || !compressed.value || original.value.size === 0) return null
@@ -235,33 +254,33 @@ function toNumber(raw: string): number | undefined {
 async function runCompression() {
   const file = sourceFile.value
   if (!file) return
+  stopCompression()
+  const run = generation
+  const controller = new AbortController()
+  job.value = controller
   error.value = ''
+  targetMet.value = null
+  attempts.value = 0
+  status.value = 'Processing image…'
   loading.value = true
   compressedDims.value = ''
+  if (compressed.value) URL.revokeObjectURL(compressed.value.url)
+  compressed.value = null
   try {
     const PixSqueeze = await loadPixSqueeze()
-    const options: PixSqueezeOptions = {
+    if (run !== generation) return
+    const options: Parameters<PixSqueezeCtor['compress']>[1] = {
       quality: quality.value,
       mimeType: adv.format,
       resize: adv.resize,
       strict: adv.strict,
       checkOrientation: adv.checkOrientation,
       retainExif: adv.retainExif,
-      success: (result: PixSqueezeResult) => {
-        if (compressed.value) URL.revokeObjectURL(compressed.value.url)
-        compressed.value = {
-          name: result.name ?? file.name,
-          size: result.size,
-          url: URL.createObjectURL(result),
-          type: result.type
-        }
-        loading.value = false
-      },
-      error: (err: Error) => {
-        error.value = err.message
-        loading.value = false
-      }
+      targetSize: targetSizeKb.value ? Number(targetSizeKb.value) * 1000 : undefined,
+      allowResize: allowResize.value,
+      signal: controller.signal
     }
+
     // Only pass numeric options the user actually set — passing undefined would
     // override PixSqueeze's defaults (Infinity / 0) and break the resize math.
     const mw = toNumber(adv.maxWidth)
@@ -284,33 +303,57 @@ async function runCompression() {
     if (adv.convertWebp) convertTypes.push('image/webp')
     options.convertTypes = convertTypes
 
-    job.value = new PixSqueeze(file, options)
+    const result = await PixSqueeze.compress(file, options)
+    if (run !== generation) return
+    compressed.value = {
+      name: result.file.name ?? file.name,
+      size: result.file.size,
+      url: URL.createObjectURL(result.file),
+      type: result.file.type
+    }
+    compressedDims.value = `${result.width}×${result.height}`
+    targetMet.value = result.targetMet
+    attempts.value = result.attempts
+    status.value = result.targetMet === false ? 'Target size was not reached. The best result is available below.' : 'Your image is ready.'
   } catch (e) {
+    if (run !== generation) return
     error.value = e instanceof Error ? e.message : String(e)
-    loading.value = false
+    status.value = ''
+  } finally {
+    if (run === generation) {
+      loading.value = false
+      job.value = null
+    }
   }
 }
 
 function loadFile(file: File) {
+  stopCompression()
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    reset()
+    error.value = 'Choose a JPEG, PNG, or WebP image for this browser demo. HEIC, TIFF, and RAW conversion is available through a configured conversion server or the Batch API.'
+    return
+  }
   sourceFile.value = file
   if (original.value) URL.revokeObjectURL(original.value.url)
   original.value = { name: file.name, size: file.size, url: URL.createObjectURL(file), type: file.type }
   originalDims.value = ''
+  if (compressed.value) URL.revokeObjectURL(compressed.value.url)
   compressed.value = null
   runCompression()
 }
 
 // Re-compress when quality or any advanced option changes (debounced).
 let debounce: ReturnType<typeof setTimeout> | undefined
-watch([quality, adv], () => {
+watch([quality, adv, targetSizeKb, allowResize], () => {
   if (!sourceFile.value) return
-  clearTimeout(debounce)
+  stopCompression()
   debounce = setTimeout(runCompression, 200)
 })
 
 function pickFirstImage(files?: FileList | null): File | undefined {
   if (!files) return undefined
-  return Array.from(files).find(f => f.type.startsWith('image/'))
+  return files[0]
 }
 
 function onInput(e: Event) {
@@ -324,7 +367,26 @@ function onDrop(e: DragEvent) {
   if (file) loadFile(file)
 }
 
+function stopCompression() {
+  clearTimeout(debounce)
+  generation += 1
+  job.value?.abort()
+  job.value = null
+  loading.value = false
+}
+
+function cancelCompression() {
+  stopCompression()
+  status.value = 'Compression cancelled.'
+}
+
 function reset() {
+  stopCompression()
+  if (original.value) URL.revokeObjectURL(original.value.url)
+  if (compressed.value) URL.revokeObjectURL(compressed.value.url)
+  targetMet.value = null
+  attempts.value = 0
+  status.value = ''
   sourceFile.value = null
   original.value = null
   compressed.value = null
@@ -332,6 +394,8 @@ function reset() {
   compressedDims.value = ''
   error.value = ''
 }
+
+onUnmounted(reset)
 
 // Per-option documentation shown in the explainer modal. `backtick` spans render
 // as inline code; the parser below turns them into <code> elements.
@@ -376,7 +440,7 @@ const optionDocs: Record<string, OptionDoc> = {
     title: 'mimeType (Output format)',
     body: [
       { t: 'p', text: 'Sets the format of the compressed image. Default `auto` keeps the original format; set it explicitly to convert — e.g. `image/webp` for the best size, or `image/jpeg` for universal support.' },
-      { t: 'p', text: 'Note: Safari cannot output WebP, so `auto` is the safe default for broad compatibility. Quality only applies to JPEG and WebP.' },
+      { t: 'p', text: 'Encoder support varies by browser. An unsupported output format may fall back to PNG; inspect the actual result type. Quality only applies to JPEG and WebP.' },
       { t: 'code', text: 'new PixSqueeze(file, {\n  mimeType: \'image/webp\'\n})' }
     ]
   },
@@ -432,7 +496,7 @@ const optionDocs: Record<string, OptionDoc> = {
   retainExif: {
     title: 'retainExif',
     body: [
-      { t: 'p', text: 'When `true`, preserves the Exif metadata (camera info, GPS, timestamp) in the output; default `false` strips it. Only applies to JPEG output.' },
+      { t: 'p', text: 'When `true`, preserves the Exif metadata (camera info, GPS, timestamp) in the output; default `false` skips reinsertion. A returned original may retain its metadata. Only applies to JPEG input/output.' },
       { t: 'p', text: 'Keep it off for privacy and smaller files unless you specifically need the metadata.' },
       { t: 'code', text: 'new PixSqueeze(file, {\n  mimeType: \'image/jpeg\',\n  retainExif: true\n})' }
     ]
@@ -525,7 +589,7 @@ function parseInline(text: string): { code: boolean, value: string }[] {
       <input
         ref="fileInput"
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp"
         class="hidden"
         @change="onInput"
       >
@@ -569,6 +633,49 @@ function parseInline(text: string): { code: boolean, value: string }[] {
         aria-label="Compression quality"
         class="w-full mt-2 accent-primary"
       >
+    </div>
+
+    <div class="space-y-3 rounded-xl border border-default p-4">
+      <label
+        for="target-size-kb"
+        class="block text-sm font-medium"
+      >Target size (KB)</label>
+      <input
+        id="target-size-kb"
+        v-model="targetSizeKb"
+        type="number"
+        min="1"
+        step="1"
+        placeholder="Optional, for example 500"
+        class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm"
+      >
+      <label class="flex items-center gap-2 text-sm">
+        <input
+          v-model="allowResize"
+          type="checkbox"
+          class="accent-primary"
+        >
+        Allow smaller dimensions to meet the target
+      </label>
+      <p class="text-xs text-muted">
+        1 KB = 1,000 bytes. Targets are best effort; an unreachable target is reported explicitly.
+      </p>
+      <UButton
+        v-if="loading"
+        color="neutral"
+        variant="outline"
+        @click="cancelCompression"
+      >
+        Cancel compression
+      </UButton>
+      <p
+        role="status"
+        aria-live="polite"
+        class="text-sm"
+        :class="targetMet === false ? 'text-warning' : 'text-muted'"
+      >
+        {{ status }}<span v-if="attempts"> · {{ attempts }} encoding attempt(s)</span>
+      </p>
     </div>
 
     <!-- Advanced options (slide-down) -->
