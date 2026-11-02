@@ -66,7 +66,7 @@ export const PRODUCTS: ProductDef[] = [
     npmName: '@alosha/pixsqueeze',
     repo: 'https://github.com/avlisodraude/pixsqueeze',
     icon: 'i-lucide-image',
-    blurb: 'Image compression API with HEIC, TIFF & camera-RAW conversion. Open-source core, hosted batch API.',
+    blurb: 'Browser image compression with byte targets and a Promise API, plus a separate hosted batch service.',
     audience: 'For apps handling user image uploads',
     kind: 'hosted-api',
     status: 'live',

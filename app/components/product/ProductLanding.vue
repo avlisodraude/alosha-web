@@ -29,7 +29,7 @@ const features = [
   { icon: 'i-lucide-shield-check', title: 'Secure & private', description: 'Images are processed in-memory and never stored on our servers. Your files stay yours.' },
   { icon: 'i-lucide-code-2', title: 'Simple integration', description: 'One endpoint, one API key. Works with any language or framework — curl, Node, Python, you name it.' },
   { icon: 'i-lucide-bar-chart-2', title: 'Usage dashboard', description: 'See exactly how many images you\'ve processed this month. Upgrade or downgrade any time.' },
-  { icon: 'i-lucide-package', title: 'Open-source core', description: 'Built on PixSqueeze, a battle-tested open-source library with millions of downloads.' }
+  { icon: 'i-lucide-package', title: 'Open-source browser library', description: 'PixSqueeze 1.5 adds Promise-based compression, byte targets, cancellation, and TypeScript declarations. Try it locally in the browser demo.' }
 ]
 
 const plans = [

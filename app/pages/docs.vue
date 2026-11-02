@@ -2,13 +2,45 @@
 definePageMeta({ layout: 'default' })
 
 useSeoMeta({
-  title: 'API Documentation — PixSqueeze',
-  description: 'Complete reference for the PixSqueeze batch image compression API: authentication, endpoints, request formats, and error codes.',
+  title: 'Documentation — PixSqueeze browser library and Batch API',
+  description: 'PixSqueeze 1.5 browser compression, target sizes, TypeScript, and cancellation, plus the separate hosted Batch API reference.',
   ogTitle: 'API Documentation — PixSqueeze',
   ogDescription: 'Complete reference for the PixSqueeze batch image compression API.',
   ogImage: 'https://alosha.dev/og.png',
   twitterCard: 'summary_large_image'
 })
+
+const browserExample = `import PixSqueeze from '@alosha/pixsqueeze'
+
+const result = await PixSqueeze.compress(file, {
+  mimeType: 'image/jpeg',
+  targetSize: 500_000,
+  allowResize: true,
+  maxWidth: 1920
+})
+
+if (result.targetMet === false) {
+  console.warn('Target could not be reached', result.outputSize)
+} else {
+  // result.file is ready to download or upload.
+}`
+
+const cancelExample = `const controller = new AbortController()
+const pending = PixSqueeze.compress(file, {
+  signal: controller.signal,
+  timeout: 15_000
+})
+// Call controller.abort() from a cancel button while pending.
+const result = await pending`
+
+const browserOptions = [
+  { name: 'targetSize', description: 'Positive byte target. Unmet targets return targetMet: false, with the best result found.' },
+  { name: 'quality / minQuality', description: 'Initial quality and lower search bound; defaults 0.8 / 0.4. JPEG and WebP use quality search.' },
+  { name: 'maxAttempts', description: 'Encoding budget from 1 to 20; default 8. Every attempt starts from the same source.' },
+  { name: 'allowResize', description: 'Allow smaller dimensions to approach a target; default false. PNG can use this without a quality search.' },
+  { name: 'signal / timeout', description: 'AbortSignal and total timeout in milliseconds (default 30000; 0 disables it). Late encoder output is discarded.' },
+  { name: 'conversion', description: 'Explicit heic/tiff/raw endpoint URLs, plus optional headers and credentials. No upload occurs without a matching configured endpoint.' }
+]
 
 const registerExample = `curl -X POST ${PIXSQUEEZE_API}/auth/register \\
   -H "Content-Type: application/json" \\
@@ -73,13 +105,72 @@ const errors = [
 <template>
   <UContainer class="py-12 max-w-3xl">
     <h1 class="text-3xl font-bold">
-      API Documentation
+      PixSqueeze documentation
     </h1>
     <p class="text-muted mt-2">
       Everything you need to integrate the PixSqueeze batch compression API.
       All endpoints live under
       <code class="font-mono text-sm bg-muted/20 px-1 rounded">{{ PIXSQUEEZE_API }}</code>.
     </p>
+
+    <section
+      id="browser-library"
+      class="mt-10"
+    >
+      <h2 class="text-xl font-semibold">
+        Browser library · version 1.5.0
+      </h2>
+      <p class="text-sm text-muted mt-2">
+        Install @alosha/pixsqueeze for local JPEG, PNG, and WebP compression. The existing callback constructor remains supported.
+        The Promise API adds bounded byte targets and output information. These options belong to the browser library, not the hosted Batch API below.
+      </p>
+      <div class="bg-gray-900 rounded-lg p-4 text-xs font-mono text-green-400 overflow-x-auto mt-3">
+        <pre>{{ browserExample }}</pre>
+      </div>
+      <div class="divide-y divide-default mt-4">
+        <div
+          v-for="option in browserOptions"
+          :key="option.name"
+          class="py-3 text-sm"
+        >
+          <code class="font-mono text-xs">{{ option.name }}</code>
+          <p class="text-muted mt-1">
+            {{ option.description }}
+          </p>
+        </div>
+      </div>
+      <h3 class="font-semibold mt-5">
+        Results and cancellation
+      </h3>
+      <p class="text-sm text-muted mt-2">
+        Results include file, originalSize, outputSize, actual mimeType, width, height, targetSize, targetMet, attempts, converted, and returnedOriginal.
+        Without a target, targetMet is null. Processing errors reject; an unattainable byte target resolves with targetMet false.
+        Standard cancellation rejects with AbortError and a deadline with TimeoutError.
+      </p>
+      <div class="bg-gray-900 rounded-lg p-4 text-xs font-mono text-green-400 overflow-x-auto mt-3">
+        <pre>{{ cancelExample }}</pre>
+      </div>
+      <p class="text-sm text-muted mt-3">
+        ESM and bundler consumers use the default import above. CommonJS uses require('@alosha/pixsqueeze'). TypeScript also supports
+        import PixSqueeze = require('@alosha/pixsqueeze') and the PixSqueeze.Options, AsyncOptions, ConversionOptions, and CompressionResult types.
+        Compression requires a browser DOM; importing the package does not provide a Node image encoder.
+      </p>
+      <p class="text-sm text-muted mt-3">
+        HEIC, TIFF, and RAW workflows require your explicitly configured conversion server. The repository includes a local playground and /api/convert/* routes;
+        those routes are not hosted by this browser-only demo. RAW conversion depends on installed codecs. Server conversion currently returns an intermediate JPEG.
+        A returned original may retain its metadata even when retainExif is false. Inspect the actual result format because browser encoders can fall back to PNG.
+      </p>
+      <div class="flex flex-wrap gap-4 mt-4 text-sm">
+        <NuxtLink
+          to="/demo"
+          class="text-primary hover:underline"
+        >Try target-size compression</NuxtLink>
+        <a
+          href="https://github.com/avlisodraude/pixsqueeze/blob/main/README.md"
+          class="text-primary hover:underline"
+        >Full library reference and local setup</a>
+      </div>
+    </section>
 
     <!-- Authentication -->
     <section class="mt-10">
