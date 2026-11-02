@@ -81,14 +81,16 @@ Verify with `pnpm lint`, `pnpm typecheck` and `pnpm build`, then check
 `https://eu-validate.alosha.dev/docs`, `/demo` and `/generator` after deployment.
 Hosted VIES/KvK service work remains planned; the demo calls no Cloud API.
 
-## Stride 3.0.0 demo
+## Stride 3.0.1 demo
 
-`public/lib/stride.js` is generated from the Stride 3.0.0 release using its
+`public/lib/stride.js` is generated from the Stride 3.0.1 release using its
 `scripts/build-browser.mjs` with the destination file as argument. It includes
 both core and chart exports, with a version banner. Copy the package build's
 `dist/garmin-fitsdk.LICENSE.txt` to `public/lib/stride.LICENSE.txt` and retain
 the notice link in the generated asset. The demo cache key tracks
 that version. Summary cards distinguish unavailable measurements from zeroes;
 HR charts honor the selected units. Landing copy covers custom splits, indoor
-records and quality reports. Package validation includes synthetic GPX/TCX/FIT
-and one private real FIT export; genuine GPX/TCX export validation is pending.
+records and quality reports. Package validation includes synthetic regressions, pinned public Garmin GPX/TCX
+export samples and one private FIT export. Public downloads are checksum-verified;
+their exact upstream extent/trimming is not independently attested. See
+[provenance and coverage](https://github.com/avlisodraude/stride/blob/main/docs/export-validation.md).
