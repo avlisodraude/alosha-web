@@ -70,7 +70,7 @@ function loadStride(): Promise<StrideApi> {
     const w = window as unknown as { Stride?: StrideApi }
     if (w.Stride) return resolve(w.Stride)
     const s = document.createElement('script')
-    s.src = '/lib/stride.js?v=3.0.0'
+    s.src = '/lib/stride.js?v=3.0.1'
     s.onload = () => (w.Stride ? resolve(w.Stride) : reject(new Error('Stride failed to initialise')))
     s.onerror = () => reject(new Error('Could not load the Stride library'))
     document.head.appendChild(s)
