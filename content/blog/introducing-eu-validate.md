@@ -1,9 +1,11 @@
 ---
 title: "Introducing eu-validate: offline EU identifier validation"
-description: Checksum-accurate VAT, IBAN, BSN and KvK validation that runs entirely on your own machine — no network calls, no dependencies.
+description: Offline VAT, IBAN and BSN checksums plus KvK format validation that runs entirely on your own machine — no network calls, no dependencies.
 date: 2026-06-15
 author: Eduardo
 ---
+
+> **Update — 2026-11-02:** Version 0.6.0 covers all 27 EU VAT prefixes and 89 national IBAN layouts, with input guards, strict postal coverage and redacted validation errors. See the [0.6.0 documentation](https://eu-validate.alosha.dev/docs). Hosted Cloud lookups remain planned.
 
 Validating European business and personal identifiers usually means one of two bad options. You either write a regex that checks the *shape* of a VAT number but not whether it's actually valid, or you call a remote service like VIES and inherit its latency, rate limits, and downtime. Neither is a good fit for the place this validation usually belongs: a form submission, a billing flow, a data import.
 
@@ -11,7 +13,7 @@ So we built **eu-validate** — a small, dependency-free library that validates 
 
 ## Checksums, not just regexes
 
-The difference between a regex and real validation is the check digit. A regex will happily accept `NL999999999B01`; eu-validate runs the actual country-specific checksum and rejects it. The package covers VAT checksum rules for 14 EU member states, IBAN validation via the ISO 13616 mod-97 algorithm with per-country length rules, Dutch BSN (the 11-proef), KvK company numbers, and postal codes for several countries.
+The difference between a regex and real validation is the check digit. A regex will happily accept `NL999999999B01`; eu-validate runs the actual country-specific checksum and rejects it. At launch, the package covered VAT checksum rules for 14 EU member states, IBAN validation via the ISO 13616 mod-97 algorithm with per-country length rules, Dutch BSN (the 11-proef), KvK company numbers, and postal codes for several countries.
 
 Every validator returns the same shape — a result object with a `valid` boolean and an `errors` array — so you can branch on the outcome or surface a specific reason to the user:
 

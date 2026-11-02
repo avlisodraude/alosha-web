@@ -31,7 +31,7 @@
     "vue": "^3.5.35"
   },
   "devDependencies": {
-    "@alosha/eu-validate": "^0.1.0",
+    "@alosha/eu-validate": "^0.6.0",
     "@nuxt/eslint": "^1.15.2",
     "esbuild": "^0.24.0",
     "eslint": "^10.4.1",

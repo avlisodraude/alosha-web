@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { auth } = useSupabaseClient()
 const user = useSupabaseUser()
-const { product, hubUrl } = useSite()
+const { product, hubUrl, isEuValidate } = useSite()
 
 useCanonical()
 
@@ -15,12 +15,12 @@ const brand = product?.name ?? 'PixSqueeze'
 const npmUrl = product?.npm ?? 'https://www.npmjs.com/package/@alosha/pixsqueeze'
 const githubUrl = product?.repo ?? 'https://github.com/avlisodraude/pixsqueeze'
 
-// Package sites (Monitor, Stride, eu-validate) have no docs page of their own —
-// /docs is PixSqueeze-only — so they link to Demo · npm · GitHub instead.
+// eu-validate has a dedicated offline reference; other package sites retain their existing links.
 const nav = computed(() =>
   isPackageSite
     ? [
         { label: 'Demo', to: '/demo' },
+        ...(isEuValidate ? [{ label: 'Docs', to: '/docs' }] : []),
         { label: 'npm', to: npmUrl, target: '_blank' },
         { label: 'GitHub', to: githubUrl, target: '_blank' }
       ]

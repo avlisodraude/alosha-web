@@ -1,11 +1,14 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'default' })
+const { isEuValidate } = useSite()
+const docsRoute = useRoute()
+const showEuValidate = computed(() => isEuValidate || docsRoute.query.product === 'eu-validate')
 
 useSeoMeta({
-  title: 'Documentation — PixSqueeze browser library and Batch API',
-  description: 'PixSqueeze 1.5 browser compression, target sizes, TypeScript, and cancellation, plus the separate hosted Batch API reference.',
-  ogTitle: 'API Documentation — PixSqueeze',
-  ogDescription: 'Complete reference for the PixSqueeze batch image compression API.',
+  title: () => showEuValidate.value ? 'eu-validate 0.6.0 documentation — offline validation' : 'Documentation — PixSqueeze browser library and Batch API',
+  description: () => showEuValidate.value ? 'eu-validate 0.6.0: 89 IBAN formats, VAT checksums, safe inputs, strict postal coverage and privacy-aware errors.' : 'PixSqueeze 1.5 browser compression, target sizes, TypeScript, and cancellation, plus the separate hosted Batch API reference.',
+  ogTitle: () => showEuValidate.value ? 'eu-validate 0.6.0 API documentation' : 'API Documentation — PixSqueeze',
+  ogDescription: () => showEuValidate.value ? 'Offline validators, errors, coverage and upgrade guidance for eu-validate 0.6.0.' : 'Complete reference for the PixSqueeze batch image compression API.',
   ogImage: 'https://alosha.dev/og.png',
   twitterCard: 'summary_large_image'
 })
@@ -103,7 +106,11 @@ const errors = [
 </script>
 
 <template>
-  <UContainer class="py-12 max-w-3xl">
+  <DocsEuValidate v-if="showEuValidate" />
+  <UContainer
+    v-else
+    class="py-12 max-w-3xl"
+  >
     <h1 class="text-3xl font-bold">
       PixSqueeze documentation
     </h1>
@@ -171,6 +178,14 @@ const errors = [
         >Full library reference and local setup</a>
       </div>
     </section>
+
+    <p class="text-sm text-muted mt-6">
+      Looking for eu-validate 0.6.0?
+      <NuxtLink
+        to="/docs?product=eu-validate"
+        class="text-primary hover:underline"
+      >Read the offline identifier validation documentation.</NuxtLink>
+    </p>
 
     <!-- Authentication -->
     <section class="mt-10">

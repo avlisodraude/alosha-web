@@ -47,8 +47,8 @@ importers:
         version: 3.5.35(typescript@6.0.3)
     devDependencies:
       '@alosha/eu-validate':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.6.0
+        version: 0.6.0
       '@nuxt/eslint':
         specifier: ^1.15.2
         version: 1.15.2(@typescript-eslint/utils@8.59.4(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(@vue/compiler-sfc@3.5.35)(eslint@10.4.1(jiti@2.7.0))(magicast@0.5.3)(typescript@6.0.3)(vite@7.3.3(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.47.1)(yaml@2.9.0))
@@ -71,8 +71,8 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@alosha/eu-validate@0.1.0':
-    resolution: {integrity: sha512-xIcIjMko/66nXf1IA696voEP3g3H3kwt6t72jBKLfdGBRU7c5qpQF6uaOSFkv8HU9vllOljBLcIkz+MLgeVBfw==}
+  '@alosha/eu-validate@0.6.0':
+    resolution: {integrity: sha512-8VMwU/R8Ltn+ZAPT0vWoqUQ4c3D2YKSUbMlb4dSBVSfNRtmhg0ZueLGRtoKftbpOmmgtoPgfKBISDlt2dkOebw==}
 
   '@alosha/vue-select@4.0.3':
     resolution: {integrity: sha512-ptvyvLCx5wIV/aGE05Y4q9Reb/T2YG8YTC/zLC+XhkRYJ01zAyFtfeagwgecR7RviaheyVkdr+JzLMXgOUOo+Q==}
@@ -5860,7 +5860,7 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@alosha/eu-validate@0.1.0': {}
+  '@alosha/eu-validate@0.6.0': {}
 
   '@alosha/vue-select@4.0.3(vue@3.5.35(typescript@6.0.3))':
     dependencies:

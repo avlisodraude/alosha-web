@@ -35,6 +35,8 @@ const subdomains = [
   ['https://stride.alosha.dev/demo', 'weekly', '0.7'],
   ['https://eu-validate.alosha.dev/', 'weekly', '0.8'],
   ['https://eu-validate.alosha.dev/demo', 'weekly', '0.7'],
+  ['https://eu-validate.alosha.dev/docs', 'weekly', '0.8'],
+  ['https://eu-validate.alosha.dev/generator', 'weekly', '0.7'],
   ['https://vue-select.alosha.dev/', 'weekly', '0.8'],
   ['https://vue-select.alosha.dev/demo', 'weekly', '0.7'],
   ['https://xlsx.alosha.dev/', 'weekly', '0.8'],

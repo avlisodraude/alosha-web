@@ -23,6 +23,7 @@ interface EuValidateApi {
   validateKvK: (v: string) => ValidationResult
   EU_COUNTRIES: string[]
   IBAN_LENGTHS: Record<string, number>
+  IBAN_PATTERNS: Record<string, RegExp>
   VAT_PATTERNS: Record<string, RegExp>
   VAT_CHECKSUM_SUPPORTED: string[]
 }
@@ -47,7 +48,7 @@ function loadLib(): Promise<EuValidateApi> {
     const w = window as unknown as { EuValidate?: EuValidateApi }
     if (w.EuValidate) return resolve(w.EuValidate)
     const s = document.createElement('script')
-    s.src = '/lib/eu-validate.js'
+    s.src = '/lib/eu-validate.js?v=0.6.0'
     s.onload = () => (w.EuValidate ? resolve(w.EuValidate) : reject(new Error('eu-validate failed to initialise')))
     s.onerror = () => reject(new Error('Could not load the eu-validate library'))
     document.head.appendChild(s)
@@ -107,7 +108,7 @@ function chooseGroups(s: string): string {
 // Handles the full token set used by VAT_PATTERNS: \d, [..] classes with ranges,
 // literals, {n} / {m,n} quantifiers, groups and top-level alternation (IE/LT).
 function sampleVat(re: RegExp): string {
-  let src = re.source.replace(/[\^$]/g, '')
+  let src = re.source.replace(/\(\?![^)]*\)/g, '').replace(/[\^$]/g, '')
   src = chooseGroups(src)
   const alts = src.split('|')
   src = alts[ri(alts.length)] ?? ''
@@ -144,7 +145,9 @@ function genValid(t: GenType, cc: string): string | null {
     const len = api.IBAN_LENGTHS[cc]
     if (!len) return null
     for (let a = 0; a < 80; a++) {
-      const bban = digits(len - 4)
+      const pattern = api.IBAN_PATTERNS[cc]
+      if (!pattern) return null
+      const bban = sampleVat(pattern).slice(4)
       const v = cc + ibanCheck(cc, bban) + bban
       if (check(v, 'iban')) return v
     }
@@ -220,13 +223,13 @@ function generate(): void {
 
 // ---- country lists (driven by the library) ----
 const vatCountries = computed<string[]>(() =>
-  lib.value ? [...lib.value.EU_COUNTRIES].sort() : ['NL']
+  lib.value ? Object.keys(lib.value.VAT_PATTERNS).sort() : ['NL']
 )
 // IBAN uses ISO codes (Greece = GR), VAT uses the EL prefix — normalise here.
 const ibanCountries = computed<string[]>(() => {
   const api = lib.value
   if (!api) return ['NL']
-  const iso = [...new Set(api.EU_COUNTRIES.map(c => (c === 'EL' ? 'GR' : c)))]
+  const iso = Object.keys(api.IBAN_LENGTHS)
   return iso.filter(c => api.IBAN_LENGTHS[c]).sort()
 })
 const countries = computed<string[]>(() =>
