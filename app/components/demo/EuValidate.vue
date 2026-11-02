@@ -12,7 +12,7 @@
 
 type IdentifierType = 'vat' | 'iban' | 'bsn' | 'kvk' | 'postalCode'
 type Mode = 'auto' | IdentifierType
-type ErrorCode = 'EMPTY_INPUT' | 'INVALID_FORMAT' | 'UNKNOWN_COUNTRY' | 'UNSUPPORTED_COUNTRY' | 'CHECKSUM_FAILED' | 'COUNTRY_REQUIRED'
+type ErrorCode = 'INVALID_INPUT' | 'INPUT_TOO_LONG' | 'INVALID_OPTIONS' | 'FORMAT_NOT_SUPPORTED' | 'CHECKSUM_NOT_VERIFIABLE' | 'EMPTY_INPUT' | 'INVALID_FORMAT' | 'UNKNOWN_COUNTRY' | 'UNSUPPORTED_COUNTRY' | 'CHECKSUM_FAILED' | 'COUNTRY_REQUIRED'
 
 interface ValidationResult {
   valid: boolean
@@ -20,12 +20,12 @@ interface ValidationResult {
   normalized: string | null
   country: string | null
   type: IdentifierType
-  checks: { format: boolean, checksum: boolean | null }
+  checks: { format: boolean, formatSupported?: boolean, checksum: boolean | null }
   errors: ErrorCode[]
 }
 
 interface EuValidateApi {
-  validate: (value: string, opts: { type: IdentifierType, country?: string }) => ValidationResult
+  validate: (value: string, opts: { type: IdentifierType, country?: string, strict?: boolean }) => ValidationResult
   VAT_CHECKSUM_SUPPORTED: string[]
   POSTAL_PATTERNS: Record<string, unknown>
 }
@@ -58,10 +58,15 @@ const postalExamples: Record<string, string> = {
 }
 
 const errorLabels: Record<ErrorCode, string> = {
+  INVALID_INPUT: 'Input must be a string',
+  INPUT_TOO_LONG: 'Input exceeds the 256-code-unit limit',
+  INVALID_OPTIONS: 'Validation options are malformed',
+  FORMAT_NOT_SUPPORTED: 'No postal format rule is available',
+  CHECKSUM_NOT_VERIFIABLE: 'The format passed, but this checksum cannot be verified offline',
   EMPTY_INPUT: 'No input provided',
   INVALID_FORMAT: 'Format does not match this identifier',
   UNKNOWN_COUNTRY: 'Country could not be determined',
-  UNSUPPORTED_COUNTRY: 'Checksum not implemented for this country',
+  UNSUPPORTED_COUNTRY: 'Country is not supported for this check',
   CHECKSUM_FAILED: 'Checksum / check-digit failed',
   COUNTRY_REQUIRED: 'A country is required for this check'
 }
@@ -105,7 +110,7 @@ function loadLib(): Promise<EuValidateApi> {
     const w = window as unknown as { EuValidate?: EuValidateApi }
     if (w.EuValidate) return resolve(w.EuValidate)
     const s = document.createElement('script')
-    s.src = '/lib/eu-validate.js'
+    s.src = '/lib/eu-validate.js?v=0.6.0'
     s.onload = () => (w.EuValidate ? resolve(w.EuValidate) : reject(new Error('eu-validate failed to initialise')))
     s.onerror = () => reject(new Error('Could not load the eu-validate library'))
     document.head.appendChild(s)
@@ -150,7 +155,7 @@ interface Evaluation {
 const evaluation = computed<Evaluation>(() => {
   if (!lib.value || !value.value.trim()) return { result: null, error: null, resolvedType: null }
   const t: IdentifierType = mode.value === 'auto' ? detectType(value.value) : mode.value
-  const opts = t === 'postalCode' ? { type: t, country: country.value } : { type: t }
+  const opts = t === 'postalCode' ? { type: t, country: country.value, strict: true } : { type: t }
   try {
     return { result: lib.value.validate(value.value, opts), error: null, resolvedType: t }
   } catch {
@@ -179,7 +184,7 @@ const codeSnippet = computed(() => {
   if (!t || !r) return ''
   const fn = fnNames[t]
   const call = t === 'postalCode'
-    ? `validate('${value.value}', { type: 'postalCode', country: '${country.value}' })`
+    ? `validate('${value.value}', { type: 'postalCode', country: '${country.value}', strict: true })`
     : `${fn}('${value.value}')`
   return `import { ${fn} } from '@alosha/eu-validate'\n\n${call}\n// →\n${JSON.stringify(r, null, 2)}`
 })
@@ -221,7 +226,7 @@ function checkLabel(c: boolean | null) {
       </h1>
       <p class="text-muted mt-2 max-w-xl mx-auto">
         Validate a VAT number, IBAN, BSN, KvK number or postal code — checked
-        right in your browser. Nothing is sent anywhere; the library makes zero network calls.
+        right in your browser. The 0.6.0 validator runs locally; identifiers are not sent to a validation service.
       </p>
 
       <div class="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
@@ -361,7 +366,7 @@ function checkLabel(c: boolean | null) {
                 class="size-5"
                 :class="result.valid ? 'text-primary' : 'text-error'"
               />
-              <span class="font-semibold">{{ result.valid ? 'Valid' : 'Invalid' }}</span>
+              <span class="font-semibold">{{ result.valid ? (result.checks.checksum === null && result.errors.includes('CHECKSUM_NOT_VERIFIABLE') ? 'Format accepted · checksum unverified' : 'Valid offline') : 'Invalid' }}</span>
               <UBadge
                 v-if="mode === 'auto' && resolvedType"
                 color="primary"
@@ -430,7 +435,7 @@ function checkLabel(c: boolean | null) {
               <UBadge
                 v-for="err in result.errors"
                 :key="err"
-                color="error"
+                :color="err === 'CHECKSUM_NOT_VERIFIABLE' ? 'warning' : 'error'"
                 variant="subtle"
                 size="sm"
                 :title="errorLabels[err]"
@@ -449,9 +454,8 @@ function checkLabel(c: boolean | null) {
                 class="size-3.5 mt-0.5 shrink-0"
               />
               <span>
-                Some post-2020 Dutch sole-trader BTW-IDs are randomised and won't satisfy the
-                offline 11-proof. Confirm these against VIES (the hosted <code>verifyVAT()</code>)
-                before treating them as invalid.
+                Both Dutch company numbers and post-2020 sole-trader BTW-IDs have offline checks.
+                A passing checksum does not establish registration; hosted VIES verification is planned.
               </span>
             </p>
 

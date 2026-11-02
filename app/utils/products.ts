@@ -105,7 +105,7 @@ export const PRODUCTS: ProductDef[] = [
     npmName: '@alosha/eu-validate',
     repo: 'https://github.com/avlisodraude/eu-validate',
     icon: 'i-lucide-badge-check',
-    blurb: 'Offline EU identifier validation — checksum-accurate IBAN & BSN, VAT checksums for all 27 EU countries, and format checks for KvK. Zero dependencies.',
+    blurb: 'Offline validation in 0.6.0: VAT checks for all 27 EU countries, 89 national IBAN layouts, BSN checksums and KvK format checks. Zero runtime dependencies.',
     audience: 'For EU fintech, billing & compliance',
     kind: 'package',
     status: 'live',

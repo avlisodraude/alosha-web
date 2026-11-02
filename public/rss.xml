@@ -51,7 +51,7 @@
       <title>Introducing eu-validate: offline EU identifier validation</title>
       <link>https://alosha.dev/blog/introducing-eu-validate</link>
       <guid isPermaLink="true">https://alosha.dev/blog/introducing-eu-validate</guid>
-      <description>Checksum-accurate VAT, IBAN, BSN and KvK validation that runs entirely on your own machine — no network calls, no dependencies.</description>
+      <description>Offline VAT, IBAN and BSN checksums plus KvK format validation that runs entirely on your own machine — no network calls, no dependencies.</description>
       <dc:creator>Eduardo</dc:creator>
       <pubDate>Mon, 15 Jun 2026 00:00:00 GMT</pubDate>
     </item>

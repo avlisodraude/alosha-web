@@ -32,3 +32,6 @@ INFRASTRUCTURE.md
 CLAUDE.md
 CLAUDE_SKILLS.md
 repomix.config.json
+
+# Local Vercel project metadata and build output
+.vercel/

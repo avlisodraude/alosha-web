@@ -62,3 +62,21 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 ## Renovate integration
 
 Install [Renovate GitHub app](https://github.com/apps/renovate/installations/select_target) on your repository and you are good to go.
+
+
+## eu-validate 0.6.0 documentation and demos
+
+The eu-validate product uses the published `@alosha/eu-validate@^0.6.0` package.
+Its `/docs` page is selected by the eu-validate hostname. The same reference is
+available on the hub at `/docs?product=eu-validate`; other documentation content
+remains available through its existing routes.
+The hub open-source card, product landing and launch article describe the release.
+
+After changing the package version, run `pnpm gen:eu-validate` to regenerate
+`public/lib/eu-validate.js`. The validator and generator load that exact bundle
+with a versioned URL. The generator uses exported national IBAN patterns and
+VAT-specific country keys, keeping Greek `EL` distinct from ISO `GR`.
+
+Verify with `pnpm lint`, `pnpm typecheck` and `pnpm build`, then check
+`https://eu-validate.alosha.dev/docs`, `/demo` and `/generator` after deployment.
+Hosted VIES/KvK service work remains planned; the demo calls no Cloud API.

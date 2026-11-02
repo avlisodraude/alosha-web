@@ -148,10 +148,10 @@ export const LANDINGS: Record<string, LandingConfig> = {
     headline: 'Open source · Free npm package',
     titleLead: 'Offline EU identifier',
     titleAccent: 'validation',
-    description: 'Checksum-accurate VAT, IBAN, BSN and KvK validation that runs entirely on your machine.',
+    description: 'Version 0.6.0 checks VAT and BSN checksums, national IBAN layouts and KvK formats entirely on your machine.',
     descriptionStrong: 'No network calls, no dependencies.',
     badges: FULL_BADGES,
-    codeTitle: 'Three lines to a valid number',
+    codeTitle: 'Offline checks with version 0.6.0',
     codeDescription: 'Import the check you need and call it. Synchronous, offline, done.',
     code: `# Install
 npm install @alosha/eu-validate
@@ -170,19 +170,19 @@ r.errors  // → ['CHECKSUM_FAILED']  (fails 11-proef)`,
     features: [
       { icon: 'i-lucide-wifi-off', title: 'Fully offline', description: 'Every check runs locally with no network calls — no VIES round-trips, no rate limits, no data leaving your server.' },
       { icon: 'i-lucide-badge-check', title: 'VAT for all 27 EU countries', description: 'Country-specific VAT checksum validation for every EU member state — structure and check digits, not just a regex.' },
-      { icon: 'i-lucide-landmark', title: 'IBAN validation', description: 'ISO 13616 IBAN checks with mod-97 verification and per-country length rules.' },
-      { icon: 'i-lucide-id-card', title: 'BSN & KvK', description: 'Dutch BSN checksum validation (11-proef) plus KvK format validation (8 digits) — handy for NL-focused products. KvK has no public checksum, so it\'s format-only; use the Cloud client to confirm a number is registered.' },
+      { icon: 'i-lucide-landmark', title: 'IBAN validation', description: 'National character rules, exact lengths and mod-97 checks for all 89 countries in SWIFT registry release 103.' },
+      { icon: 'i-lucide-id-card', title: 'BSN & KvK', description: 'Dutch BSN checksum validation (11-proef) plus KvK format validation (8 digits) — handy for NL-focused products. KvK has no public checksum, so it\'s format-only; registration lookups are planned through the optional Cloud client.' },
       { icon: 'i-lucide-feather', title: 'Zero dependencies', description: 'Tiny, tree-shakeable, and dependency-free. Ships ESM + types, works in Node and the browser.' },
-      { icon: 'i-lucide-shield-check', title: 'Typed & tested', description: 'Written in TypeScript with full types and a green test suite covering every checksum path.' }
+      { icon: 'i-lucide-shield-check', title: 'Safe inputs & clear coverage', description: 'Typed results, a 256-code-unit input limit, redacted validation errors, postal coverage metadata and opt-in strict postal checks. Verified by 400 tests.' }
     ],
     recipesTitle: 'Production recipes',
-    recipesDescription: 'Real problems your product hits in EU markets — solved with the published API.',
+    recipesDescription: 'Offline recipes use the published 0.6.0 API. Cloud recipes illustrate future hosted lookups; that service is not deployed.',
     recipes: [
       {
         title: 'Reject bad VAT numbers before you ever call VIES',
         problem: 'A B2B checkout must apply reverse-charge VAT, but VIES is slow, rate-limited, and rejects malformed input anyway.',
         code: `import { validateVAT } from '@alosha/eu-validate'
-// Hosted VIES lookups (@alosha/eu-validate/cloud) ship in Phase 3 — coming soon.
+// Hosted VIES lookups (@alosha/eu-validate/cloud) are planned; the client is included, but the service is not deployed.
 // The offline validateVAT() below works today; the createClient()/verifyVAT() calls
 // are forward-looking. See "Confirm VAT registration…" below for graceful fallback.
 import { createClient } from '@alosha/eu-validate/cloud'
@@ -201,7 +201,7 @@ export async function resolveVat(input: string) {
   const live = await eu.verifyVAT(offline.normalized!)
   return { ok: live.registered, company: live.name }
 }`,
-        why: 'The offline checksum filters out typos and fabricated numbers for free, so the slow, rate-limited VIES call only ever runs on structurally valid input. You cut checkout latency and stop burning your VIES quota on garbage. (The hosted VIES step uses @alosha/eu-validate/cloud, which ships in Phase 3 — the offline validation works today.)',
+        why: 'The offline checksum filters out typos and fabricated numbers for free, so the slow, rate-limited VIES call only ever runs on structurally valid input. You cut checkout latency and stop burning your VIES quota on garbage. (The hosted VIES step uses @alosha/eu-validate/cloud, whose hosted service is planned — the offline validation works today.)',
         sandbox: 'https://stackblitz.com/github/avlisodraude/eu-validate/tree/main/examples/reject-bad-vat'
       },
       {
@@ -241,7 +241,7 @@ export async function checkVat(input: string) {
 
   try {
     const live = await eu.verifyVAT(offline.normalized!)
-    return { status: (live.registered ? 'registered' : 'not_registered') as const, company: live.name }
+    return { status: live.registered ? 'registered' as const : 'not_registered' as const, company: live.name }
   } catch (err) {
     if (err instanceof CloudNotAvailableError) {
       // Hosted lookups aren't live yet — the offline checksum already passed, so degrade
@@ -255,7 +255,7 @@ export async function checkVat(input: string) {
     throw err
   }
 }`,
-        why: 'verifyVAT() throws typed errors instead of a generic Error, so a Cloud outage or the not-yet-shipped Phase 3 endpoint never gets confused with "the VAT number is wrong." The offline checksum already did the hard rejection work, so every Cloud failure mode here degrades to "unconfirmed" instead of blocking the user.',
+        why: 'verifyVAT() throws typed errors instead of a generic Error, so a Cloud outage or a not-yet-deployed hosted endpoint never gets confused with "the VAT number is wrong." The offline checksum already did the hard rejection work, so every Cloud failure mode here degrades to "unconfirmed" instead of blocking the user.',
         sandbox: 'https://stackblitz.com/github/avlisodraude/eu-validate/tree/main/examples/confirm-vat-with-fallback'
       },
       {
@@ -342,13 +342,13 @@ console.log(\`\${clean.length - 1} clean, \${rejected.length - 1} rejected — o
       }
     ],
     trustRows: [
-      { icon: 'i-lucide-gauge', metric: 'Performance', target: '0 ms network · synchronous', value: 'Offline checksum runs in-process — no VIES round-trip, no latency, 100% uptime.' },
+      { icon: 'i-lucide-gauge', metric: 'Performance', target: '0 ms network · synchronous', value: 'Offline checksum runs in-process — no network dependency for offline validation.' },
       { icon: 'i-lucide-wifi-off', metric: 'Data isolation', target: 'No network in core', value: 'Identifiers never leave your environment — simpler GDPR posture.' },
       { icon: 'i-lucide-feather', metric: 'Bundle size', target: '~3 KB min+gzip', value: 'Negligible impact on your app’s Core Web Vitals.' },
       { icon: 'i-lucide-package-x', metric: 'Dependencies', target: '0 runtime deps', value: 'No third-party supply-chain surface added to your build.' },
       { icon: 'i-lucide-file-code-2', metric: 'Type safety', target: 'Ships .d.ts (ESM + CJS)', value: 'Autocompletion and compile-time safety out of the box.' },
       { icon: 'i-lucide-scale', metric: 'Licensing', target: 'MIT (core)', value: 'MIT-licensed core runs entirely in your infra — clears legal review and never breaks if alosha.dev goes away.' },
-      { icon: 'i-lucide-cloud', metric: 'Live lookups', target: 'Optional /cloud, API-key', value: 'Opt-in VIES & KvK registration checks when you need them.' }
+      { icon: 'i-lucide-cloud', metric: 'Live lookups', target: 'Optional /cloud, API-key', value: 'Optional client included; hosted VIES and KvK lookups are planned.' }
     ],
     useCases: {
       title: 'The business case for offline validation',
@@ -365,7 +365,7 @@ console.log(\`\${clean.length - 1} clean, \${rejected.length - 1} rejected — o
             { icon: 'i-lucide-server-crash', label: 'Single point of failure', detail: 'VIES has scheduled downtime and per-member-state outages; when it 5xxs or times out, your checkout inherits the failure.' },
             { icon: 'i-lucide-thermometer-snowflake', label: 'Rate limits', detail: 'Government endpoints throttle aggressively, so traffic spikes — exactly when revenue is highest — get rejected.' }
           ],
-          mitigation: 'eu-validate runs the structural and checksum validation in-process (Modulo-97 for IBAN, 11-proef for BSN, country VAT rules) with zero network calls — instant, 100% uptime. You only ever spend a VIES round-trip on numbers that already passed the offline checksum, so live lookups become rare and non-blocking.'
+          mitigation: 'eu-validate runs the structural and checksum validation in-process (Modulo-97 for IBAN, 11-proef for BSN, country VAT rules) with zero network calls without an external service dependency. You only ever spend a VIES round-trip on numbers that already passed the offline checksum, so live lookups become rare and non-blocking.'
         },
         {
           icon: 'i-lucide-shield-alert',
@@ -399,7 +399,7 @@ console.log(\`\${clean.length - 1} clean, \${rejected.length - 1} rejected — o
     },
     supportPoints: [
       'Hosted VIES VAT registration lookups via @alosha/eu-validate/cloud (coming soon)',
-      'KvK company-register lookups with a single API key',
+      'KvK company-register lookups with an API key (planned)',
       'Priority bug fixes and answers straight from the maintainer',
       'Custom validators or extra country coverage on request'
     ],
