@@ -12,6 +12,9 @@ interface Split { km: number, paceSecPerKm: number, elevationGainM: number, avgH
 interface HrZones { z1: number, z2: number, z3: number, z4: number, z5: number }
 interface StrideStats {
   distanceM: number
+  distanceSource: 'device' | 'computed' | 'unavailable'
+  movingTimeSource: 'timer' | 'speed' | 'unavailable'
+  quality: { timingSource: string, warnings: string[] }
   elapsedTimeSec: number
   movingTimeSec: number
   avgPaceSecPerKm: number
@@ -27,14 +30,14 @@ interface StrideStats {
 interface StrideActivity { name?: string, format?: string, type?: string, startTime?: string, points: unknown[] }
 interface StrideApi {
   parse: (input: string | Uint8Array) => StrideActivity
-  analyze: (a: StrideActivity, maxHR?: number) => StrideStats
+  analyze: (a: StrideActivity, options?: { splitDistanceM?: number, pauseDetection?: 'auto' | 'speed' }) => StrideStats
   formatPace: (s: number, u?: Units) => string
   formatDistance: (m: number, u?: Units) => string
   formatDuration: (s: number) => string
   paceChartConfig: (a: StrideActivity, s: StrideStats, o?: object) => ChartCfg
   elevationChartConfig: (a: StrideActivity, s: StrideStats, o?: object) => ChartCfg
-  heartRateChartConfig: (a: StrideActivity, s: StrideStats) => ChartCfg
-  hrZonesChartConfig: (s: StrideStats) => ChartCfg
+  heartRateChartConfig: (a: StrideActivity, s: StrideStats, o?: object) => ChartCfg
+  hrZonesChartConfig: (s: StrideStats, o?: object) => ChartCfg
   splitsChartConfig: (s: StrideStats, o?: object) => ChartCfg
 }
 interface ChartCfg { type: string, data: unknown, options?: Record<string, unknown> }
@@ -67,7 +70,7 @@ function loadStride(): Promise<StrideApi> {
     const w = window as unknown as { Stride?: StrideApi }
     if (w.Stride) return resolve(w.Stride)
     const s = document.createElement('script')
-    s.src = '/lib/stride.js'
+    s.src = '/lib/stride.js?v=3.0.0'
     s.onload = () => (w.Stride ? resolve(w.Stride) : reject(new Error('Stride failed to initialise')))
     s.onerror = () => reject(new Error('Could not load the Stride library'))
     document.head.appendChild(s)
@@ -194,7 +197,7 @@ async function renderCharts() {
   mount(Chart, splitsCanvas.value, Stride.splitsChartConfig(st, opts))
   mount(Chart, elevationCanvas.value, Stride.elevationChartConfig(act, st, opts))
   if (st.hrZones) {
-    mount(Chart, hrCanvas.value, Stride.heartRateChartConfig(act, st))
+    mount(Chart, hrCanvas.value, Stride.heartRateChartConfig(act, st, opts))
     mount(Chart, zonesCanvas.value, Stride.hrZonesChartConfig(st))
   }
 }
@@ -221,9 +224,9 @@ const summary = computed<Stat[]>(() => {
   const S = Sapi()
   if (!st || !S) return []
   const out: Stat[] = [
-    { label: 'Distance', value: S.formatDistance(st.distanceM, units.value), icon: 'i-lucide-route' },
-    { label: 'Moving time', value: S.formatDuration(st.movingTimeSec), icon: 'i-lucide-timer' },
-    { label: 'Avg pace', value: S.formatPace(st.avgPaceSecPerKm, units.value), icon: 'i-lucide-gauge' }
+    { label: 'Distance', value: st.distanceSource === 'unavailable' || st.quality.timingSource === 'unavailable' ? 'Unavailable' : S.formatDistance(st.distanceM, units.value), icon: 'i-lucide-route' },
+    { label: 'Moving time', value: st.movingTimeSource === 'unavailable' || st.quality.timingSource === 'unavailable' ? 'Unavailable' : S.formatDuration(st.movingTimeSec), icon: 'i-lucide-timer' },
+    { label: 'Avg pace', value: st.distanceM > 0 && st.avgPaceSecPerKm > 0 ? S.formatPace(st.avgPaceSecPerKm, units.value) : 'Unavailable', icon: 'i-lucide-gauge' }
   ]
   if (st.bestKmPaceSecPerKm != null)
     out.push({ label: 'Best km', value: S.formatPace(st.bestKmPaceSecPerKm, units.value), icon: 'i-lucide-zap' })

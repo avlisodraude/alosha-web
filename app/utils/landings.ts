@@ -619,7 +619,7 @@ if (report.failed > 0) process.exit(1)`,
 
   'stride': {
     headline: 'Open source · Free npm package',
-    titleLead: 'GPX, TCX & FIT analytics',
+    titleLead: 'Stride 3 · GPX, TCX & FIT analytics',
     titleAccent: 'for runners',
     description: 'Parse GPX, TCX and FIT files, compute running metrics, and render Chart.js dashboards.',
     descriptionStrong: 'Zero config — one API for every format.',
@@ -627,7 +627,7 @@ if (report.failed > 0) process.exit(1)`,
     heroChips: ['gpx', 'tcx', 'fit'],
     heroChipsNote: 'one API, auto-detected',
     codeTitle: 'Parse, analyse, chart',
-    codeDescription: 'A file path and one call for the metrics. Charts live behind a subpath, so parsing stays dependency-free.',
+    codeDescription: 'A file path and one call for the metrics. Charts live behind an optional subpath; parsing works without Chart.js.',
     code: `import { parse, analyze } from '@alosha/stride'
 // Charts are optional — install chart.js only if you render:
 import { paceChartConfig } from '@alosha/stride/charts'
@@ -646,8 +646,8 @@ new Chart(canvas, paceChartConfig(activity, stats))`,
     featuresDescription: 'One package, no wrappers around wrappers. Works in the browser and in Node.',
     features: [
       { icon: 'i-lucide-file-text', title: 'GPX, TCX & FIT parser', description: 'Parse GPX, TCX or FIT files — Garmin, Strava, Coros, Wahoo and more — auto-detected, with full HR, cadence, and elevation support.' },
-      { icon: 'i-lucide-ruler', title: 'Running metrics', description: 'Distance, moving time, avg/best pace, elevation gain/loss, HR zones, cadence, and per-km splits — all in one call.' },
-      { icon: 'i-lucide-target', title: 'Device-accurate numbers', description: 'Uses the watch’s own distance and barometric elevation when the file carries them, and denoises GPS altitude when it doesn’t — instead of integrating GPS jitter into inflated totals. A true rolling best-km, and time-weighted HR zones, not sample counts.' },
+      { icon: 'i-lucide-ruler', title: 'Running metrics', description: 'Distance, moving time, avg/best pace, elevation gain/loss, HR zones, cadence, and kilometre, mile or custom-distance splits — all in one call.' },
+      { icon: 'i-lucide-target', title: 'Sources and quality reports', description: 'Uses the watch’s own distance and barometric elevation when the file carries them, and denoises GPS altitude when it doesn’t — instead of integrating GPS jitter into inflated totals. Quality reports explain missing data and timing assumptions. Supports indoor records, FIT timer pauses and a rolling best-km within intact tracks.' },
       { icon: 'i-lucide-bar-chart-2', title: 'Chart.js configs', description: 'Five ready-made chart configs (pace, elevation, HR, HR zones, splits) behind an optional subpath — chart.js stays out of your install unless you render. Browser or Node canvas.' },
       { icon: 'i-lucide-heart-pulse', title: 'Heart rate zones', description: 'Automatic Z1–Z5 breakdown by %HRmax or heart-rate reserve (Karvonen). Time-weighted seconds in each zone, ready for a doughnut chart.' },
       { icon: 'i-lucide-globe', title: 'Metric & imperial', description: 'All formatters and chart labels switch between km/min·km and mi/min·mi via a single units option.' },
