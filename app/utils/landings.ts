@@ -1067,7 +1067,7 @@ await workbook.xlsx.writeFile('report.xlsx')
 
 // Read it back.
 const loaded = new Workbook()
-await loaded.xlsx.load(bytes)
+await loaded.xlsx.load(bytes, { strict: true }) // reject known content loss
 loaded.getWorksheet('Report')?.getCell('B2').value // → 42`,
     featuresTitle: 'Everything a real workbook needs',
     featuresDescription: 'Built to be the package you reach for instead of hand-rolling OOXML or fighting ExcelJS internals.',
@@ -1080,7 +1080,8 @@ loaded.getWorksheet('Report')?.getCell('B2').value // → 42`,
       { icon: 'i-lucide-list-checks', title: 'Data validation', description: 'List dropdowns and whole/decimal/date/time/text-length/custom constraints, settable per cell or per range via worksheet.dataValidations.add(sqref, dv).' },
       { icon: 'i-lucide-message-square', title: 'Cell comments', description: 'cell.note round-trips plain-string and rich-text notes with a multi-author table — real comments{n}.xml plus the legacy VML anchor Excel expects.' },
       { icon: 'i-lucide-image', title: 'Embedded images', description: 'workbook.addImage + worksheet.addImage support two-cell range anchors and one-cell/pixel-extent anchors for logos, charts-as-images and photo grids.' },
-      { icon: 'i-lucide-gauge', title: 'Low-memory streaming writer', description: 'The stream.xlsx.WorkbookWriter-shaped API renders and deflates each row as you commit it — ~14.2× less peak memory than the buffered writer at ~1.9× the throughput on 500k-row exports.' }
+      { icon: 'i-lucide-gauge', title: 'Cancellable streaming exports', description: 'Awaitable rows pause for slow destinations. AbortSignal cancels exports, and a 16 MiB default output queue ceiling prevents unlimited compressed-output buildup. The published 500k-row baseline used ~14.2× less peak memory than the buffered writer.' },
+      { icon: 'i-lucide-shield-check', title: 'Import limits & diagnostics', description: 'Configurable ZIP and model limits bound imports. Structured warnings report known discarded features; strict mode rejects those warnings. Strict mode checks known loss rather than validating the full OOXML schema.' }
     ],
     useCases: {
       title: 'Why teams move off ExcelJS or a home-grown OOXML writer',
@@ -1097,7 +1098,7 @@ loaded.getWorksheet('Report')?.getCell('B2').value // → 42`,
             { icon: 'i-lucide-hourglass', label: 'Time to first byte', detail: 'Nothing streams to the client until the entire workbook has been built and zipped, so large exports feel frozen.' },
             { icon: 'i-lucide-cpu', label: 'Container limits', detail: 'A report that worked in dev OOMs in a memory-capped serverless function or container once real production data volume hits it.' }
           ],
-          mitigation: 'The streaming WorkbookWriter renders and deflates each row into the output archive the moment you call row.commit(), keeping peak memory roughly flat regardless of row count — with the same styles, merges, panes, data validation, conditional formatting, comments and images as the buffered writer.'
+          mitigation: 'The streaming WorkbookWriter renders rows incrementally. Awaitable row methods pause production for slow destinations, with a configurable hard output queue ceiling and AbortSignal cancellation. Styles, shared strings, images and other metadata can still grow with the workbook.'
         },
         {
           icon: 'i-lucide-git-pull-request-arrow',
@@ -1145,15 +1146,20 @@ await workbook.xlsx.writeFile('report.xlsx')`,
         problem: 'A nightly export job builds a report so large that the buffered writer\'s in-memory workbook risks OOM-killing the container it runs in.',
         code: `import { WorkbookWriter } from '@alosha/xlsx'
 
-const wb = new WorkbookWriter({ filename: 'big-report.xlsx' })
+const controller = new AbortController()
+const wb = new WorkbookWriter({
+  filename: 'big-report.xlsx',
+  signal: controller.signal
+})
 const ws = wb.addWorksheet('Data')
 
-for (const record of hugeDataset) {
-  ws.addRow([record.id, record.name, record.amount]).commit() // flushed now
+for await (const record of hugeDataset) {
+  await ws.addRowAsync([record.id, record.name, record.amount])
 }
+// Call controller.abort() to cancel from a job or request handler.
 ws.commit()
 await wb.commit()`,
-        why: 'row.commit() renders and deflates that row into the output archive immediately instead of retaining it, so peak memory stays roughly flat regardless of row count — about 14.2× less peak memory than the buffered writer at 1.9× the throughput on a 500k-row benchmark. Pass a Writable instead of a filename to stream straight to an HTTP response, or omit both to consume the writer as an AsyncIterable<Uint8Array>.'
+        why: 'addRowAsync() renders and commits each row, pausing when the destination falls behind. The compressed output queue defaults to a 1 MiB high-water mark and a 16 MiB hard ceiling; metadata and destination buffers are separate. Pass a Writable to stream to an HTTP response, or omit the destination and consume the async iterable concurrently. The published 500k-row benchmark is a historical baseline, not a new measurement of this release.'
       },
       {
         title: 'Write a formula, rich text, a hyperlink and an error code — all as plain cell values',
