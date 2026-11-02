@@ -12,7 +12,9 @@
  */
 export default defineNuxtRouteMiddleware((to) => {
   const { site, isHub, isProdHost, hubUrl, productUrl, monitorUrl, strideUrl, euValidateUrl, vueSelectUrl, xlsxUrl } = useSite()
-  const target = routeSite(to.path)
+  const isEuValidateDocs = to.path.replace(/\/+$/, '') === '/docs'
+    && (site === 'eu-validate' || to.query.product === 'eu-validate')
+  const target = isEuValidateDocs ? 'shared' : routeSite(to.path)
 
   if (isProdHost && target !== 'shared' && target !== site) {
     let base = hubUrl
