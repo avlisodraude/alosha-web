@@ -13,8 +13,8 @@ importers:
   .:
     dependencies:
       '@alosha/vue-select':
-        specifier: ^4.0.3
-        version: 4.0.3(vue@3.5.35(typescript@6.0.3))
+        specifier: 4.1.2
+        version: 4.1.2(vue@3.5.35(typescript@6.0.3))
       '@alosha/xlsx':
         specifier: ^0.14.0
         version: 0.14.0
@@ -74,10 +74,10 @@ packages:
   '@alosha/eu-validate@0.6.0':
     resolution: {integrity: sha512-8VMwU/R8Ltn+ZAPT0vWoqUQ4c3D2YKSUbMlb4dSBVSfNRtmhg0ZueLGRtoKftbpOmmgtoPgfKBISDlt2dkOebw==}
 
-  '@alosha/vue-select@4.0.3':
-    resolution: {integrity: sha512-ptvyvLCx5wIV/aGE05Y4q9Reb/T2YG8YTC/zLC+XhkRYJ01zAyFtfeagwgecR7RviaheyVkdr+JzLMXgOUOo+Q==}
+  '@alosha/vue-select@4.1.2':
+    resolution: {integrity: sha512-S9dH9DC2N/iJN9NxTNXkunafgLZkcwfcflIzf8OoBJ+0hNRsFOuq6Sf/JP49nCjCkCPlTSsrN++enSKX9uLjkQ==}
     peerDependencies:
-      vue: 3.x
+      vue: ^3.2.0
 
   '@alosha/xlsx@0.14.0':
     resolution: {integrity: sha512-ufnGjYJkZAn2xWim34fkV3b9NcmpKdt3G3OLKmksQpxjpph1Esu2fWdqVFO6D6aSkMS0jLjXSVPgNqkEoMyKXQ==}
@@ -5862,7 +5862,7 @@ snapshots:
 
   '@alosha/eu-validate@0.6.0': {}
 
-  '@alosha/vue-select@4.0.3(vue@3.5.35(typescript@6.0.3))':
+  '@alosha/vue-select@4.1.2(vue@3.5.35(typescript@6.0.3))':
     dependencies:
       vue: 3.5.35(typescript@6.0.3)
 

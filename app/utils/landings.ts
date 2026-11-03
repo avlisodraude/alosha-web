@@ -808,12 +808,12 @@ function splitAnalysis(activity) {
     titleLead: 'Vue 3 select, dropdown',
     titleAccent: '& typeahead',
     description: 'A maintained Vue 3 fork of the classic vue-select — grouped options, a full WAI-ARIA 1.2 combobox, and native TypeScript types.',
-    descriptionStrong: 'Zero runtime dependencies, 7.42 KiB gzip.',
+    descriptionStrong: 'Zero bundled runtime dependencies. Vue Select 4.1.2 requires Vue 3.2 or later in the Vue 3 series.',
     badges: FULL_BADGES,
     heroChips: ['single', 'multi', 'tags', 'async'],
     heroChipsNote: 'one component, every select pattern',
     codeTitle: 'Install, register, select',
-    codeDescription: 'Vue 3 removed the global Vue object, so registration happens once on the app instance — then it behaves like any other v-model input.',
+    codeDescription: 'Register the component on your Vue app instance and bind it with v-model. The 4.1.2 ESM and UMD bundles passed smoke tests on Vue 3.2.0.',
     code: `# Install
 npm install @alosha/vue-select
 
@@ -833,9 +833,9 @@ createApp(App).component('v-select', vSelect).mount('#app')
       { icon: 'i-lucide-accessibility', title: 'WAI-ARIA 1.2 combobox', description: 'combobox role and aria-expanded live on the search input, aria-activedescendant tracks the highlighted option, and focus stays put after selecting or pressing Escape — spec-correct, not an approximation.' },
       { icon: 'i-lucide-sliders-horizontal', title: 'Clear, deselect & dropdown control', description: 'A clear slot and deselect slot customize the × controls, and openDropdown()/closeDropdown()/toggleDropdown() are exposed on the instance so a parent can drive the dropdown through a template ref.' },
       { icon: 'i-lucide-file-code-2', title: 'Native TypeScript types', description: 'Hand-authored dist/vue-select.d.ts resolves automatically through the package\'s types/exports fields — no @types/vue-select needed, and installing it would only shadow the accurate bundled types.' },
-      { icon: 'i-lucide-move', title: 'Positioning without a required dependency', description: 'Default positioning is plain JS with zero dependencies; opt into appendToBody plus a calculatePosition built on @floating-ui/dom (replacing the old Popper.js docs example) for auto-flip, scroll-aware placement.' },
+      { icon: 'i-lucide-move', title: 'Positioning without a required dependency', description: 'Use appendToBody with a calculatePosition hook for custom placement. Version 4.1.2 runs positioning cleanup when the menu closes even if appendToBody was turned off while it was open.' },
       { icon: 'i-lucide-tags', title: 'Tagging & SSR out of the box', description: 'Turn on taggable to let users create new options from free text, and render the same component server-side — SSR support ships alongside the browser build.' },
-      { icon: 'i-lucide-feather', title: 'Zero deps, opt-in virtual scroll', description: '7.42 KiB gzip (ES) / 6.56 KiB (UMD) with no runtime dependencies; flip on virtual-scroll to window very large option lists so only visible rows hit the DOM (experimental, fixed row height).' }
+      { icon: 'i-lucide-feather', title: 'Opt-in virtual scrolling', description: 'Enable virtual-scroll for very large lists with fixed-height rows. Version 4.1.2 keeps keyboard navigation in view across virtual windows. Chromium tests cover filtering and clearing.' }
     ],
     useCases: {
       title: 'Should you build your own select component?',
@@ -931,7 +931,7 @@ const options = [
     label="label"
   />
 </template>`,
-        why: 'Group objects ({ label, options }) mix freely with flat options in the same array, and group headers render as non-selectable, non-highlightable rows automatically — so a regionally-grouped picker needs no custom grouping logic, just a shaped options array. reduce keeps the bound value a plain country code instead of the whole option object.'
+        why: 'Group objects ({ label, options }) can share an array with flat options. Group headers are skipped during keyboard navigation. reduce stores a country code in v-model. Version 4.1.2 resolves that code to the grouped child even when search hides it.'
       },
       {
         title: 'Search a remote API with debounce instead of filtering a static list',
