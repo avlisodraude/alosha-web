@@ -416,12 +416,13 @@ console.log(\`\${clean.length - 1} clean, \${rejected.length - 1} rejected — o
     titleLead: 'Website monitoring',
     titleAccent: 'for developers',
     description: 'Playwright-based checks with retries, screenshots, alerts, and HTML reports.',
-    descriptionStrong: 'Zero config to get started.',
+    descriptionStrong: 'Requires Node.js 20 or later. Node.js 24 LTS is recommended.',
     badges: ['version', 'downloads', 'types', 'license'],
     codeTitle: 'Up and running in minutes',
-    codeDescription: 'One config file. Two commands. Your sites are being watched.',
+    codeDescription: 'Install Chromium, add a configuration file, and run your first check.',
     code: `# Install
 npm install -D @alosha/monitor
+npx playwright install chromium
 
 # monitor.config.ts
 export default {
@@ -531,16 +532,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npm exec --no -- playwright install chromium --with-deps
       # 'monitor run' exits 1 on failure — the run goes red AND
       # the Slack notifier in monitor.config.ts fires.
-      - run: npx monitor run
+      - run: npm exec --no -- monitor run
         env:
           SLACK_WEBHOOK_URL: \${{ secrets.SLACK_WEBHOOK_URL }}`,
-        why: 'GitHub schedules and runs the job for you — no server, no cron daemon, no hosted bill. monitor run exits non-zero when any check fails, so the workflow goes red and your config’s Slack notifier alerts at the same moment. (GitHub cron is best-effort, so treat very short intervals as approximate.)',
-        sandbox: 'https://stackblitz.com/github/avlisodraude/monitor/tree/main/examples/github-actions'
+        why: 'Commit your package-lock.json with @alosha/monitor installed. GitHub schedules and runs the job for you — no server, no cron daemon, no hosted bill. monitor run exits non-zero when any check fails, so the workflow goes red and your config’s Slack notifier alerts at the same moment. (GitHub cron is best-effort, so treat very short intervals as approximate.)'
       },
       {
         title: 'Get a Slack alert with a screenshot the moment a page goes down',
