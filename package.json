@@ -18,7 +18,7 @@
     "dev:xlsx": "NUXT_PUBLIC_FORCE_SITE=xlsx nuxt dev"
   },
   "dependencies": {
-    "@alosha/vue-select": "^4.0.3",
+    "@alosha/vue-select": "4.1.2",
     "@alosha/xlsx": "^0.14.0",
     "@iconify-json/lucide": "^1.2.111",
     "@iconify-json/simple-icons": "^1.2.85",
