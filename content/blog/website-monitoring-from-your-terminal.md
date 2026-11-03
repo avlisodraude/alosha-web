@@ -45,4 +45,7 @@ Monitor is MIT licensed and free on npm. A hosted version for teams who'd rather
 
 ```bash
 npm install -D @alosha/monitor
+npx playwright install chromium
 ```
+
+Monitor 0.5 requires Node.js 20 or later. Use Node.js 24 LTS for new installations and CI. Both run modes validate check names, URLs, retries, concurrency, and intervals before Chromium starts. Use intervals such as `5m`, `2h30m`, or `1.5h`. See the [release notes](https://github.com/avlisodraude/monitor/blob/main/CHANGELOG.md) for migration details.
